@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Bluetooth</string>
+    <string name="saluto">Benvenuto!</string>
+    <string name="error">Errore Generico</string>
+    <string name="send_error">Errore invio!</string>
+    <string name="connected">Connesso con:</string>
+    <string name="disconnected">Disconesso</string>
+    <string name="search_finish">Ricerca finita!</string>
+    <string name="do_search">Ricerca in corso!</string>
+    <string name="connect">Connetti</string>
+    <string name="finish_connection">Connessione terminata</string>
+    <string name="dissociato">Dissociato</string>
+    <string name="no_dispo">Non ci sono dispositivi</string>
+    <string name="list">Lista:</string>
+    <string name="delete">Elimina</string>
+    <string name="no_bluetooth">Non hai il bluetooth</string>
+    <string name="on">&#160;&#160;Bluetooth On</string>
+    <string name="off">&#160;&#160;Bluetooth Off</string>
+    <string name="connection">Mi sto connettendo¦</string>
+    <string name="associati">Dispositivi Associati</string>
+    <string name="invia">invia</string>
+</resources>
