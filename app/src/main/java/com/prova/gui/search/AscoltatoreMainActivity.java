@@ -40,7 +40,7 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
         ricerca= false;
     }
 
-    private void inRicerca()
+    void inRicerca()
     {
         if (ricerca) {
             try {
@@ -112,7 +112,7 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
         {app.getMessaggio().setText(R.string.no_bluetooth);}
     }
 
-    private void cerca()
+    void cerca()
     {
         if (!ricerca)
         {
@@ -137,6 +137,7 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
         openPage1.putExtra("nome", nomi.get(i));
         openPage1.putExtra("mac", mac.get(i));
         pulisci();
+        app.setCollegato(true);
         app.getMessaggio().setText(R.string.connection);
         app.startActivity(openPage1);
     }

@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView address;
     private LinearLayout bottoni;
     private Switch stato_bluetooth;
+    private boolean collegato = false;
 
     public TextView getMessaggio() {return messaggio;}
     public Button getAssociati() {return associati;}
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     public LinearLayout getBottoni() {return bottoni;}
     public Switch getStato_bluetooth(){return stato_bluetooth;}
     public AscoltatoreMainActivity getAscoltatore() { return ascoltatore; }
+    public void setCollegato (boolean collegato){ this.collegato = collegato; }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         changeView();
+        if (collegato) {
+            TextView t = (TextView) findViewById(R.id.messaggio);
+            t.setText(R.string.finish_connection);
+            collegato = false;
+        }
     }
 
     @Override
@@ -72,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        TextView t= (TextView) findViewById(R.id.messaggio);
-        t.setText(R.string.finish_connection);
+        ascoltatore.inRicerca();
     }
 
     @Override
@@ -81,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
         int size = stato_bluetooth.getHeight();
         stato_bluetooth.setTextSize(size/8);
+        LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.5f);
+        buttonLayoutParams.setMargins(associati.getWidth()/10,associati.getHeight()/6,associati.getWidth()/10,associati.getHeight()/6);
+        associati.setLayoutParams(buttonLayoutParams);
     }
 
     public void changeView(){
