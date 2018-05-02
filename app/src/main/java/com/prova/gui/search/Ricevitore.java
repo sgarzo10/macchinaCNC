@@ -34,21 +34,28 @@ public class Ricevitore extends BroadcastReceiver {
             b.setImageDrawable(ContextCompat.getDrawable(app, R.drawable.lente));
             app.getAscoltatore().setRicerca();
         } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            app.getAscoltatore().getNomi().add(device.getName());
-            app.getAscoltatore().getMac().add(device.getAddress());
-            ArrayAdapter adapter = new ArrayAdapter(app,android.R.layout.simple_list_item_1, app.getAscoltatore().getNomi());
-            app.getNomi().setAdapter(adapter);
-            ArrayAdapter adapter1 = new  ArrayAdapter(app,android.R.layout.simple_list_item_1, app.getAscoltatore().getMac());
-            app.getAddress().setAdapter(adapter1);
-            Button pr= new Button(app);
-            pr.setId(R.id.connetti);
-            pr.setText(R.string.connect);
-            pr.setTextSize(10);
-            pr.setTag(trovati);
-            pr.setOnClickListener(app.getAscoltatore());
-            app.getBottoni().addView(pr);
-            trovati++;
+            try {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                app.getAscoltatore().getNomi().add(device.getName());
+                app.getAscoltatore().getMac().add(device.getAddress());
+                Log.i("NAME",device.getName());
+                Log.i("MAC",device.getAddress());
+                ArrayAdapter adapter = new ArrayAdapter(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getNomi());
+                app.getNomi().setAdapter(adapter);
+                ArrayAdapter adapter1 = new ArrayAdapter(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getMac());
+                app.getAddress().setAdapter(adapter1);
+                Button pr= new Button(app);
+                pr.setId(R.id.connetti);
+                pr.setText(R.string.connect);
+                pr.setTextSize(10);
+                pr.setTag(trovati);
+                pr.setOnClickListener(app.getAscoltatore());
+                app.getBottoni().addView(pr);
+                trovati++;
+            }
+            catch (Exception e){
+                Log.e("EXCEPTION", e.getMessage());
+            }
         }
     }
 }

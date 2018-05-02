@@ -112,7 +112,7 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
         {app.getMessaggio().setText(R.string.no_bluetooth);}
     }
 
-    void cerca()
+    private void cerca()
     {
         if (!ricerca)
         {
