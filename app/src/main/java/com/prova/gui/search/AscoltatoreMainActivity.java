@@ -133,24 +133,30 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
     private void connetti(int i)
     {
         inRicerca();
-        Intent openPage1 = new Intent(app,ConnectionActivity.class);
-        openPage1.putExtra("nome", nomi.get(i));
-        openPage1.putExtra("mac", mac.get(i));
-        pulisci();
-        app.setCollegato(true);
-        app.getMessaggio().setText(R.string.connection);
-        app.startActivity(openPage1);
+        try {
+            Intent openPage1 = new Intent(app, ConnectionActivity.class);
+            openPage1.putExtra("nome", nomi.get(i));
+            openPage1.putExtra("mac", mac.get(i));
+            pulisci();
+            app.setCollegato(true);
+            app.getMessaggio().setText(R.string.connection);
+            app.startActivity(openPage1);
+        } catch (Exception e){
+            app.getMessaggio().setText(R.string.error);
+        }
     }
 
     private void elimina(int i)
     {
-        BluetoothDevice mmDevice=bluetooth.getDevice(mac.get(i));
         try {
+            BluetoothDevice mmDevice=bluetooth.getDevice(mac.get(i));
             Method m = mmDevice.getClass().getMethod("removeBond", (Class[]) null);
             m.invoke(mmDevice, (Object[]) null);
             app.getMessaggio().setText(R.string.dissociato);
             pulisci();
-        } catch (Exception e) { app.getMessaggio().setText(R.string.error); }
+        } catch (Exception e) {
+            app.getMessaggio().setText(R.string.error);
+        }
     }
 
     public void onClick(View view) {
@@ -181,10 +187,15 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
     }
 
     private void updateList(){
-        ArrayAdapter adapter = new ArrayAdapter(app, android.R.layout.simple_list_item_1, nomi);
-        app.getNomi().setAdapter(adapter);
-        ArrayAdapter adapter1 = new ArrayAdapter(app, android.R.layout.simple_list_item_1, mac);
-        app.getAddress().setAdapter(adapter1);
+        try {
+            ArrayAdapter adapter = new ArrayAdapter(app, android.R.layout.simple_list_item_1, nomi);
+            app.getNomi().setAdapter(adapter);
+            ArrayAdapter adapter1 = new ArrayAdapter(app, android.R.layout.simple_list_item_1, mac);
+            app.getAddress().setAdapter(adapter1);
+        }
+        catch (Exception e){
+            app.getMessaggio().setText(R.string.error);
+        }
     }
 
     private void pulisci(){

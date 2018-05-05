@@ -33,21 +33,13 @@ public class BluetoothConnection extends Thread {
         BluetoothDevice mmDevice = bluetoothAdapter.getRemoteDevice(mac);
         try {
             mmSocket = (BluetoothSocket) mmDevice.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(mmDevice, 1);
-        } catch (Exception e) {
-            return false;
-        }
-        try {
             mmSocket.connect();
             outStream = mmSocket.getOutputStream();
             input = mmSocket.getInputStream();
             return true;
         } catch (Exception e) {
-            try {
-                mmSocket.close();
-                return false;
-            } catch (Exception e1) {
-                return false;
-            }
+            Log.e("EXCEPTION CONNECTION",e.getMessage());
+            return disconnetti();
         }
     }
 
@@ -55,20 +47,22 @@ public class BluetoothConnection extends Thread {
         try {
             mmSocket.close();
             outStream = null;
+            input = null;
             return true;
         } catch (Exception e) {
+            Log.e("EXCEPTION DISCONNECT",e.getMessage());
             return false;
         }
     }
 
     public boolean invia(String message) {
-        byte[] msgBuffer = message.getBytes();
         try {
+            byte[] msgBuffer = message.getBytes();
             outStream.write(msgBuffer);
             Log.i("SEND",message);
             return true;
         } catch (IOException e) {
-            Log.w("SEND","Messaggio non inviato");
+            Log.e("EXCEPTION SEND",e.getMessage());
             return false;
         }
     }
@@ -80,7 +74,6 @@ public class BluetoothConnection extends Thread {
 
         while (true) {
             try {
-                // Read from the InputStream
                 if (input != null) {
                     bytes = input.available();
                     if (bytes != 0) {
@@ -89,7 +82,7 @@ public class BluetoothConnection extends Thread {
                     }
                 }
             } catch (IOException ignored) {
-                Log.e("ERROR CONNECTION", ignored.getMessage());
+                Log.e("EXCEPTION CONNEC RECIVE", ignored.getMessage());
             }
         }
     }

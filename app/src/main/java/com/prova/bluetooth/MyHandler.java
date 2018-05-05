@@ -19,14 +19,19 @@ public class MyHandler extends android.os.Handler{
     public void handleMessage(android.os.Message msg) {
         switch (msg.what) {
             case 1:
-                byte[] readBuf = (byte[]) msg.obj;
-                String strIncom = new String(readBuf, 0, msg.arg1);
-                Log.i("RECIVE", strIncom);
-                sb.append(strIncom);
-                int endOfLineIndex = sb.indexOf("\r\n");
-                if (endOfLineIndex > 0) {
-                    mexRicevuto = sb.substring(0, endOfLineIndex);
-                    sb.delete(0, sb.length());
+                try {
+                    byte[] readBuf = (byte[]) msg.obj;
+                    String strIncom = new String(readBuf, 0, msg.arg1);
+                    Log.i("RECIVE", strIncom);
+                    sb.append(strIncom);
+                    int endOfLineIndex = sb.indexOf("\r\n");
+                    if (endOfLineIndex > 0) {
+                        mexRicevuto = sb.substring(0, endOfLineIndex);
+                        sb.delete(0, sb.length());
+                    }
+                }catch (Exception e){
+                    Log.e("EXCEPTION HAND RECIVE", e.getMessage());
+                    mexRicevuto = "ERROR";
                 }
                 break;
         }

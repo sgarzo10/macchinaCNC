@@ -8,7 +8,6 @@ import com.prova.bluetooth.R;
 public class AscoltatoreConnectionActivity implements View.OnClickListener {
 
     private ConnectionActivity app;
-    private TextView t;
 
     AscoltatoreConnectionActivity(ConnectionActivity app)
     {
@@ -19,11 +18,8 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.invia:
-                t = new TextView(app);
-                if (!app.getBluetooth().invia(app.getTesto().getText().toString())) {
-                    t.setText(R.string.error);
-                    app.getOutput().addView(t);
-                }
+                if (!app.getBluetooth().invia(app.getTesto().getText().toString()))
+                    addView(app.getResources().getString(R.string.error));
                 else
                     createThread();
                 break;
@@ -35,14 +31,18 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener {
         handler.postDelayed(new Runnable() {
             public void run() {
                 if (!app.getBluetooth().getH().getMexRicevuto().equals("")) {
-                    String mex = "RX: " + app.getBluetooth().getH().getMexRicevuto();
-                    t.setText(mex);
-                    app.getOutput().addView(t);
+                    addView("RX: " + app.getBluetooth().getH().getMexRicevuto());
                     app.getBluetooth().getH().setMexRicevuto("");
                 }
                 else
                     createThread();
             }
         }, 100);
+    }
+
+    private void addView(String s){
+        TextView t = new TextView(app);
+        t.setText(s);
+        app.getOutput().addView(t);
     }
 }
