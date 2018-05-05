@@ -1,4 +1,4 @@
-package com.prova.gui.search;
+package com.prova.gui.search.activity;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -13,12 +13,12 @@ import android.widget.CompoundButton;
 
 import com.prova.bluetooth.R;
 import com.prova.bluetooth.Bluetooth;
-import com.prova.gui.device.ConnectionActivity;
+import com.prova.gui.device.activity.ConnectionActivity;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
 
-class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private MainActivity app;
     private boolean ricerca;
@@ -26,9 +26,9 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
     private ArrayList<String> mac;
     private Bluetooth bluetooth;
 
-    void setRicerca() {this.ricerca = false;}
-    ArrayList<String> getNomi() {return nomi;}
-    ArrayList<String> getMac() {return mac;}
+    public void setRicerca() {this.ricerca = false;}
+    public ArrayList<String> getNomi() {return nomi;}
+    public ArrayList<String> getMac() {return mac;}
     public Bluetooth getBluetooth() {return bluetooth;}
 
     AscoltatoreMainActivity(MainActivity app)
@@ -188,9 +188,9 @@ class AscoltatoreMainActivity implements View.OnClickListener, CompoundButton.On
 
     private void updateList(){
         try {
-            ArrayAdapter adapter = new ArrayAdapter(app, android.R.layout.simple_list_item_1, nomi);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(app, android.R.layout.simple_list_item_1, nomi);
             app.getNomi().setAdapter(adapter);
-            ArrayAdapter adapter1 = new ArrayAdapter(app, android.R.layout.simple_list_item_1, mac);
+            ArrayAdapter<String> adapter1 = new ArrayAdapter<>(app, android.R.layout.simple_list_item_1, mac);
             app.getAddress().setAdapter(adapter1);
         }
         catch (Exception e){

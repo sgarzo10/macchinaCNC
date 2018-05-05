@@ -29,7 +29,9 @@
             android:src="@drawable/lente"
             android:background="?android:selectableItemBackground"
             android:visibility="invisible"
-            tools:ignore="NestedWeights" />
+            android:scaleType="fitCenter"
+            tools:ignore="NestedWeights"
+            android:contentDescription="@string/cerca" />
 
         <Button
             android:id="@+id/associati"

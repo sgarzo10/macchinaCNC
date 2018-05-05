@@ -1,4 +1,4 @@
-package com.prova.gui.search;
+package com.prova.gui.search.utility;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,13 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import com.prova.bluetooth.R;
+import com.prova.gui.search.activity.MainActivity;
 
 public class Ricevitore extends BroadcastReceiver {
 
     private MainActivity app;
     private int trovati;
 
-    Ricevitore(MainActivity app) {
+    public Ricevitore(MainActivity app) {
         this.app=app;
         trovati=0;
     }
@@ -52,9 +53,9 @@ public class Ricevitore extends BroadcastReceiver {
             app.getAscoltatore().getMac().add(device.getAddress());
             Log.i("NAME",app.getAscoltatore().getNomi().get(trovati));
             Log.i("MAC",app.getAscoltatore().getMac().get(trovati));
-            ArrayAdapter adapter = new ArrayAdapter(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getNomi());
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getNomi());
             app.getNomi().setAdapter(adapter);
-            ArrayAdapter adapter1 = new ArrayAdapter(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getMac());
+            ArrayAdapter<String> adapter1 = new ArrayAdapter<>(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getMac());
             app.getAddress().setAdapter(adapter1);
             Button pr= new Button(app);
             pr.setId(R.id.connetti);

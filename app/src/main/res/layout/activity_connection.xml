@@ -44,11 +44,102 @@
     </ScrollView>
 
     <LinearLayout
-        android:id="@+id/joystick"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="0.7"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:id="@+id/joystick"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="0.35"
+            android:orientation="vertical"
+            tools:ignore="NestedWeights,UselessLeaf">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="0.65"
+            android:orientation="vertical"
+            android:weightSum="1"
+            tools:ignore="NestedWeights">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight="0.50"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                tools:ignore="NestedWeights,UselessLeaf">
+
+                <RelativeLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.6">
+
+                    <Switch
+                        android:id="@+id/rotazione_attiva"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:theme="@style/SCBSwitch" />
+
+                </RelativeLayout>
+
+                <ImageButton
+                    android:id="@+id/sali"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:background="?android:selectableItemBackground"
+                    android:baselineAlignBottom="false"
+                    android:contentDescription="@string/sali"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/sali" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight="0.50"
+                android:weightSum="1"
+                android:orientation="horizontal"
+                tools:ignore="NestedWeights,UselessLeaf">
+
+                <RelativeLayout
+                    android:id="@+id/quadrato"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4">
+
+                </RelativeLayout>
+
+                <ImageButton
+                    android:id="@+id/scendi"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:layout_gravity="start"
+                    android:background="?android:selectableItemBackground"
+                    android:contentDescription="@string/scendi"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/scendi" />
+
+                <RelativeLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2">
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -16,7 +16,13 @@
     <string name="no_bluetooth">Non hai il bluetooth</string>
     <string name="on">&#160;&#160;Bluetooth On</string>
     <string name="off">&#160;&#160;Bluetooth Off</string>
-    <string name="connection">Mi sto connettendo¦</string>
+    <string name="connection">Mi sto connettendo!</string>
     <string name="associati">Dispositivi Associati</string>
     <string name="invia">invia</string>
+    <string name="scendi">scendi</string>
+    <string name="sali">sali</string>
+    <string name="quadrato">quadrato</string>
+    <string name="rot_on">Rotazione On</string>
+    <string name="rot_off">Rotazione Off</string>
+    <string name="cerca">cerca</string>
 </resources>

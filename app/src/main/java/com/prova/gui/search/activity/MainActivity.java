@@ -1,4 +1,4 @@
-package com.prova.gui.search;
+package com.prova.gui.search.activity;
 
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import com.prova.bluetooth.R;
+import com.prova.gui.search.utility.Ricevitore;
 
 public class MainActivity extends AppCompatActivity {
 
