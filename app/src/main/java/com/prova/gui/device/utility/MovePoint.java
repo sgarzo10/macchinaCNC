@@ -19,6 +19,7 @@ public class MovePoint extends Thread {
     538 + 67 = valore della x tutto a destra
     87 = valore della Y tutta in alto
     538 + 87 = valore della y tutta in basso
+    @TODO calcola i valori in base allo schermo e non inserirli statici
      */
     private void spostaPuntino(){
         float myX = (((jv.getX()-67)/538)-0.5f)*3;

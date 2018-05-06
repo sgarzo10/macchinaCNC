@@ -4,6 +4,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
+
+import com.prova.gui.device.utility.MyHandler;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,12 +19,8 @@ public class BluetoothConnection extends Thread {
     private BluetoothAdapter bluetoothAdapter;
     private MyHandler h;
 
-    public MyHandler getH() {
-        return h;
-    }
-
-    public BluetoothConnection (){
-        h = new MyHandler();
+    public BluetoothConnection (MyHandler h){
+        this.h = h;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mmSocket = null;
         outStream = null;

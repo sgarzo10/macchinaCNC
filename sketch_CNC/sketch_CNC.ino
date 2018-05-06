@@ -28,12 +28,13 @@ struct movimento {
 };
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-//x y z
 int millimetri_totali[3] = {0,0,0};
 int lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
+boolean seriale = true;
 
 void setup() {
-  Serial.begin(9600);
+  if (seriale)
+    Serial.begin(9600);
   bluetooth.begin(9600);
   pinMode (PUL_MOT_X, OUTPUT);
   pinMode (DIR_MOT_X, OUTPUT);
@@ -49,18 +50,15 @@ void setup() {
   pinMode (SENS_MOT_Z, INPUT);
   pinMode (MANDRINO, OUTPUT);
   pinMode (LED, OUTPUT);
+  my_print("---------------  START  ---------------", true);
+  reset("all");
   digitalWrite(LED,HIGH);
-  Serial.println("---------------  START  ---------------");
-  reset();
 }
 
 void loop() {
   String bluetooth_buffer = bluetooth_read();
   if (bluetooth_buffer != "")
-  {
-    bluetooth.println("ricevuto " + bluetooth_buffer);
     bluetooth_command(bluetooth_buffer);
-  }
 }
 
 String bluetooth_read(){
@@ -125,7 +123,7 @@ void aggiorna_misura(movimento m){
   else
     totali = totali - m.millimetri;
   millimetri_totali[indice] = totali;
-  dove_print(totali, m.motore);
+  dove_print(indice, m.motore);
 }
 
 void sposta(String command){
@@ -141,16 +139,16 @@ void attiva_mandrino(String command){
   if (command == "on" || command == "off"){
     if(command == "on"){
       digitalWrite(MANDRINO, true);
-      Serial.println("ATTIVO MANDRINO!");
+      my_print("ATTIVO MANDRINO!", true);
     }
     else{
       digitalWrite(MANDRINO, false);
-      Serial.println("SPENGO MANDRINO!");
+      my_print("SPENGO MANDRINO!", true);
     }
   }
   else{
-    Serial.print("I POSSIBILI VALORI PER QUESTO COMANDO SONO ON O OFF, TU HAI SCRITTO: "); 
-    Serial.println(command);
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO ON O OFF, TU HAI SCRITTO: ", false); 
+    my_print(command, true);
   }
 }
 
@@ -164,16 +162,16 @@ void dove_sono(String command){
       dove_print(2, "z");
   }
   else{
-    Serial.print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: "); 
-    Serial.println(command);
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: ", false); 
+    my_print(command, true);
   }
 }
 
 void dove_print(int indice, String asse){
-  Serial.print("TI TROVI A: ");
-  Serial.print(millimetri_totali[indice]);
-  Serial.print(" MILLIMETRI SULL'ASSE ");
-  Serial.println(asse);
+  my_print("TI TROVI A: ", false);
+  my_print(String(millimetri_totali[indice]), false);
+  my_print(" MILLIMETRI SULL'ASSE ", false);
+  my_print(asse, true);
 }
 
 void dimmi_lunghezze(String command){
@@ -186,22 +184,74 @@ void dimmi_lunghezze(String command){
       print_lunghezze(2, "z");
   }
   else{
-    Serial.print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: "); 
-    Serial.println(command);
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: ", false); 
+    my_print(command, true);
   }
 }
 
 void print_lunghezze(int indice, String asse){
-  Serial.print("L'ASSE ");
-  Serial.print(asse);
-  Serial.print(" È LUNGO ");
-  Serial.print(lunghezze[indice]);
-  Serial.println(" MILLIMETRI");
+  my_print("L'ASSE ", false);
+  my_print(asse, false);
+  my_print(" È LUNGO ", false);
+  my_print(String(lunghezze[indice]), false);
+  my_print(" MILLIMETRI", true);
+}
+
+void setta_lunghezze(String command){
+  String motore = "";
+  String lunghezza = "0";
+  int indice = -1;
+  boolean ok = true;
+  int ind = command.indexOf(" ");
+  if (ind > 0){
+    motore = command.substring(0, ind);
+    lunghezza = command.substring(ind+1, command.length());
+  }
+  if (motore == "x" || motore == "y" || motore == "z"){
+    if (motore == "x")
+     indice = 0;
+    if (motore == "y")
+     indice = 1;
+    if (motore == "z")
+     indice = 2;
+  }
+  else{
+    my_print("I POSSIBILI MOTORI SONO X Y Z, NON ESISTE NESSUN MOTORE CON LA SIGLA: ", false);
+    my_print(motore, true);
+    ok = false;
+  }
+  if (lunghezza.toInt() == 0){
+    my_print("LA LUNGHEZZA DEVE ESSERE UN NUMERO MAGGIORE DI 0, HAI INSERITO: ", false);
+    my_print(lunghezza, true);
+    ok = false;
+  }
+  if (ok){
+    lunghezze[indice] = lunghezza.toInt();
+    my_print("SETTO LA LUNGHEZZA DELL'ASSE ", false);
+    my_print(motore, false);
+    my_print(" A ", false);
+    my_print(lunghezza, false);
+    my_print(" MILLIMETRI", true);
+  }
+}
+
+void setta_seriale(String command){
+  if (command == "blu" || command == "ser"){
+    if (command == "blu")
+      seriale = false;
+    else
+      seriale = true;
+    my_print("ORA L'OUTPUT VERRA MOSTRATO QUI", true);
+  }
+  else{
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO BLU O SER, TU HAI SCRITTO: ", false); 
+    my_print(command, true);
+  }
 }
 
 void bluetooth_command(String command){
-  Serial.print("MESSAGGIO RICEVUTO: "); 
-  Serial.println(command);
+  my_print("MESSAGGIO RICEVUTO: ", false); 
+  my_print(command, true);
   if (command.substring(0,6) == "muovi ")
     sposta(command.substring(6,command.length()));
   if (command.substring(0,6) == "ruota ")
@@ -210,6 +260,12 @@ void bluetooth_command(String command){
     dove_sono(command.substring(5,command.length()));
   if (command.substring(0,5) == "lung ")
     dimmi_lunghezze(command.substring(5,command.length())); 
+  if (command.substring(0,5) == "setL ")
+    setta_lunghezze(command.substring(5,command.length()));
+  if (command.substring(0,6) == "reset ")
+    reset(command.substring(6,command.length()));
+  if (command.substring(0,6) == "setSe ")
+    setta_seriale(command.substring(6,command.length()));
 }
 
 movimento lettura_parametri(String command){
@@ -237,14 +293,14 @@ movimento lettura_parametri(String command){
       }
     }
   }
-  Serial.print("Motore: ");
-  Serial.println(motore);
-  Serial.print("Direzione: ");
-  Serial.println(direzione);
-  Serial.print("Millimetri: ");
-  Serial.println(millimetri);
-  Serial.print("Velocita: ");
-  Serial.println(velocita);
+  /*my_print("Motore: ", false);
+  my_print(motore, true);
+  my_print("Direzione: ", false);
+  my_print(direzione, true);
+  my_print("Millimetri: ", false);
+  my_print(millimetri, true);
+  my_print("Velocita: ", false);
+  my_print(velocita, true);*/
   if (motore == "x" || motore == "y" || motore == "z"){
     m.motore = motore;
     if (motore == "x")
@@ -255,8 +311,8 @@ movimento lettura_parametri(String command){
      indice = 2;
   }
   else{
-    Serial.print("I POSSIBILI MOTORI SONO X Y Z, NON ESISTE NESSUN MOTORE CON LA SIGLA: ");
-    Serial.println(motore);
+    my_print("I POSSIBILI MOTORI SONO X Y Z, NON ESISTE NESSUN MOTORE CON LA SIGLA: ", false);
+    my_print(motore, true);
     ok = false;
   }
   if (direzione == "su" || direzione == "giu"){
@@ -266,28 +322,28 @@ movimento lettura_parametri(String command){
       m.direzione = false;
   }
   else{
-    Serial.print("LE POSSIBILI DIREZIONI SONO SU O GIU, TU HAI SCRITTO: ");
-    Serial.println(direzione);
+    my_print("LE POSSIBILI DIREZIONI SONO SU O GIU, TU HAI SCRITTO: ", false);
+    my_print(direzione, true);
     ok = false;
   }
   if (millimetri.toInt() == 0){
-    Serial.print("I MILLIMETRI DEVONO ESSERE UN NUMERO MAGGIORE DI 0, HAI INSERITO: ");
-    Serial.println(millimetri);
+    my_print("I MILLIMETRI DEVONO ESSERE UN NUMERO MAGGIORE DI 0, HAI INSERITO: ", false);
+    my_print(millimetri, true);
     ok = false;
     }
   if (velocita.toInt() == 0){
-    Serial.print("LA VELOCITA DEVE ESSERE UN NUMERO MAGGIORE DI 0, HAI INSERITO: ");
-    Serial.println(velocita);
+    my_print("LA VELOCITA DEVE ESSERE UN NUMERO MAGGIORE DI 0, HAI INSERITO: ", false);
+    my_print(velocita, true);
     ok = false;
     }
   if (ok){
     if (m.direzione){
        int mancante = lunghezze[indice] - millimetri_totali[indice];
        if (millimetri.toInt() > mancante){
-          Serial.print("ERRORE!!! PER ARRIVARE A FINE CORSA CI SONO SOLO ");
-          Serial.print(mancante);
-          Serial.println(" MILLIMETRI");
-          Serial.println("TI PORTO A FINE CORSA!!");
+          my_print("ERRORE!!! PER ARRIVARE A FINE CORSA CI SONO SOLO ", false);
+          my_print(String(mancante), false);
+          my_print(" MILLIMETRI", true);
+          my_print("TI PORTO A FINE CORSA!!", true);
           m.millimetri = mancante;   
        }
        else
@@ -295,17 +351,17 @@ movimento lettura_parametri(String command){
     }
     else{
        if (millimetri.toInt() > millimetri_totali[indice]){
-          Serial.print("ERRORE!!! PER ARRIVARE A INIZIO CORSA CI SONO SOLO ");
-          Serial.print(millimetri_totali[indice]);
-          Serial.println(" MILLIMETRI");
-          Serial.println("TI PORTO A INIZIO CORSA!!");
+          my_print("ERRORE!!! PER ARRIVARE A INIZIO CORSA CI SONO SOLO ", false);
+          my_print(String(millimetri_totali[indice]), false);
+          my_print(" MILLIMETRI", true);
+          my_print("TI PORTO A INIZIO CORSA!!", true);
           m.millimetri = millimetri_totali[indice];   
        }
        else
           m.millimetri = millimetri.toInt();
     }
     if (velocita.toInt() < 32){
-      Serial.println("ERRORE!! VELOCITA TROPPO BASSA, IMPOSTO 32"); 
+      my_print("ERRORE!! VELOCITA TROPPO BASSA, IMPOSTO 32", true); 
       m.velocita = 32;
     }
     else
@@ -314,7 +370,41 @@ movimento lettura_parametri(String command){
   return m;
 }
 
-void reset(){
-  Serial.println("EFFETTUO IL RESET DEI MOTORI!");
-  Serial.println("ORA TUTTI I MOTORI SONO A 0");
+void reset(String command){
+  if (command == "x" || command == "y" || command == "z" || command == "all"){
+    if (command == "x" || command == "all")
+      reset_motore("x");
+    if (command == "y" || command == "all")
+      reset_motore("y");
+    if (command == "z" || command == "all")
+      reset_motore("z");
+  }
+  else{
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: ", false); 
+    my_print(command, true);
+  }
+}
+
+void reset_motore(String asse){
+  my_print("EFFETTUO IL RESET DELL'ASSE ", false);
+  my_print(asse, true);
+  my_print("RESET DELL'ASSE ", false);
+  my_print(asse, false);
+  my_print(" TERMINATO", true);
+}
+
+void my_print(String s, boolean new_line){
+  if (seriale){
+    if (new_line)
+      Serial.println(s);
+    else
+      Serial.print(s);
+  }
+  else{
+    if (new_line)
+      bluetooth.println(s);
+    else
+      bluetooth.print(s);
+    delay(100);
+  }
 }

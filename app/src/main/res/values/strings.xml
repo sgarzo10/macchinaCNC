@@ -25,4 +25,9 @@
     <string name="rot_on">Rotazione On</string>
     <string name="rot_off">Rotazione Off</string>
     <string name="cerca">cerca</string>
+    <string name="dove">dove</string>
+    <string name="seriale">seriale</string>
+    <string name="lunghezze">lunghezze</string>
+    <string name ="mex_posizioni">TI TROVI A: %1$d MILLIMETRI SULL\'ASSE %2$s</string>
+    <string name ="mex_lunghezze">L\'ASSE %1$s È LUNGO %2$d MILLIMETRI</string>
 </resources>
