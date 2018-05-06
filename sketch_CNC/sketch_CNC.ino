@@ -340,7 +340,7 @@ movimento lettura_parametri(String command){
     if (m.direzione){
        int mancante = lunghezze[indice] - millimetri_totali[indice];
        if (millimetri.toInt() > mancante){
-          my_print("ERRORE!!! PER ARRIVARE A FINE CORSA CI SONO SOLO ", false);
+          my_print("PER ARRIVARE A FINE CORSA CI SONO SOLO ", false);
           my_print(String(mancante), false);
           my_print(" MILLIMETRI", true);
           my_print("TI PORTO A FINE CORSA!!", true);
@@ -351,7 +351,7 @@ movimento lettura_parametri(String command){
     }
     else{
        if (millimetri.toInt() > millimetri_totali[indice]){
-          my_print("ERRORE!!! PER ARRIVARE A INIZIO CORSA CI SONO SOLO ", false);
+          my_print("PER ARRIVARE A INIZIO CORSA CI SONO SOLO ", false);
           my_print(String(millimetri_totali[indice]), false);
           my_print(" MILLIMETRI", true);
           my_print("TI PORTO A INIZIO CORSA!!", true);
@@ -361,7 +361,7 @@ movimento lettura_parametri(String command){
           m.millimetri = millimetri.toInt();
     }
     if (velocita.toInt() < 32){
-      my_print("ERRORE!! VELOCITA TROPPO BASSA, IMPOSTO 32", true); 
+      my_print("VELOCITA TROPPO BASSA, IMPOSTO 32", true); 
       m.velocita = 32;
     }
     else

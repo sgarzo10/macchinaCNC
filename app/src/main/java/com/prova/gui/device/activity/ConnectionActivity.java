@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.prova.bluetooth.BluetoothConnection;
 import com.prova.bluetooth.R;
 import com.prova.gui.device.utility.JoystickView;
+import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
 import com.prova.gui.device.utility.QuadratoView;
 
@@ -25,14 +26,18 @@ public class ConnectionActivity extends AppCompatActivity {
     private BluetoothConnection bluetooth;
     private JoystickView joystickView;
     private QuadratoView quadratoView;
+    private MovePoint mp;
     private Switch rotazione_attiva;
     private AscoltatoreConnectionActivity ascoltatore;
 
-    BluetoothConnection getBluetooth() { return bluetooth;}
+    public BluetoothConnection getBluetooth() { return bluetooth;}
     EditText getTesto() { return testo; }
     Switch getRotazione_attiva() {return rotazione_attiva;}
     public QuadratoView getQuadratoView() {return quadratoView;}
     public AscoltatoreConnectionActivity getAscoltatore() { return ascoltatore; }
+    public MovePoint getMp() {
+        return mp;
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -64,6 +69,8 @@ public class ConnectionActivity extends AppCompatActivity {
         sali.setOnTouchListener(ascoltatore);
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
+        mp = new MovePoint(this, joystickView);
+        mp.start();
         TextView t = new TextView(this);
         boolean connesso = false;
         MyHandler h = new MyHandler(this);
@@ -105,7 +112,7 @@ public class ConnectionActivity extends AppCompatActivity {
         super.onDestroy();
         bluetooth.disconnetti();
         bluetooth.interrupt();
-        joystickView.getMp().interrupt();
+        mp.interrupt();
     }
 
     public void addView(String s){

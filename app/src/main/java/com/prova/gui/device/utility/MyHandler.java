@@ -38,16 +38,25 @@ public class MyHandler extends android.os.Handler{
                         sb.delete(0, sb.length());
                         String[] mexSplit = mex.split(" ");
                         if (mexSplit[0].equals("TI") && mexSplit[1].equals("TROVI")) {
-                            app.getAscoltatore().getLunghezze()[map.get(mexSplit[6])] = Integer.parseInt(mexSplit[3]);
+                            app.getAscoltatore().getPosizioni()[map.get(mexSplit[6])] = Integer.parseInt(mexSplit[3]);
                             Log.i("POSIZIONE", mexSplit[6] + " " + mexSplit[3]);
-                            if (mex.equals(String.format(app.getResources().getString(R.string.mex_posizioni), Integer.parseInt(mexSplit[3]), mexSplit[6])))
+                            if (mex.equals(String.format(app.getResources().getString(R.string.mex_posizioni), Integer.parseInt(mexSplit[3]), mexSplit[6]))) {
                                 Log.i("ESITO CHECK", "OK");
+                                app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0],app.getAscoltatore().getPosizioni()[1]);
+                            }
+                            else
+                                app.getBluetooth().invia("dove all");
                         }
                         if(mexSplit[0].equals("L'ASSE") && mexSplit[3].equals("LUNGO")) {
-                            app.getAscoltatore().getPosizioni()[map.get(mexSplit[1])] = Integer.parseInt(mexSplit[4]);
+                            app.getAscoltatore().getLunghezze()[map.get(mexSplit[1])] = Integer.parseInt(mexSplit[4]);
                             Log.i("LUNGHEZZA", mexSplit[1] + " " + mexSplit[4]);
-                            if (mex.equals(String.format(app.getResources().getString(R.string.mex_lunghezze), mexSplit[1], Integer.parseInt(mexSplit[4]))))
+                            if (mex.equals(String.format(app.getResources().getString(R.string.mex_lunghezze), mexSplit[1], Integer.parseInt(mexSplit[4])))) {
                                 Log.i("ESITO CHECK", "OK");
+                                app.getQuadratoView().setMaxX(app.getAscoltatore().getLunghezze()[0]);
+                                app.getQuadratoView().setMaxY(app.getAscoltatore().getLunghezze()[1]);
+                            }
+                            else
+                                app.getBluetooth().invia("lung all");
                         }
                     }
                 }catch (Exception e){

@@ -9,7 +9,7 @@ public class MovePoint extends Thread {
     private ConnectionActivity app;
     private JoystickView jv;
 
-    MovePoint(ConnectionActivity app, JoystickView jv){
+    public MovePoint(ConnectionActivity app, JoystickView jv){
         this.app = app;
         this.jv = jv;
     }

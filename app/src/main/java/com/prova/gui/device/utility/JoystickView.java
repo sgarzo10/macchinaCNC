@@ -14,7 +14,6 @@ import com.prova.gui.device.activity.ConnectionActivity;
 public class JoystickView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener{
 
     ConnectionActivity app;
-    private MovePoint mp;
     private float baseRadius;
     private float hatRadius;
     private float centerX;
@@ -37,18 +36,12 @@ public class JoystickView extends SurfaceView implements SurfaceHolder.Callback,
         return continua;
     }
 
-    public MovePoint getMp() {
-        return mp;
-    }
-
     public JoystickView(ConnectionActivity app) {
         super(app);
         this.app = app;
         continua = false;
         getHolder().addCallback(this);
         setOnTouchListener(this);
-        mp = new MovePoint(app, this);
-        mp.start();
     }
 
     @Override

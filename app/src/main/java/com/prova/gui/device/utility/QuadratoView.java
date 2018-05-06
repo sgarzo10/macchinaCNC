@@ -15,18 +15,23 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
     private float radius;
     private float currentX;
     private float currentY;
+    private int maxX;
+    private int maxY;
 
     public float getCurrentX() {
         return currentX;
     }
-
     public float getCurrentY() {
         return currentY;
     }
+    public void setMaxX(int maxX) { this.maxX = maxX; }
+    public void setMaxY(int maxY) { this.maxY = maxY; }
 
     public QuadratoView(ConnectionActivity app) {
         super(app);
         this.app = app;
+        maxX = 0;
+        maxY = 0;
         getHolder().addCallback(this);
     }
 
@@ -46,16 +51,24 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void calcolaDimensioni(){
-        radius = Math.min(getWidth(),getHeight()) / 80f;
+        radius = Math.min(getWidth(),getHeight()) / 60f;
         currentX = getWidth() / 2;
         currentY = getHeight() / 2;
     }
 
     public void drawPoint(float x, float y){
+        if (maxX != 0) {
+            x = (x * (getWidth() - 10)) / maxX;
+            x = x + 5;
+        }
+        if (maxY != 0) {
+            y = (y * (getHeight() - 12)) / maxY;
+            y = y + 6;
+        }
         if (getHolder().getSurface().isValid()){
             Canvas canvas = this.getHolder().lockCanvas();
             Paint colors = new Paint();
-            if (x > 1 && x < getWidth() - 1 && y > 1 && y < getHeight() - 1) {
+            if (x >= 5 && x <= getWidth() - 4 && y >= 6 && y <= getHeight() - 6) {
                 currentX = x;
                 currentY = y;
                 colors.setARGB(255, 229 , 209, 162);
