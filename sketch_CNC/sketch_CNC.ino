@@ -65,7 +65,7 @@ String bluetooth_read(){
   String lettura = "";
   while (bluetooth.available()){
     lettura += (char)bluetooth.read();
-    delay(100);
+    delay(20);
   }
   return lettura;
 }
@@ -168,9 +168,9 @@ void dove_sono(String command){
 }
 
 void dove_print(int indice, String asse){
-  my_print("TI TROVI A: ", false);
+  my_print("A ", false);
   my_print(String(millimetri_totali[indice]), false);
-  my_print(" MILLIMETRI SULL'ASSE ", false);
+  my_print(" ASSE ", false);
   my_print(asse, true);
 }
 
@@ -190,11 +190,10 @@ void dimmi_lunghezze(String command){
 }
 
 void print_lunghezze(int indice, String asse){
-  my_print("L'ASSE ", false);
+  my_print("ASSE ", false);
   my_print(asse, false);
-  my_print(" È LUNGO ", false);
-  my_print(String(lunghezze[indice]), false);
-  my_print(" MILLIMETRI", true);
+  my_print(" LUNGO ", false);
+  my_print(String(lunghezze[indice]), true);
 }
 
 void setta_lunghezze(String command){
@@ -250,8 +249,8 @@ void setta_seriale(String command){
 }
 
 void bluetooth_command(String command){
-  my_print("MESSAGGIO RICEVUTO: ", false); 
-  my_print(command, true);
+  Serial.print("MESSAGGIO RICEVUTO: "); 
+  Serial.println(command);
   if (command.substring(0,6) == "muovi ")
     sposta(command.substring(6,command.length()));
   if (command.substring(0,6) == "ruota ")
@@ -293,14 +292,6 @@ movimento lettura_parametri(String command){
       }
     }
   }
-  /*my_print("Motore: ", false);
-  my_print(motore, true);
-  my_print("Direzione: ", false);
-  my_print(direzione, true);
-  my_print("Millimetri: ", false);
-  my_print(millimetri, true);
-  my_print("Velocita: ", false);
-  my_print(velocita, true);*/
   if (motore == "x" || motore == "y" || motore == "z"){
     m.motore = motore;
     if (motore == "x")
@@ -401,10 +392,11 @@ void my_print(String s, boolean new_line){
       Serial.print(s);
   }
   else{
-    if (new_line)
+    if (new_line){
       bluetooth.println(s);
+      delay(100);
+    }
     else
       bluetooth.print(s);
-    delay(100);
   }
 }

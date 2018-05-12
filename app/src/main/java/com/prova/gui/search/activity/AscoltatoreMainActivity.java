@@ -82,7 +82,7 @@ public class AscoltatoreMainActivity implements View.OnClickListener, CompoundBu
                 }
             }
         }
-        catch (NullPointerException e)
+        catch (Exception e)
         {app.getMessaggio().setText(R.string.no_bluetooth);}
     }
 
@@ -94,7 +94,7 @@ public class AscoltatoreMainActivity implements View.OnClickListener, CompoundBu
             app.startActivityForResult(turnOn, 0);
             app.changeView();
         }
-        catch (NullPointerException e)
+        catch (Exception e)
         {app.getMessaggio().setText(R.string.no_bluetooth);}
     }
 
@@ -108,7 +108,7 @@ public class AscoltatoreMainActivity implements View.OnClickListener, CompoundBu
             app.getAssociati().setVisibility(View.INVISIBLE);
             pulisci();
         }
-        catch (NullPointerException e)
+        catch (Exception e)
         {app.getMessaggio().setText(R.string.no_bluetooth);}
     }
 

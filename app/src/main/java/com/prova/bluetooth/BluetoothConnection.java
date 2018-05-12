@@ -4,10 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
-
 import com.prova.gui.device.utility.MyHandler;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -18,6 +15,8 @@ public class BluetoothConnection extends Thread {
     private InputStream input;
     private BluetoothAdapter bluetoothAdapter;
     private MyHandler h;
+
+    public MyHandler getH() { return h; }
 
     public BluetoothConnection (MyHandler h){
         this.h = h;
@@ -59,7 +58,7 @@ public class BluetoothConnection extends Thread {
             outStream.write(msgBuffer);
             Log.i("SEND",message);
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e("EXCEPTION SEND",e.getMessage());
             return false;
         }
@@ -69,7 +68,6 @@ public class BluetoothConnection extends Thread {
     public void run() {
         byte[] buffer = new byte[1024];
         int bytes;
-
         while (true) {
             try {
                 if (input != null) {
@@ -79,7 +77,7 @@ public class BluetoothConnection extends Thread {
                         h.obtainMessage(1, bytes, -1, buffer).sendToTarget();
                     }
                 }
-            } catch (IOException ignored) {
+            } catch (Exception ignored) {
                 Log.e("EXCEPTION CONNEC RECIVE", ignored.getMessage());
             }
         }

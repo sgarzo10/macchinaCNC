@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import com.prova.gui.device.activity.ConnectionActivity;
 
 @SuppressLint("ViewConstructor")
@@ -52,8 +51,6 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void calcolaDimensioni(){
         radius = Math.min(getWidth(),getHeight()) / 60f;
-        currentX = getWidth() / 2;
-        currentY = getHeight() / 2;
     }
 
     public void drawPoint(float x, float y){
@@ -64,11 +61,12 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
         if (maxY != 0) {
             y = (y * (getHeight() - 12)) / maxY;
             y = y + 6;
+            y = getHeight() - y;
         }
         if (getHolder().getSurface().isValid()){
             Canvas canvas = this.getHolder().lockCanvas();
             Paint colors = new Paint();
-            if (x >= 5 && x <= getWidth() - 4 && y >= 6 && y <= getHeight() - 6) {
+            if (x >= 5 && x <= getWidth() - 5 && y >= 6 && y <= getHeight() - 6) {
                 currentX = x;
                 currentY = y;
                 colors.setARGB(255, 229 , 209, 162);

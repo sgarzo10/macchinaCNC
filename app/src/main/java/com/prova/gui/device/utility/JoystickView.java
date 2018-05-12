@@ -89,8 +89,6 @@ public class JoystickView extends SurfaceView implements SurfaceHolder.Callback,
                     drawJoystick(e.getX(), e.getY());
                     x = e.getX();
                     y = e.getY();
-                    /*Log.i("X",Float.toString(e.getX()));
-                    Log.i("Y",Float.toString(e.getY()));*/
                     continua = true;
                 }
                 else{
@@ -100,10 +98,10 @@ public class JoystickView extends SurfaceView implements SurfaceHolder.Callback,
                     drawJoystick(constrainedX, constrainedY);
                     x = constrainedX;
                     y = constrainedY;
-                    /*Log.i("X",Float.toString(constrainedX));
-                    Log.i("Y",Float.toString(constrainedY));*/
                     continua = true;
                 }
+                /*Log.i("X",Float.toString(x));
+                  Log.i("Y",Float.toString(y));*/
             }
             else
                 drawJoystick(getWidth()/2, getHeight()/2);

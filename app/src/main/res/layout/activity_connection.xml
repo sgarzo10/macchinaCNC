@@ -77,18 +77,33 @@
                 android:weightSum="1"
                 tools:ignore="NestedWeights,UselessLeaf">
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="0dip"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.6">
+                    android:layout_weight="0.6"
+                    android:orientation="vertical"
+                    android:weightSum="1">
 
                     <Switch
                         android:id="@+id/rotazione_attiva"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="0.6"
                         android:theme="@style/SCBSwitch" />
 
-                </RelativeLayout>
+                    <TextView
+                        android:id="@+id/text_lunghezze"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="0.2" />
+
+                    <TextView
+                        android:id="@+id/posizioni"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="0.2" />
+
+                </LinearLayout>
 
                 <ImageButton
                     android:id="@+id/sali"

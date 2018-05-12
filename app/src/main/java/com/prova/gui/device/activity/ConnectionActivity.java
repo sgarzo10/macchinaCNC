@@ -2,6 +2,7 @@ package com.prova.gui.device.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,8 @@ import java.util.Objects;
 public class ConnectionActivity extends AppCompatActivity {
 
     private EditText testo;
+    private TextView posizioni;
+    private TextView textLunghezze;
     private LinearLayout output;
     private BluetoothConnection bluetooth;
     private JoystickView joystickView;
@@ -29,15 +32,16 @@ public class ConnectionActivity extends AppCompatActivity {
     private MovePoint mp;
     private Switch rotazione_attiva;
     private AscoltatoreConnectionActivity ascoltatore;
+    private boolean initLunghezze;
+    private boolean initPosizioni;
 
     public BluetoothConnection getBluetooth() { return bluetooth;}
     EditText getTesto() { return testo; }
     Switch getRotazione_attiva() {return rotazione_attiva;}
     public QuadratoView getQuadratoView() {return quadratoView;}
     public AscoltatoreConnectionActivity getAscoltatore() { return ascoltatore; }
-    public MovePoint getMp() {
-        return mp;
-    }
+    public TextView getPosizioni() { return posizioni; }
+    public TextView getTextLunghezze() { return textLunghezze; }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -60,6 +64,8 @@ public class ConnectionActivity extends AppCompatActivity {
         rotazione_attiva = (Switch) findViewById(R.id.rotazione_attiva);
         testo = (EditText) findViewById(R.id.da_inviare);
         output = (LinearLayout) findViewById(R.id.outSeriale);
+        posizioni = (TextView) findViewById(R.id.posizioni);
+        textLunghezze = (TextView) findViewById(R.id.text_lunghezze);
         linearLayoutJoystick.addView(joystickView);
         relativeLayoutQuadrato.addView(quadratoView);
         invia.setOnClickListener(ascoltatore);
@@ -73,8 +79,7 @@ public class ConnectionActivity extends AppCompatActivity {
         mp.start();
         TextView t = new TextView(this);
         boolean connesso = false;
-        MyHandler h = new MyHandler(this);
-        bluetooth = new BluetoothConnection(h);
+        bluetooth = new BluetoothConnection(new MyHandler(this));
         while (!connesso) {
             if (bluetooth.connetti(mac)) {
                 t.setText(String.format("%s %s", getResources().getString(R.string.connected), nome));
@@ -86,6 +91,9 @@ public class ConnectionActivity extends AppCompatActivity {
                 output.addView(t);
             }
         }
+        initLunghezze = false;
+        initPosizioni = false;
+        ascoltatore.inviaMessaggio("setSe blu");
     }
 
     @Override
@@ -103,10 +111,12 @@ public class ConnectionActivity extends AppCompatActivity {
         joystickView.calcolaDimensioni();
         joystickView.drawJoystick(joystickView.getWidth() / 2, joystickView.getHeight() / 2);
         quadratoView.calcolaDimensioni();
-        quadratoView.drawPoint(quadratoView.getWidth() / 2, quadratoView.getHeight() / 2);
-        int size = rotazione_attiva.getHeight();
-        rotazione_attiva.setTextSize(size/10);
+        rotazione_attiva.setTextSize(rotazione_attiva.getHeight() / 10);
+        posizioni.setTextSize(posizioni.getHeight() / 4);
+        textLunghezze.setTextSize(textLunghezze.getHeight() / 4);
+        getValoriInziaili();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -119,5 +129,31 @@ public class ConnectionActivity extends AppCompatActivity {
         TextView t = new TextView(this);
         t.setText(s);
         output.addView(t);
+    }
+
+    private void getValoriInziaili(){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                if (!bluetooth.getH().isFine())
+                    getValoriInziaili();
+                else {
+                    if (!initLunghezze) {
+                        ascoltatore.inviaMessaggio("lung all");
+                        initLunghezze = true;
+                        bluetooth.getH().setFine(false);
+                        getValoriInziaili();
+                    }
+                    else {
+                        if (!initPosizioni) {
+                            ascoltatore.inviaMessaggio("dove all");
+                            initPosizioni = true;
+                            bluetooth.getH().setFine(false);
+                            getValoriInziaili();
+                        }
+                    }
+                }
+            }
+        }, 100);
     }
 }
