@@ -41,12 +41,13 @@ public class MyHandler extends android.os.Handler{
                     int endOfLineIndex = sb.indexOf("\r\n");
                     if (endOfLineIndex > 0) {
                         String mex = sb.substring(0, endOfLineIndex);
-                        //app.addView(mex);
                         sb.delete(0, sb.length());
                         String[] mexSplit = mex.split(" ");
-                        if (app.getAscoltatore().getMessaggio().equals("setSe blu"))
+                        if (app.getAscoltatore().getMessaggio().equals("ra") || app.getAscoltatore().getMessaggio().equals("rs"))
+                            app.addView(mex);
+                        if (app.getAscoltatore().getMessaggio().equals("ssb"))
                             fine = true;
-                        if (app.getAscoltatore().getMessaggio().equals("dove all")){
+                        if (app.getAscoltatore().getMessaggio().equals("da")){
                             ricevuti = ricevuti + 1;
                             if (mexSplit.length == 4 && mex.equals(String.format(app.getResources().getString(R.string.mex_posizioni), Integer.parseInt(mexSplit[1]), mexSplit[3]))) {
                                 ok = ok +1;
@@ -63,11 +64,11 @@ public class MyHandler extends android.os.Handler{
                                     fine = true;
                                 }
                                 else
-                                    app.getBluetooth().invia("dove all");
+                                    app.getBluetooth().invia("da");
                                 ok = 0;
                             }
                         }
-                        if (app.getAscoltatore().getMessaggio().equals("lung all")){
+                        if (app.getAscoltatore().getMessaggio().equals("la")){
                             ricevuti = ricevuti + 1;
                             if(mexSplit.length == 4 && mex.equals(String.format(app.getResources().getString(R.string.mex_lunghezze), mexSplit[1], Integer.parseInt(mexSplit[3])))) {
                                 ok = ok +1;
@@ -85,11 +86,11 @@ public class MyHandler extends android.os.Handler{
                                     fine = true;
                                 }
                                 else
-                                    app.getBluetooth().invia("lung all");
+                                    app.getBluetooth().invia("la");
                                 ok = 0;
                             }
                         }
-                        if (app.getAscoltatore().getMessaggio().equals("muovi z giu 1 32") || app.getAscoltatore().getMessaggio().equals("muovi z su 1 32")){
+                        if (app.getAscoltatore().getMessaggio().equals("mzg1") || app.getAscoltatore().getMessaggio().equals("mzs1")){
                             ricevuti = ricevuti + 1;
                             if (mexSplit.length == 4 && mex.equals(String.format(app.getResources().getString(R.string.mex_posizioni), Integer.parseInt(mexSplit[1]), mexSplit[3]))) {
                                 ok = ok +1;
@@ -104,7 +105,7 @@ public class MyHandler extends android.os.Handler{
                                     app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
                                 }
                                 else
-                                    app.getBluetooth().invia("dove z");
+                                    app.getBluetooth().invia("dz");
                                 ok = 0;
                             }
                         }

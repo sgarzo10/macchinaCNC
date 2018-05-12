@@ -93,7 +93,7 @@ public class ConnectionActivity extends AppCompatActivity {
         }
         initLunghezze = false;
         initPosizioni = false;
-        ascoltatore.inviaMessaggio("setSe blu");
+        ascoltatore.inviaMessaggio("ssb");
     }
 
     @Override
@@ -139,14 +139,14 @@ public class ConnectionActivity extends AppCompatActivity {
                     getValoriInziaili();
                 else {
                     if (!initLunghezze) {
-                        ascoltatore.inviaMessaggio("lung all");
+                        ascoltatore.inviaMessaggio("la");
                         initLunghezze = true;
                         bluetooth.getH().setFine(false);
                         getValoriInziaili();
                     }
                     else {
                         if (!initPosizioni) {
-                            ascoltatore.inviaMessaggio("dove all");
+                            ascoltatore.inviaMessaggio("da");
                             initPosizioni = true;
                             bluetooth.getH().setFine(false);
                             getValoriInziaili();

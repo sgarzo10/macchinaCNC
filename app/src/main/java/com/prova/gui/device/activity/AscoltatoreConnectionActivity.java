@@ -41,13 +41,13 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 inviaMessaggio(app.getTesto().getText().toString());
                 break;
             case R.id.dove:
-                inviaMessaggio("dove all");
+                inviaMessaggio("da");
                 break;
             case R.id.seriale:
-                inviaMessaggio("setSe blu");
+                inviaMessaggio("ssb");
                 break;
             case R.id.lunghezze:
-                inviaMessaggio("lung all");
+                inviaMessaggio("la");
                 break;
         }
     }
@@ -56,13 +56,13 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             app.getRotazione_attiva().setText(app.getResources().getString(R.string.rot_on));
-            messaggio = "ruota on";
+            messaggio = "ra";
             if (!app.getBluetooth().invia(messaggio))
                 app.addView(app.getResources().getString(R.string.error));
         }
         else {
             app.getRotazione_attiva().setText(app.getResources().getString(R.string.rot_off));
-            messaggio = "ruota off";
+            messaggio = "rs";
             if (!app.getBluetooth().invia(messaggio))
                 app.addView(app.getResources().getString(R.string.error));
         }
@@ -74,11 +74,11 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         if(e.getAction() != MotionEvent.ACTION_UP) {
             switch (v.getId()) {
                 case R.id.sali:
-                    messaggio = "muovi z giu 1 32";
+                    messaggio = "mzg1";
                     sendTemporizzata();
                     break;
                 case R.id.scendi:
-                    messaggio = "muovi z su 1 32";
+                    messaggio = "mzs1";
                     sendTemporizzata();
                     break;
             }

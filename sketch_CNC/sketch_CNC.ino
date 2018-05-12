@@ -51,7 +51,7 @@ void setup() {
   pinMode (MANDRINO, OUTPUT);
   pinMode (LED, OUTPUT);
   my_print("---------------  START  ---------------", true);
-  reset("all");
+  reset("a");
   digitalWrite(LED,HIGH);
 }
 
@@ -136,8 +136,8 @@ void sposta(String command){
 }
 
 void attiva_mandrino(String command){
-  if (command == "on" || command == "off"){
-    if(command == "on"){
+  if (command == "a" || command == "s"){
+    if(command == "a"){
       digitalWrite(MANDRINO, true);
       my_print("ATTIVO MANDRINO!", true);
     }
@@ -147,22 +147,22 @@ void attiva_mandrino(String command){
     }
   }
   else{
-    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO ON O OFF, TU HAI SCRITTO: ", false); 
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO A O S, TU HAI SCRITTO: ", false); 
     my_print(command, true);
   }
 }
 
 void dove_sono(String command){
-  if (command == "x" || command == "y" || command == "z" || command == "all"){
-    if (command == "x" || command == "all")
+  if (command == "x" || command == "y" || command == "z" || command == "a"){
+    if (command == "x" || command == "a")
       dove_print(0, "x");
-    if (command == "y" || command == "all")
+    if (command == "y" || command == "a")
       dove_print(1, "y");
-    if (command == "z" || command == "all")
+    if (command == "z" || command == "a")
       dove_print(2, "z");
   }
   else{
-    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: ", false); 
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z A, TU HAI SCRITTO: ", false); 
     my_print(command, true);
   }
 }
@@ -175,16 +175,16 @@ void dove_print(int indice, String asse){
 }
 
 void dimmi_lunghezze(String command){
-  if (command == "x" || command == "y" || command == "z" || command == "all"){
-    if (command == "x" || command == "all")
+  if (command == "x" || command == "y" || command == "z" || command == "a"){
+    if (command == "x" || command == "a")
       print_lunghezze(0, "x");
-    if (command == "y" || command == "all")
+    if (command == "y" || command == "a")
       print_lunghezze(1, "y");
-    if (command == "z" || command == "all")
+    if (command == "z" || command == "a")
       print_lunghezze(2, "z");
   }
   else{
-    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: ", false); 
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z A, TU HAI SCRITTO: ", false); 
     my_print(command, true);
   }
 }
@@ -235,15 +235,15 @@ void setta_lunghezze(String command){
 }
 
 void setta_seriale(String command){
-  if (command == "blu" || command == "ser"){
-    if (command == "blu")
+  if (command == "b" || command == "s"){
+    if (command == "b")
       seriale = false;
     else
       seriale = true;
     my_print("ORA L'OUTPUT VERRA MOSTRATO QUI", true);
   }
   else{
-    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO BLU O SER, TU HAI SCRITTO: ", false); 
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO B O S, TU HAI SCRITTO: ", false); 
     my_print(command, true);
   }
 }
@@ -251,20 +251,20 @@ void setta_seriale(String command){
 void bluetooth_command(String command){
   Serial.print("MESSAGGIO RICEVUTO: "); 
   Serial.println(command);
-  if (command.substring(0,6) == "muovi ")
-    sposta(command.substring(6,command.length()));
-  if (command.substring(0,6) == "ruota ")
-    attiva_mandrino(command.substring(6,command.length()));
-  if (command.substring(0,5) == "dove ")
-    dove_sono(command.substring(5,command.length()));
-  if (command.substring(0,5) == "lung ")
-    dimmi_lunghezze(command.substring(5,command.length())); 
-  if (command.substring(0,5) == "setL ")
-    setta_lunghezze(command.substring(5,command.length()));
-  if (command.substring(0,6) == "reset ")
-    reset(command.substring(6,command.length()));
-  if (command.substring(0,6) == "setSe ")
-    setta_seriale(command.substring(6,command.length()));
+  if (command.substring(0,1) == "m")
+    sposta(command.substring(1,command.length()));
+  if (command.substring(0,1) == "r")
+    attiva_mandrino(command.substring(1,command.length()));
+  if (command.substring(0,1) == "d")
+    dove_sono(command.substring(1,command.length()));
+  if (command.substring(0,1) == "l")
+    dimmi_lunghezze(command.substring(1,command.length())); 
+  if (command.substring(0,2) == "re")
+    reset(command.substring(2,command.length()));
+  if (command.substring(0,2) == "sl")
+    setta_lunghezze(command.substring(2,command.length()));
+  if (command.substring(0,2) == "ss")
+    setta_seriale(command.substring(2,command.length()));
 }
 
 movimento lettura_parametri(String command){
@@ -279,7 +279,7 @@ movimento lettura_parametri(String command){
   m.millimetri=0;
   m.motore="";
   m.direzione=NULL;
-  int ind = command.indexOf(" ");
+  /*int ind = command.indexOf(" ");
   if (ind > 0){
     motore = command.substring(0, ind);
     int ind1 = command.indexOf(" ", ind+1);
@@ -291,7 +291,10 @@ movimento lettura_parametri(String command){
         velocita = command.substring(ind2+1,command.length());
       }
     }
-  }
+  }*/
+  motore = command.substring(0,1);
+  direzione = command.substring(1,2);
+  millimetri = command.substring(2,command.length());
   if (motore == "x" || motore == "y" || motore == "z"){
     m.motore = motore;
     if (motore == "x")
@@ -306,14 +309,14 @@ movimento lettura_parametri(String command){
     my_print(motore, true);
     ok = false;
   }
-  if (direzione == "su" || direzione == "giu"){
-    if (direzione == "su")  
+  if (direzione == "s" || direzione == "g"){
+    if (direzione == "s")  
       m.direzione = true;
-    if (direzione == "giu")
+    if (direzione == "g")
       m.direzione = false;
   }
   else{
-    my_print("LE POSSIBILI DIREZIONI SONO SU O GIU, TU HAI SCRITTO: ", false);
+    my_print("LE POSSIBILI DIREZIONI SONO S O G, TU HAI SCRITTO: ", false);
     my_print(direzione, true);
     ok = false;
   }
@@ -322,11 +325,12 @@ movimento lettura_parametri(String command){
     my_print(millimetri, true);
     ok = false;
     }
+  /*  
   if (velocita.toInt() == 0){
     my_print("LA VELOCITA DEVE ESSERE UN NUMERO MAGGIORE DI 0, HAI INSERITO: ", false);
     my_print(velocita, true);
     ok = false;
-    }
+    }*/
   if (ok){
     if (m.direzione){
        int mancante = lunghezze[indice] - millimetri_totali[indice];
@@ -351,27 +355,28 @@ movimento lettura_parametri(String command){
        else
           m.millimetri = millimetri.toInt();
     }
-    if (velocita.toInt() < 32){
+    /*if (velocita.toInt() < 32){
       my_print("VELOCITA TROPPO BASSA, IMPOSTO 32", true); 
       m.velocita = 32;
     }
     else
-      m.velocita = velocita.toInt();
+      m.velocita = velocita.toInt();*/
+    m.velocita=32;
   }
   return m;
 }
 
 void reset(String command){
-  if (command == "x" || command == "y" || command == "z" || command == "all"){
-    if (command == "x" || command == "all")
+  if (command == "x" || command == "y" || command == "z" || command == "a"){
+    if (command == "x" || command == "a")
       reset_motore("x");
-    if (command == "y" || command == "all")
+    if (command == "y" || command == "a")
       reset_motore("y");
-    if (command == "z" || command == "all")
+    if (command == "z" || command == "a")
       reset_motore("z");
   }
   else{
-    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z ALL, TU HAI SCRITTO: ", false); 
+    my_print("I POSSIBILI VALORI PER QUESTO COMANDO SONO X Y Z A, TU HAI SCRITTO: ", false); 
     my_print(command, true);
   }
 }
