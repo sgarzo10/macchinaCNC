@@ -28,8 +28,6 @@
     <string name="dove">dove</string>
     <string name="seriale">seriale</string>
     <string name="lunghezze">lunghezze</string>
-    <string name ="mex_posizioni">A %1$d ASSE %2$s</string>
-    <string name ="mex_lunghezze">ASSE %1$s LUNGO %2$d</string>
     <string name="output_posizioni">X: %1$d Y: %2$d Z: %3$d</string>
     <string name="output_lunghezze">LX: %1$d LY: %2$d LZ: %3$d</string>
 </resources>

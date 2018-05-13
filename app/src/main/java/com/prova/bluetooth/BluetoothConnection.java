@@ -66,7 +66,7 @@ public class BluetoothConnection extends Thread {
 
     @Override
     public void run() {
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[2048];
         int bytes;
         while (true) {
             try {
