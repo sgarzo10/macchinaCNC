@@ -36,12 +36,12 @@ public class MyHandler extends android.os.Handler{
                 try {
                     byte[] readBuf = (byte[]) msg.obj;
                     String strIncom = new String(readBuf, 0, msg.arg1);
-                    //Log.i("RECIVE", strIncom);
                     sb.append(strIncom);
                     int endOfLineIndex = sb.indexOf("\r\n");
                     if (endOfLineIndex > 0) {
                         String mex = sb.substring(0, endOfLineIndex);
                         sb.delete(0, sb.length());
+                        Log.i("RECIVE", mex);
                         if (app.getAscoltatore().getMessaggi().get(0).equals("ra")) {
                             if (checkOtherMessagge(mex)) {
                                 app.addView("MANDRINO ATTIVATO");
@@ -67,7 +67,7 @@ public class MyHandler extends android.os.Handler{
                             ricevuti = ricevuti + 1;
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                Log.i("POSIZIONE", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
+                                //Log.i("POSIZIONE", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
                                 app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
@@ -89,7 +89,7 @@ public class MyHandler extends android.os.Handler{
                             ricevuti = ricevuti + 1;
                             if(checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                Log.i("LUNGHEZZA", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
+                                //Log.i("LUNGHEZZA", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
                                 app.getAscoltatore().getLunghezze()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
@@ -112,21 +112,30 @@ public class MyHandler extends android.os.Handler{
                             ricevuti = ricevuti + 1;
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                Log.i("POSIZIONE", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
+                                //Log.i("POSIZIONE", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
                                 app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
                             if (ricevuti == 1) {
                                 ricevuti = 0;
                                 if (ok == 1) {
-                                    app.addView("POSIZIONE OTTENUTA CORRETTAMENTE");
+                                    //app.addView("POSIZIONE OTTENUTA CORRETTAMENTE");
                                     app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
                                     if (mex.substring(0,1).equals("x") || mex.substring(0,1).equals("y"))
                                         app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
-                                    app.getAscoltatore().shiftMessaggi();
                                 }
-                                else
-                                    app.getBluetooth().invia("d" + app.getAscoltatore().getMessaggi().get(0).substring(1,2));
+                                else {
+                                    String asse = app.getAscoltatore().getMessaggi().get(0).substring(1, 2);
+                                    String dir = app.getAscoltatore().getMessaggi().get(0).substring(2, 3);
+                                    if (dir.equals("s"))
+                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] + 1;
+                                    else
+                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] - 1;
+                                    app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
+                                    if (asse.equals("x") || asse.equals("y"))
+                                        app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+                                }
+                                app.getAscoltatore().shiftMessaggi();
                                 ok = 0;
                             }
                         }

@@ -151,6 +151,8 @@ public class ConnectionActivity extends AppCompatActivity {
                             bluetooth.getH().setFine(false);
                             getValoriInziaili();
                         }
+                        else
+                            ascoltatore.getMessaggi().clear();
                     }
                 }
             }

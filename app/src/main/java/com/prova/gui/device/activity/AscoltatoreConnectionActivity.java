@@ -3,13 +3,13 @@ package com.prova.gui.device.activity;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import com.prova.bluetooth.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AscoltatoreConnectionActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, View.OnTouchListener  {
 
@@ -74,20 +74,20 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         if(e.getAction() != MotionEvent.ACTION_UP) {
             switch (v.getId()) {
                 case R.id.sali:
-                    sendTemporizzata("mzg1");
+                    sendTemporizzata(new String[]{"mzg1"});
                     break;
                 case R.id.scendi:
-                    sendTemporizzata("mzs1");
+                    sendTemporizzata(new String[]{"mzs1"});
                     break;
             }
         }
         return false;
     }
 
-    public void sendTemporizzata(String mex){
+    public void sendTemporizzata(String[] mex){
         if (posso){
             posso = false;
-            messaggi.add(mex);
+            messaggi.addAll(Arrays.asList(mex));
             if (!app.getBluetooth().invia(messaggi.get(0)))
                 app.addView(app.getResources().getString(R.string.error));
         }
@@ -100,7 +100,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                         posso = true;
                         crea = true;
                     }
-                }, 350);
+                }, 500);
             }
         }
     }
