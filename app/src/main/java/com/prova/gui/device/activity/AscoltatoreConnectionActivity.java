@@ -1,8 +1,6 @@
 package com.prova.gui.device.activity;
 
 import android.annotation.SuppressLint;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -17,8 +15,6 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     private ArrayList<String> messaggi;
     private int[] lunghezze;
     private int[] posizioni;
-    private boolean posso;
-    private boolean crea;
 
     public int[] getLunghezze(){ return lunghezze; }
     public int[] getPosizioni(){ return posizioni; }
@@ -27,8 +23,6 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     AscoltatoreConnectionActivity(ConnectionActivity app)
     {
         this.app=app;
-        posso = true;
-        crea = true;
         lunghezze = new int[3];
         posizioni = new int[3];
         messaggi = new ArrayList<>();
@@ -74,34 +68,21 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         if(e.getAction() != MotionEvent.ACTION_UP) {
             switch (v.getId()) {
                 case R.id.sali:
-                    sendTemporizzata(new String[]{"mzg1"});
+                    addMex(new String[]{"mzg1"});
                     break;
                 case R.id.scendi:
-                    sendTemporizzata(new String[]{"mzs1"});
+                    addMex(new String[]{"mzs1"});
                     break;
             }
         }
         return false;
     }
 
-    public void sendTemporizzata(String[] mex){
-        if (posso){
-            posso = false;
+    public void addMex(String[] mex){
+        if (messaggi.size() == 0) {
             messaggi.addAll(Arrays.asList(mex));
             if (!app.getBluetooth().invia(messaggi.get(0)))
                 app.addView(app.getResources().getString(R.string.error));
-        }
-        else {
-            if (crea) {
-                crea = false;
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        posso = true;
-                        crea = true;
-                    }
-                }, 500);
-            }
         }
     }
 
@@ -115,5 +96,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         for (int i = 0; i < messaggi.size() - 1; i++)
             messaggi.set(i, messaggi.get(i + 1));
         messaggi.remove(messaggi.size() - 1);
+        if (messaggi.size() > 0 && messaggi.get(0) != null)
+            app.getBluetooth().invia(messaggi.get(0));
     }
 }

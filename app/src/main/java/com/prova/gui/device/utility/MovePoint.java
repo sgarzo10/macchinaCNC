@@ -24,9 +24,9 @@ public class MovePoint extends Thread {
         float myX = (((jv.getX()-67)/538)-0.5f)*4;
         float myY = (((jv.getY()-87)/538)-0.5f)*4;
         String[] messaggi = new String[]{};
-        /*Log.i("X CALCOLATA", Float.toString(myX));
-        Log.i("Y CALCOLATA", Float.toString(myY));
-        app.getQuadratoView().drawPoint(app.getQuadratoView().getCurrentX() + myX, app.getQuadratoView().getCurrentY() + myY);*/
+        Log.i("X CALCOLATA", Integer.toString(Math.round(myX)));
+        Log.i("Y CALCOLATA", Integer.toString(Math.round(myY)));
+        //app.getQuadratoView().drawPoint(app.getQuadratoView().getCurrentX() + myX, app.getQuadratoView().getCurrentY() + myY);
         if (Math.round(myY) == 0 && Math.round(myX) == 2)
             messaggi = new String[]{"mxs1"};
         if (Math.round(myY) == 0 && Math.round(myX) == -2)
@@ -35,6 +35,7 @@ public class MovePoint extends Thread {
             messaggi = new String[]{"mys1"};
         if (Math.round(myY) == 2 && Math.round(myX) == 0)
             messaggi = new String[]{"myg1"};
+        //
         if (Math.round(myY) == 1 && Math.round(myX) == 1)
             messaggi = new String[]{"mxs1","myg1"};
         if (Math.round(myY) == -1 && Math.round(myX) == 1)
@@ -43,8 +44,26 @@ public class MovePoint extends Thread {
             messaggi = new String[]{"mxg1","myg1"};
         if (Math.round(myY) == -1 && Math.round(myX) == -1)
             messaggi = new String[]{"mxg1","mys1"};
+        //
+        if (Math.round(myY) == 2 && Math.round(myX) == 1)
+            messaggi = new String[]{"mxs1","myg1","myg1"};
+        if (Math.round(myY) == -2 && Math.round(myX) == 1)
+            messaggi = new String[]{"mxs1","mys1","mys1"};
+        if (Math.round(myY) == 1 && Math.round(myX) == -2)
+            messaggi = new String[]{"mxg1","mxg1","myg1"};
+        if (Math.round(myY) == -1 && Math.round(myX) == -2)
+            messaggi = new String[]{"mxg1","mxg1","mys1"};
+        //
+        if (Math.round(myY) == 1 && Math.round(myX) == 2)
+            messaggi = new String[]{"mxs1","mxs1","myg1"};
+        if (Math.round(myY) == -1 && Math.round(myX) == 2)
+            messaggi = new String[]{"mxs1","mxs1","mys1"};
+        if (Math.round(myY) == 2 && Math.round(myX) == -1)
+            messaggi = new String[]{"mxg1","myg1","myg1"};
+        if (Math.round(myY) == -2 && Math.round(myX) == -1)
+            messaggi = new String[]{"mxg1","mys1","mys1"};
         if(messaggi.length > 0)
-            app.getAscoltatore().sendTemporizzata(messaggi);
+            app.getAscoltatore().addMex(messaggi);
     }
 
     @Override

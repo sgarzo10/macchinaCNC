@@ -34,6 +34,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private AscoltatoreConnectionActivity ascoltatore;
     private boolean initLunghezze;
     private boolean initPosizioni;
+    private boolean primo;
 
     public BluetoothConnection getBluetooth() { return bluetooth;}
     EditText getTesto() { return testo; }
@@ -91,6 +92,7 @@ public class ConnectionActivity extends AppCompatActivity {
                 output.addView(t);
             }
         }
+        primo = true;
         initLunghezze = false;
         initPosizioni = false;
         ascoltatore.inviaMessaggio("ssb");
@@ -114,7 +116,12 @@ public class ConnectionActivity extends AppCompatActivity {
         rotazione_attiva.setTextSize(rotazione_attiva.getHeight() / 10);
         posizioni.setTextSize(posizioni.getHeight() / 4);
         textLunghezze.setTextSize(textLunghezze.getHeight() / 4);
-        getValoriInziaili();
+        if (primo) {
+            getValoriInziaili();
+            primo = false;
+        }
+        else
+            quadratoView.drawPoint(ascoltatore.getPosizioni()[0], ascoltatore.getPosizioni()[1]);
     }
 
     @Override

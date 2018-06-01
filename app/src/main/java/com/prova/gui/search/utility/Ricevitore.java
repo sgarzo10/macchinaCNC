@@ -48,8 +48,14 @@ public class Ricevitore extends BroadcastReceiver {
     private void found(Intent intent){
         try {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            app.getAscoltatore().getNomi().add(device.getName());
-            app.getAscoltatore().getMac().add(device.getAddress());
+            if (device.getName() != null)
+                app.getAscoltatore().getNomi().add(device.getName());
+            else
+                app.getAscoltatore().getNomi().add("NA");
+            if (device.getAddress() != null)
+                app.getAscoltatore().getMac().add(device.getAddress());
+            else
+                app.getAscoltatore().getNomi().add("NA");
             ArrayAdapter<String> adapter = new ArrayAdapter<>(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getNomi());
             app.getNomi().setAdapter(adapter);
             ArrayAdapter<String> adapter1 = new ArrayAdapter<>(app, android.R.layout.simple_list_item_1, app.getAscoltatore().getMac());
