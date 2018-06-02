@@ -1,6 +1,7 @@
 package com.prova.gui.device.activity;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -15,6 +16,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     private ArrayList<String> messaggi;
     private int[] lunghezze;
     private int[] posizioni;
+    private boolean primo;
 
     public int[] getLunghezze(){ return lunghezze; }
     public int[] getPosizioni(){ return posizioni; }
@@ -23,6 +25,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     AscoltatoreConnectionActivity(ConnectionActivity app)
     {
         this.app=app;
+        primo = true;
         lunghezze = new int[3];
         posizioni = new int[3];
         messaggi = new ArrayList<>();
@@ -68,35 +71,44 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         if(e.getAction() != MotionEvent.ACTION_UP) {
             switch (v.getId()) {
                 case R.id.sali:
-                    addMex(new String[]{"mzg1"});
+                    inviaMessaggio("mzg1");
                     break;
                 case R.id.scendi:
-                    addMex(new String[]{"mzs1"});
+                    inviaMessaggio("mzs1");
                     break;
             }
         }
         return false;
     }
 
-    public void addMex(String[] mex){
+    public void addMex(ArrayList<String> mex){
         if (messaggi.size() == 0) {
-            messaggi.addAll(Arrays.asList(mex));
-            if (!app.getBluetooth().invia(messaggi.get(0)))
-                app.addView(app.getResources().getString(R.string.error));
+           messaggi.addAll(mex);
+            if (primo) {
+                primo = false;
+                if (!app.getBluetooth().invia(messaggi.get(0)))
+                    app.addView(app.getResources().getString(R.string.error));
+            }
         }
     }
 
     public void inviaMessaggio(String mex){
-        messaggi.add(mex);
-        if (!app.getBluetooth().invia(messaggi.get(0)))
-            app.addView(app.getResources().getString(R.string.error));
+        if (messaggi.size() == 0) {
+            messaggi.add(mex);
+            if (!app.getBluetooth().invia(messaggi.get(0)))
+                app.addView(app.getResources().getString(R.string.error));
+        }
     }
 
     public void shiftMessaggi(){
         for (int i = 0; i < messaggi.size() - 1; i++)
             messaggi.set(i, messaggi.get(i + 1));
         messaggi.remove(messaggi.size() - 1);
-        if (messaggi.size() > 0 && messaggi.get(0) != null)
+        Log.i("SIZE", Integer.toString(messaggi.size()));
+        if (messaggi.size() > 0)
             app.getBluetooth().invia(messaggi.get(0));
+        else
+            primo = true;
+
     }
 }

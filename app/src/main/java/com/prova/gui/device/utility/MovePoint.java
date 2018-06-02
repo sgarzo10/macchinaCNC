@@ -1,7 +1,11 @@
 package com.prova.gui.device.utility;
 
 import android.util.Log;
+
+import com.prova.bluetooth.R;
 import com.prova.gui.device.activity.ConnectionActivity;
+
+import java.util.ArrayList;
 
 public class MovePoint extends Thread {
 
@@ -23,46 +27,30 @@ public class MovePoint extends Thread {
     private void spostaPuntino(){
         float myX = (((jv.getX()-67)/538)-0.5f)*4;
         float myY = (((jv.getY()-87)/538)-0.5f)*4;
-        String[] messaggi = new String[]{};
-        Log.i("X CALCOLATA", Integer.toString(Math.round(myX)));
+        ArrayList<String> messaggi = new ArrayList<>();
+        /*Log.i("X CALCOLATA", Integer.toString(Math.round(myX)));
         Log.i("Y CALCOLATA", Integer.toString(Math.round(myY)));
-        //app.getQuadratoView().drawPoint(app.getQuadratoView().getCurrentX() + myX, app.getQuadratoView().getCurrentY() + myY);
-        if (Math.round(myY) == 0 && Math.round(myX) == 2)
-            messaggi = new String[]{"mxs1"};
-        if (Math.round(myY) == 0 && Math.round(myX) == -2)
-            messaggi = new String[]{"mxg1"};
-        if (Math.round(myY) == -2 && Math.round(myX) == 0)
-            messaggi = new String[]{"mys1"};
-        if (Math.round(myY) == 2 && Math.round(myX) == 0)
-            messaggi = new String[]{"myg1"};
+        app.getAscoltatore().getPosizioni()[0] = app.getAscoltatore().getPosizioni()[0] + Math.round(myX);
+        app.getAscoltatore().getPosizioni()[1] = app.getAscoltatore().getPosizioni()[1] - Math.round(myY);
+        app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+        app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
+        */
         //
-        if (Math.round(myY) == 1 && Math.round(myX) == 1)
-            messaggi = new String[]{"mxs1","myg1"};
-        if (Math.round(myY) == -1 && Math.round(myX) == 1)
-            messaggi = new String[]{"mxs1","mys1"};
-        if (Math.round(myY) == 1 && Math.round(myX) == -1)
-            messaggi = new String[]{"mxg1","myg1"};
-        if (Math.round(myY) == -1 && Math.round(myX) == -1)
-            messaggi = new String[]{"mxg1","mys1"};
-        //
-        if (Math.round(myY) == 2 && Math.round(myX) == 1)
-            messaggi = new String[]{"mxs1","myg1","myg1"};
-        if (Math.round(myY) == -2 && Math.round(myX) == 1)
-            messaggi = new String[]{"mxs1","mys1","mys1"};
-        if (Math.round(myY) == 1 && Math.round(myX) == -2)
-            messaggi = new String[]{"mxg1","mxg1","myg1"};
-        if (Math.round(myY) == -1 && Math.round(myX) == -2)
-            messaggi = new String[]{"mxg1","mxg1","mys1"};
-        //
-        if (Math.round(myY) == 1 && Math.round(myX) == 2)
-            messaggi = new String[]{"mxs1","mxs1","myg1"};
-        if (Math.round(myY) == -1 && Math.round(myX) == 2)
-            messaggi = new String[]{"mxs1","mxs1","mys1"};
-        if (Math.round(myY) == 2 && Math.round(myX) == -1)
-            messaggi = new String[]{"mxg1","myg1","myg1"};
-        if (Math.round(myY) == -2 && Math.round(myX) == -1)
-            messaggi = new String[]{"mxg1","mys1","mys1"};
-        if(messaggi.length > 0)
+        if (Math.round(myX) > 0){
+            for (int i = 0; i < Math.round(myX); i++)
+                messaggi.add("mxs1");
+        } else{
+            for (int i = Math.round(myX); i < 0; i++)
+                messaggi.add("mxg1");
+        }
+        if (Math.round(myY) > 0){
+            for (int i = 0; i < Math.round(myY); i++)
+                messaggi.add("myg1");
+        } else{
+            for (int i = Math.round(myY); i < 0; i++)
+                messaggi.add("mys1");
+        }
+        if(messaggi.size() > 0)
             app.getAscoltatore().addMex(messaggi);
     }
 
