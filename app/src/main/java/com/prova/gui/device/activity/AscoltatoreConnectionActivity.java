@@ -143,38 +143,112 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
 
     private void disegnaTriangolo(int base){
         ArrayList<String> messaggi = new ArrayList<>();
-        long altezza = Math.round((base*Math.sqrt(3))/2);
+        ArrayList<String> messaggiRitorno = new ArrayList<>();
+        boolean skipFirst = false;
+        long a = Math.round((base*Math.sqrt(3))/2);
+        int altezza = (int) a;
         for (int i = 0; i < base; i++)
             messaggi.add("mxs1");
         for(int i = 0; i < 2; i++) {
             messaggi.add("mys1");
             messaggi.add("mxg1");
         }
-        for (int i = 0; i < (altezza - 2)/2; i++) {
-            messaggi.add("mys1");
+        messaggi.add("mys1");
+        messaggi.add("mys1");
+        messaggi.add("mxg1");
+        messaggi.add("mys1");
+        messaggi.add("mxg1");
+        altezza = altezza - 5;
+        int giri = altezza / 7;
+        for (int i = 0; i < giri; i++) {
+            for (int j = 0; j< 3; j++) {
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mxg1");
+            }
             messaggi.add("mys1");
             messaggi.add("mxg1");
         }
-        if (((altezza - 2)/2) % 2 == 1) {
-            for (int i = 0; i < (altezza - 2) / 2; i++) {
-                messaggi.add("myg1");
-                messaggi.add("myg1");
+        altezza = altezza - giri * 7;
+        switch (altezza){
+            case 0:
+                messaggi.remove(messaggi.size()-1);
+                messaggi.remove(messaggi.size()-1);
+                messaggi.remove(messaggi.size()-1);
+                messaggi.add("mys1");
                 messaggi.add("mxg1");
-            }
-            messaggi.add("myg1");
-            messaggi.add("mxg1");
-            messaggi.add("myg1");
-        } else {
-            for (int i = 0; i < (altezza - 2) / 2; i++) {
+                break;
+            case 1:
+                messaggi.remove(messaggi.size()-1);
+                messaggi.add("mys1");
                 messaggi.add("mxg1");
-                messaggi.add("myg1");
-                messaggi.add("myg1");
-            }
-            for(int i = 0; i < 2; i++) {
+                skipFirst = true;
+                break;
+            case 2:
+                messaggi.remove(messaggi.size()-1);
+                messaggi.add("mys1");
+                messaggi.add("mys1");
                 messaggi.add("mxg1");
-                messaggi.add("myg1");
-            }
+                if (base % 2 == 1){
+                    messaggi.add("mxg1");
+                    skipFirst = true;
+                }
+                break;
+            case 3:
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mxg1");
+                skipFirst = true;
+                break;
+            case 4:
+                messaggi.remove(messaggi.size()-1);
+                messaggi.add("mys1");
+                messaggi.add("mxg1");
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mxg1");
+                if (base % 2 == 1){
+                    messaggi.add("mxg1");
+                    skipFirst = true;
+                }
+                break;
+            case 5:
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mxg1");
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mys1");
+                messaggi.add("mxg1");
+                skipFirst = true;
+                break;
+            case 6:
+                for (int j = 0; j< 2; j++) {
+                    messaggi.add("mys1");
+                    messaggi.add("mys1");
+                    messaggi.add("mys1");
+                    messaggi.add("mxg1");
+                }
+                if (base % 2 == 1){
+                    messaggi.add("mxg1");
+                    skipFirst = true;
+                }
+                break;
         }
+        int i;
+        if (skipFirst && base % 2 == 1)
+            i = messaggi.size() - 2;
+        else
+            i = messaggi.size() - 1;
+        for (; i > base - 1; i--){
+            if (messaggi.get(i).equals("mys1"))
+                messaggiRitorno.add("myg1");
+            else
+                messaggiRitorno.add(messaggi.get(i));
+        }
+        messaggi.addAll(messaggiRitorno);
         addMex(messaggi);
     }
 

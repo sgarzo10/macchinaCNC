@@ -52,7 +52,7 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void calcolaDimensioni(){
-        radius = Math.min(getWidth(),getHeight()) / 60f;
+        radius = Math.min(getWidth(),getHeight()) / 240f;
     }
 
     public void drawPoint(float x, float y){
