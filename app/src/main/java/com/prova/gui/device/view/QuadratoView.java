@@ -1,6 +1,7 @@
-package com.prova.gui.device.utility;
+package com.prova.gui.device.view;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.SurfaceHolder;
@@ -10,19 +11,15 @@ import com.prova.gui.device.activity.ConnectionActivity;
 @SuppressLint("ViewConstructor")
 public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
 
-    ConnectionActivity app;
     private float radius;
     private float currentX;
     private float currentY;
     private int maxX;
     private int maxY;
+    private boolean primo;
+    private Bitmap mBitmap;
+    private ConnectionActivity app;
 
-    public float getCurrentX() {
-        return currentX;
-    }
-    public float getCurrentY() {
-        return currentY;
-    }
     public void setMaxX(int maxX) { this.maxX = maxX; }
     public void setMaxY(int maxY) { this.maxY = maxY; }
 
@@ -31,6 +28,8 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
         this.app = app;
         maxX = 0;
         maxY = 0;
+        primo = true;
+        mBitmap = null;
         getHolder().addCallback(this);
     }
 
@@ -41,7 +40,10 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        if (!app.isResume())
+            mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config. ARGB_8888);
+        else
+            app.setResume(false);
     }
 
     @Override
@@ -63,17 +65,36 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
             y = y + 6;
             y = getHeight() - y;
         }
-        if (getHolder().getSurface().isValid()){
-            Canvas canvas = this.getHolder().lockCanvas();
+        if (getHolder().getSurface().isValid() && x >= 5 && x <= getWidth() - 5 && y >= 6 && y <= getHeight() - 6){
             Paint colors = new Paint();
-            if (x >= 5 && x <= getWidth() - 5 && y >= 6 && y <= getHeight() - 6) {
-                currentX = x;
-                currentY = y;
-                colors.setARGB(255, 229 , 209, 162);
-                canvas.drawRect(getLeft(), getTop(), getRight(), getBottom(), colors);
-                colors.setARGB(255, 167, 0, 0);
-                canvas.drawCircle(x, y, radius, colors);
+            currentX = x;
+            currentY = y;
+            if (mBitmap == null)
+                return;
+            Canvas canvas = new Canvas(mBitmap);
+            if (primo){
+                primo = false;
+                colors.setARGB(255, 229, 209, 162);
+                canvas.drawColor(colors.getColor());
             }
+            colors.setARGB(255, 167, 0, 0);
+            canvas.drawCircle(x, y, radius, colors);
+            canvas = getHolder().lockCanvas(null);
+            canvas.drawBitmap(mBitmap, 0, 0, null);
+            getHolder().unlockCanvasAndPost(canvas);
+        }
+    }
+
+    public void pulisci(){
+        if (getHolder().getSurface().isValid()) {
+            Canvas canvas = new Canvas(mBitmap);
+            Paint colors = new Paint();
+            colors.setARGB(255, 229, 209, 162);
+            canvas.drawColor(colors.getColor());
+            colors.setARGB(255, 167, 0, 0);
+            canvas.drawCircle(currentX, currentY, radius, colors);
+            canvas = getHolder().lockCanvas(null);
+            canvas.drawBitmap(mBitmap, 0, 0, null);
             getHolder().unlockCanvasAndPost(canvas);
         }
     }

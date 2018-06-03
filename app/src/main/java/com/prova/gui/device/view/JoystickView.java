@@ -1,4 +1,4 @@
-package com.prova.gui.device.utility;
+package com.prova.gui.device.view;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;

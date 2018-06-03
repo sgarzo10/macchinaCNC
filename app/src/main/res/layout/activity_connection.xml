@@ -30,18 +30,82 @@
 
     </LinearLayout>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="0.2">
+        android:layout_weight="0.2"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:baselineAligned="false">
+
+        <ScrollView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            tools:ignore="NestedWeights">
+
+            <LinearLayout
+                android:id="@+id/outSeriale"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </ScrollView>
 
         <LinearLayout
-            android:id="@+id/outSeriale"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:orientation="horizontal"
+            android:weightSum="4">
 
-    </ScrollView>
+            <ImageButton
+                android:id="@+id/rettangolo"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:baselineAlignBottom="false"
+                android:contentDescription="@string/quadrato"
+                android:scaleType="fitCenter"
+                android:src="@drawable/quadrato" />
+
+            <ImageButton
+                android:id="@+id/triangolo"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:baselineAlignBottom="false"
+                android:contentDescription="@string/triangolo_eq"
+                android:scaleType="fitCenter"
+                android:src="@drawable/triangolo" />
+
+            <ImageButton
+                android:id="@+id/parallelo"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:baselineAlignBottom="false"
+                android:contentDescription="@string/parallelo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/parallelo" />
+
+            <ImageButton
+                android:id="@+id/cerchio"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:baselineAlignBottom="false"
+                android:contentDescription="@string/cerchio"
+                android:scaleType="fitCenter"
+                android:src="@drawable/cerchio" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -80,7 +144,7 @@
                 <LinearLayout
                     android:layout_width="0dip"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.6"
+                    android:layout_weight="0.4"
                     android:orientation="vertical"
                     android:weightSum="1">
 
@@ -116,6 +180,29 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/sali" />
 
+                <LinearLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_weight="0.2"
+                    android:weightSum="1">
+
+                    <Button
+                        android:id="@+id/clear"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:text="@string/clear"
+                        android:layout_weight="0.5"/>
+
+                    <Button
+                        android:id="@+id/posiziona"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:text="@string/posiziona"
+                        android:layout_weight="0.5"/>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -130,7 +217,7 @@
                     android:id="@+id/quadrato"
                     android:layout_width="0dip"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.4">
+                    android:layout_weight="0.3">
 
                 </RelativeLayout>
 
@@ -148,29 +235,36 @@
                 <LinearLayout
                     android:layout_width="0dip"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.2"
+                    android:layout_weight="0.3"
                     android:orientation="vertical"
-                    android:weightSum="3">
+                    android:weightSum="4">
 
                     <Button
-                        android:id="@+id/dove"
+                        android:id="@+id/resetx"
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/dove"
+                        android:text="@string/resetX"
                         android:layout_weight="1"/>
 
                     <Button
-                        android:id="@+id/lunghezze"
+                        android:id="@+id/resety"
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/lunghezze"
+                        android:text="@string/resetY"
                         android:layout_weight="1"/>
 
                     <Button
-                        android:id="@+id/seriale"
+                        android:id="@+id/resetz"
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/seriale"
+                        android:text="@string/resetZ"
+                        android:layout_weight="1"/>
+
+                    <Button
+                        android:id="@+id/reseta"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:text="@string/resetA"
                         android:layout_weight="1"/>
 
                 </LinearLayout>

@@ -118,14 +118,16 @@ void aggiorna_misura(movimento m){
   millimetri_totali[indice] = totali;
 }
 
-void sposta(String command){
+void sposta(String command, boolean aggiorna){
   movimento m = lettura_parametri(command);
   if (m.millimetri != 0){
     for(int i=0;i<m.millimetri;i++)
       sposta_millimetro(m.motore, m.direzione, m.velocita);
-    aggiorna_misura(m);
+    if (aggiorna)
+      aggiorna_misura(m);
   }
-  dove_print(m.motore);
+  if (aggiorna)
+    dove_print(m.motore);
 }
 
 void attiva_mandrino(String command){
@@ -224,8 +226,8 @@ void bluetooth_command(String command){
   Serial.print("MESSAGGIO RICEVUTO: "); 
   Serial.println(command);
   if (command.substring(0,1) == "m")
-    sposta(command.substring(1,command.length()));
-  if (command.substring(0,1) == "r")
+    sposta(command.substring(1,command.length()), true);
+  if (command.substring(0,1) == "r" && !(command.substring(1,2) == "e"))
     attiva_mandrino(command.substring(1,command.length()));
   if (command.substring(0,1) == "d")
     dove_sono(command.substring(1,command.length()));
@@ -337,10 +339,23 @@ void reset(String command){
 }
 
 void reset_motore(String asse){
-  Serial.print("INIZIO RESET ASSE ");
-  Serial.println(asse);
-  Serial.print("TERMINATO RESET ASSE ");
-  Serial.println(asse);
+  int pin = 0;
+  int indice = motoreToIndice(asse);
+  String dir = "";
+  if (asse == "x")
+    pin = SENS_MOT_X;
+  if (asse == "y")
+    pin = SENS_MOT_Y;
+  if (asse == "z"){
+    pin = SENS_MOT_Z;
+    dir = "s";
+  }else
+    dir = "g";
+  /*while(!digitalRead(pin))
+    sposta(asse+dir+"1", false);*/
+  millimetri_totali[indice] = 0;
+  my_print("r", false);
+  my_print(asse, true);
 }
 
 void my_print(String s, boolean new_line){

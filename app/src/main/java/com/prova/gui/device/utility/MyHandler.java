@@ -41,7 +41,7 @@ public class MyHandler extends android.os.Handler{
                     if (endOfLineIndex > 0) {
                         String mex = sb.substring(0, endOfLineIndex);
                         sb.delete(0, sb.length());
-                        Log.i("RECIVE", mex);
+                        //Log.i("RECIVE", mex);
                         if (app.getAscoltatore().getMessaggi().get(0).equals("ra")) {
                             if (checkOtherMessagge(mex)) {
                                 app.addView("MANDRINO ATTIVATO");
@@ -67,7 +67,6 @@ public class MyHandler extends android.os.Handler{
                             ricevuti = ricevuti + 1;
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                //Log.i("POSIZIONE", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
                                 app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
@@ -89,7 +88,6 @@ public class MyHandler extends android.os.Handler{
                             ricevuti = ricevuti + 1;
                             if(checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                //Log.i("LUNGHEZZA", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
                                 app.getAscoltatore().getLunghezze()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
@@ -108,41 +106,51 @@ public class MyHandler extends android.os.Handler{
                                 ok = 0;
                             }
                         }
+                        if (app.getAscoltatore().getMessaggi().get(0).equals("rex") || app.getAscoltatore().getMessaggi().get(0).equals("rey") || app.getAscoltatore().getMessaggi().get(0).equals("rez")){
+                            if (checkOtherMessagge(mex)) {
+                                ok = ok + 1;
+                                app.getAscoltatore().getPosizioni()[map.get(mex.substring(1,2))] = 0;
+                                app.addView("RESET ASSE " + mex.substring(1,2).toUpperCase() + " EFFETTUATO");
+                            } else
+                                ok = 0;
+                            if (ok == 1) {
+                                app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
+                                if (mex.substring(1,2).equals("x") || mex.substring(1,2).equals("y"))
+                                    app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+                                app.getAscoltatore().shiftMessaggi();
+                            } else
+                                app.getBluetooth().invia(app.getAscoltatore().getMessaggi().get(0));
+                            ok = 0;
+                        }
                         if (app.getAscoltatore().getMessaggi().get(0).equals("mzg1") || app.getAscoltatore().getMessaggi().get(0).equals("mzs1") || app.getAscoltatore().getMessaggi().get(0).equals("mxg1") || app.getAscoltatore().getMessaggi().get(0).equals("mxs1") || app.getAscoltatore().getMessaggi().get(0).equals("myg1") || app.getAscoltatore().getMessaggi().get(0).equals("mys1")){
-                            ricevuti = ricevuti + 1;
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                //Log.i("POSIZIONE", mex.substring(0,1) + " " + mex.substring(1,mex.length()));
                                 app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
-                            if (ricevuti == 1) {
-                                ricevuti = 0;
-                                if (ok == 1) {
-                                    //app.addView("POSIZIONE OTTENUTA CORRETTAMENTE");
-                                    app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
-                                    if (mex.substring(0,1).equals("x") || mex.substring(0,1).equals("y"))
-                                        app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
-                                }
-                                else {
-                                    String asse = app.getAscoltatore().getMessaggi().get(0).substring(1, 2);
-                                    String dir = app.getAscoltatore().getMessaggi().get(0).substring(2, 3);
-                                    if (dir.equals("s")) {
-                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] + 1;
-                                        if (app.getAscoltatore().getPosizioni()[map.get(asse)] > app.getAscoltatore().getLunghezze()[map.get(asse)])
-                                            app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getLunghezze()[map.get(asse)];
-                                    } else {
-                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] - 1;
-                                        if (app.getAscoltatore().getPosizioni()[map.get(asse)] < 0)
-                                            app.getAscoltatore().getPosizioni()[map.get(asse)] = 0;
-                                    }
-                                    app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
-                                    if (asse.equals("x") || asse.equals("y"))
-                                        app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
-                                }
-                                app.getAscoltatore().shiftMessaggi();
-                                ok = 0;
+                            if (ok == 1) {
+                                app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
+                                if (mex.substring(0,1).equals("x") || mex.substring(0,1).equals("y"))
+                                    app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
                             }
+                            else {
+                                String asse = app.getAscoltatore().getMessaggi().get(0).substring(1, 2);
+                                String dir = app.getAscoltatore().getMessaggi().get(0).substring(2, 3);
+                                if (dir.equals("s")) {
+                                    app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] + 1;
+                                    if (app.getAscoltatore().getPosizioni()[map.get(asse)] > app.getAscoltatore().getLunghezze()[map.get(asse)])
+                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getLunghezze()[map.get(asse)];
+                                } else {
+                                    app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] - 1;
+                                    if (app.getAscoltatore().getPosizioni()[map.get(asse)] < 0)
+                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = 0;
+                                }
+                                app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
+                                if (asse.equals("x") || asse.equals("y"))
+                                    app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+                            }
+                            app.getAscoltatore().shiftMessaggi();
+                            ok = 0;
                         }
                     }
                 }catch (Exception e){
@@ -168,6 +176,8 @@ public class MyHandler extends android.os.Handler{
 
     private boolean checkOtherMessagge(String mex){
         boolean ok = false;
+        if (app.getAscoltatore().getMessaggi().get(0).substring(0,2).equals("re") && mex.equals("r" + app.getAscoltatore().getMessaggi().get(0).substring(2,3)))
+            ok = true;
         if (app.getAscoltatore().getMessaggi().get(0).equals("ra") && mex.equals("am"))
             ok = true;
         if (app.getAscoltatore().getMessaggi().get(0).equals("rs") && mex.equals("sm"))
