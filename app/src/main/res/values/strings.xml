@@ -26,6 +26,7 @@
     <string name="triangolo_eq">triangolo</string>
     <string name="parallelo">parallelo</string>
     <string name="cerchio">cerchio</string>
+    <string name="trapezio">trapezio</string>
     <string name="rot_on">Rotazione On</string>
     <string name="rot_off">Rotazione Off</string>
     <string name="cerca">cerca</string>

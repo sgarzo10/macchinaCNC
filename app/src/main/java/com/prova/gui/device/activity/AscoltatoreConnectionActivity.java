@@ -6,6 +6,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import com.prova.bluetooth.R;
+import com.prova.gui.device.utility.DrawFigure;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +16,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
 
     private ConnectionActivity app;
     private ArrayList<String> messaggi;
+    private DrawFigure drawFigure;
     private int[] lunghezze;
     private int[] posizioni;
 
@@ -31,14 +34,12 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             lunghezze[i] = -1;
             posizioni[i] = -1;
         }
+        drawFigure = new DrawFigure(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.invia:
-                inviaMessaggio(app.getTesto().getText().toString());
-                break;
             case R.id.clear:
                 app.getQuadratoView().pulisci();
                 break;
@@ -72,6 +73,8 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 break;
             case R.id.cerchio:
                 app.getDialog().get(4).show();
+            case R.id.trapezio:
+                app.getDialog().get(5).show();
                 break;
         }
     }
@@ -128,216 +131,6 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             app.getBluetooth().invia(messaggi.get(0));
     }
 
-    private void disegnaRettangolo(int larghezza, int altezza){
-        ArrayList<String> messaggi = new ArrayList<>();
-        for (int i = 0; i < larghezza; i++)
-            messaggi.add("mxs1");
-        for (int i = 0; i < altezza; i++)
-            messaggi.add("mys1");
-        for (int i = 0; i < larghezza; i++)
-            messaggi.add("mxg1");
-        for (int i = 0; i < altezza; i++)
-            messaggi.add("myg1");
-        addMex(messaggi);
-    }
-
-    private void disegnaTriangolo(int base){
-        ArrayList<String> messaggi = new ArrayList<>();
-        ArrayList<String> messaggiRitorno = new ArrayList<>();
-        boolean skipFirst = false;
-        long a = Math.round((base*Math.sqrt(3))/2);
-        int altezza = (int) a;
-        for (int i = 0; i < base; i++)
-            messaggi.add("mxs1");
-        for(int i = 0; i < 2; i++) {
-            messaggi.add("mys1");
-            messaggi.add("mxg1");
-        }
-        messaggi.add("mys1");
-        messaggi.add("mys1");
-        messaggi.add("mxg1");
-        messaggi.add("mys1");
-        messaggi.add("mxg1");
-        altezza = altezza - 5;
-        int giri = altezza / 7;
-        for (int i = 0; i < giri; i++) {
-            for (int j = 0; j< 3; j++) {
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-            }
-            messaggi.add("mys1");
-            messaggi.add("mxg1");
-        }
-        altezza = altezza - giri * 7;
-        switch (altezza){
-            case 0:
-                messaggi.remove(messaggi.size()-1);
-                messaggi.remove(messaggi.size()-1);
-                messaggi.remove(messaggi.size()-1);
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                break;
-            case 1:
-                messaggi.remove(messaggi.size()-1);
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                skipFirst = true;
-                break;
-            case 2:
-                messaggi.remove(messaggi.size()-1);
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                if (base % 2 == 1){
-                    messaggi.add("mxg1");
-                    skipFirst = true;
-                }
-                break;
-            case 3:
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                skipFirst = true;
-                break;
-            case 4:
-                messaggi.remove(messaggi.size()-1);
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                if (base % 2 == 1){
-                    messaggi.add("mxg1");
-                    skipFirst = true;
-                }
-                break;
-            case 5:
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mys1");
-                messaggi.add("mxg1");
-                skipFirst = true;
-                break;
-            case 6:
-                for (int j = 0; j< 2; j++) {
-                    messaggi.add("mys1");
-                    messaggi.add("mys1");
-                    messaggi.add("mys1");
-                    messaggi.add("mxg1");
-                }
-                if (base % 2 == 1){
-                    messaggi.add("mxg1");
-                    skipFirst = true;
-                }
-                break;
-        }
-        int i;
-        if (skipFirst && base % 2 == 1)
-            i = messaggi.size() - 2;
-        else
-            i = messaggi.size() - 1;
-        for (; i > base - 1; i--){
-            if (messaggi.get(i).equals("mys1"))
-                messaggiRitorno.add("myg1");
-            else
-                messaggiRitorno.add(messaggi.get(i));
-        }
-        messaggi.addAll(messaggiRitorno);
-        addMex(messaggi);
-    }
-
-    private void disegnaParallelo(int base, int altezza, int sfasamento){
-        ArrayList<String> messaggi = new ArrayList<>();
-        for (int i = 0; i < base; i++)
-            messaggi.add("mxs1");
-        if (altezza == sfasamento) {
-            for (int i = 0; i < (altezza-1); i++) {
-                messaggi.add("mys1");
-                messaggi.add("mxs1");
-            }
-            messaggi.add("mxs1");
-            messaggi.add("mys1");
-        }
-        for (int i = 0; i < base; i++)
-            messaggi.add("mxg1");
-        if (altezza == sfasamento) {
-            for (int i = 0; i < (altezza-1); i++) {
-                messaggi.add("myg1");
-                messaggi.add("mxg1");
-            }
-            messaggi.add("mxg1");
-            messaggi.add("myg1");
-        }
-        addMex(messaggi);
-    }
-
-    private void disegnaCerchio(int raggio){
-        ArrayList<String> messaggi = new ArrayList<>();
-        int myRaggio = raggio;
-        for(int i = 1; i <= raggio; i++){
-             long y = Math.round(Math.sqrt(raggio*raggio - i*i ));
-             if (y == myRaggio)
-                 messaggi.add("mxs1");
-             if (y < myRaggio) {
-                 for (int j = 0; j < myRaggio - y; j++)
-                    messaggi.add("myg1");
-                 messaggi.add("mxs1");
-                 myRaggio = myRaggio - (myRaggio - (int)y);
-             }
-        }
-        for (int j = 0; j < myRaggio; j++)
-            messaggi.add("myg1");
-        myRaggio = raggio;
-        for(int i = 1; i <= raggio; i++){
-            long x = Math.round(Math.sqrt(raggio*raggio - i*i ));
-            if (x == myRaggio)
-                messaggi.add("myg1");
-            if (x < myRaggio) {
-                for (int j = 0; j < myRaggio - x; j++)
-                    messaggi.add("mxg1");
-                messaggi.add("myg1");
-                myRaggio = myRaggio - (myRaggio - (int)x);
-            }
-        }
-        for (int j = 0; j < myRaggio; j++)
-            messaggi.add("mxg1");
-        myRaggio = raggio;
-        for(int i = 1; i <= raggio; i++){
-            long y = Math.round(Math.sqrt(raggio*raggio - i*i ));
-            if (y == myRaggio)
-                messaggi.add("mxg1");
-            if (y < myRaggio) {
-                for (int j = 0; j < myRaggio - y; j++)
-                    messaggi.add("mys1");
-                messaggi.add("mxg1");
-                myRaggio = myRaggio - (myRaggio - (int)y);
-            }
-        }
-        for (int j = 0; j < myRaggio; j++)
-            messaggi.add("mys1");
-        myRaggio = raggio;
-        for(int i = 1; i <= raggio; i++){
-            long x = Math.round(Math.sqrt(raggio*raggio - i*i ));
-            if (x == myRaggio)
-                messaggi.add("mys1");
-            if (x < myRaggio) {
-                for (int j = 0; j < myRaggio - x; j++)
-                    messaggi.add("mxs1");
-                messaggi.add("mys1");
-                myRaggio = myRaggio - (myRaggio - (int)x);
-            }
-        }
-        for (int j = 0; j < myRaggio; j++)
-            messaggi.add("mxs1");
-        addMex(messaggi);
-    }
-
     @Override
     @SuppressLint("UseSparseArrays")
     public void onClick(DialogInterface dialog, int which) {
@@ -359,8 +152,8 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                     map.put(2, "z");
                     for (int i = 0; i < 3; i++) {
                         int coordinata = Integer.parseInt(app.getInput().get(i).getText().toString());
-                        if (coordinata > lunghezze[1])
-                            coordinata = lunghezze[1];
+                        if (coordinata > lunghezze[i])
+                            coordinata = lunghezze[i];
                         if (coordinata > posizioni[i]){
                             for (int k = 0; k < (coordinata - posizioni[i]); k++)
                                 messaggi.add("m" + map.get(i) + "s1");
@@ -374,16 +167,18 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                         addMex(messaggi);
                     break;
                 case 1:
-                    disegnaRettangolo(Integer.parseInt(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()));
+                    drawFigure.disegnaRettangolo(Integer.parseInt(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()));
                     break;
                 case 2:
-                    disegnaTriangolo(Integer.parseInt(app.getInput().get(5).getText().toString()));
+                    drawFigure.disegnaTriangolo(Integer.parseInt(app.getInput().get(5).getText().toString()), Integer.parseInt(app.getInput().get(6).getText().toString()), Integer.parseInt(app.getInput().get(7).getText().toString()));
                     break;
                 case 3:
-                    disegnaParallelo(Integer.parseInt(app.getInput().get(6).getText().toString()),Integer.parseInt(app.getInput().get(7).getText().toString()),Integer.parseInt(app.getInput().get(8).getText().toString()));
+                    drawFigure.disegnaParallelo(Integer.parseInt(app.getInput().get(8).getText().toString()),Integer.parseInt(app.getInput().get(9).getText().toString()),Integer.parseInt(app.getInput().get(10).getText().toString()));
                     break;
                 case 4:
-                    disegnaCerchio(Integer.parseInt(app.getInput().get(9).getText().toString()));
+                    drawFigure.disegnaCerchio(Integer.parseInt(app.getInput().get(11).getText().toString()));
+                case 5:
+                    drawFigure.disegnaTrapezio(Integer.parseInt(app.getInput().get(12).getText().toString()), Integer.parseInt(app.getInput().get(13).getText().toString()), Integer.parseInt(app.getInput().get(14).getText().toString()), Integer.parseInt(app.getInput().get(15).getText().toString()), Integer.parseInt(app.getInput().get(16).getText().toString()));
                     break;
             }
         }

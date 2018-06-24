@@ -10,30 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="0.1"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <EditText
-            android:id="@+id/da_inviare"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.7"
-            tools:ignore="NestedWeights" />
-
-        <Button
-            android:id="@+id/invia"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:text="@string/invia" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.2"
+        android:layout_weight="0.3"
         android:orientation="horizontal"
         android:weightSum="1"
         android:baselineAligned="false">
@@ -41,7 +18,7 @@
         <ScrollView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="0.4"
             tools:ignore="NestedWeights">
 
             <LinearLayout
@@ -55,9 +32,9 @@
         <LinearLayout
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="0.6"
             android:orientation="horizontal"
-            android:weightSum="4">
+            android:weightSum="5">
 
             <ImageButton
                 android:id="@+id/rettangolo"
@@ -102,6 +79,17 @@
                 android:contentDescription="@string/cerchio"
                 android:scaleType="fitCenter"
                 android:src="@drawable/cerchio" />
+
+            <ImageButton
+                android:id="@+id/trapezio"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:baselineAlignBottom="false"
+                android:contentDescription="@string/trapezio"
+                android:scaleType="fitCenter"
+                android:src="@drawable/trapezio" />
 
         </LinearLayout>
 

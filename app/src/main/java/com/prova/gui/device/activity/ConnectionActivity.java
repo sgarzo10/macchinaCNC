@@ -24,7 +24,6 @@ import java.util.Objects;
 
 public class ConnectionActivity extends AppCompatActivity {
 
-    private EditText testo;
     private ArrayList<EditText> input;
     private TextView posizioni;
     private TextView textLunghezze;
@@ -44,7 +43,6 @@ public class ConnectionActivity extends AppCompatActivity {
     public BluetoothConnection getBluetooth() { return bluetooth;}
     public boolean isResume() { return resume; }
     public void setResume(boolean resume) {this.resume = resume;}
-    EditText getTesto() { return testo; }
     ArrayList<EditText> getInput() { return input; }
     ArrayList<AlertDialog> getDialog() {return dialog;}
     Switch getRotazione_attiva() {return rotazione_attiva;}
@@ -66,7 +64,6 @@ public class ConnectionActivity extends AppCompatActivity {
         String nome = Objects.requireNonNull(getIntent().getExtras()).getString("nome");
         String mac = Objects.requireNonNull(getIntent().getExtras().getString("mac"));
         ascoltatore = new AscoltatoreConnectionActivity(this);
-        Button invia = (Button) findViewById(R.id.invia);
         Button resetX = (Button) findViewById(R.id.resetx);
         Button resetY = (Button) findViewById(R.id.resety);
         Button resetZ = (Button) findViewById(R.id.resetz);
@@ -77,18 +74,17 @@ public class ConnectionActivity extends AppCompatActivity {
         ImageButton triangolo = (ImageButton) findViewById(R.id.triangolo);
         ImageButton parallelo = (ImageButton) findViewById(R.id.parallelo);
         ImageButton cerchio = (ImageButton) findViewById(R.id.cerchio);
+        ImageButton trapezio = (ImageButton) findViewById(R.id.trapezio);
         ImageButton sali = (ImageButton) findViewById(R.id.sali);
         ImageButton scendi = (ImageButton) findViewById(R.id.scendi);
         LinearLayout linearLayoutJoystick = (LinearLayout) findViewById(R.id.joystick);
         RelativeLayout relativeLayoutQuadrato = (RelativeLayout) findViewById(R.id.quadrato);
         rotazione_attiva = (Switch) findViewById(R.id.rotazione_attiva);
-        testo = (EditText) findViewById(R.id.da_inviare);
         output = (LinearLayout) findViewById(R.id.outSeriale);
         posizioni = (TextView) findViewById(R.id.posizioni);
         textLunghezze = (TextView) findViewById(R.id.text_lunghezze);
         linearLayoutJoystick.addView(joystickView);
         relativeLayoutQuadrato.addView(quadratoView);
-        invia.setOnClickListener(ascoltatore);
         resetX.setOnClickListener(ascoltatore);
         resetY.setOnClickListener(ascoltatore);
         resetZ.setOnClickListener(ascoltatore);
@@ -97,16 +93,18 @@ public class ConnectionActivity extends AppCompatActivity {
         triangolo.setOnClickListener(ascoltatore);
         parallelo.setOnClickListener(ascoltatore);
         cerchio.setOnClickListener(ascoltatore);
+        trapezio.setOnClickListener(ascoltatore);
         clear.setOnClickListener(ascoltatore);
         posiziona.setOnClickListener(ascoltatore);
         sali.setOnTouchListener(ascoltatore);
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
-        createDialog("Scegli posizione", "Inserisci le coordinate", 3, new String[]{"X", "Y", "Z"});
-        createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", 2, new String[]{"Base", "Altezza"});
-        createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", 1, new String[]{"Lato"});
-        createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", 3, new String[]{"Base", "Altezza", "Sfasamento"});
-        createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", 1, new String[]{"Raggio"});
+        createDialog("Scegli posizione", "Inserisci le coordinate", new String[]{"X", "Y", "Z"});
+        createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza"});
+        createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2"});
+        createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza"});
+        createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", new String[]{"Raggio"});
+        createDialog("Scegli dimensioni trapezio", "Inserisci le dimensioni", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza"});
         mp = new MovePoint(this, joystickView);
         mp.start();
         TextView t = new TextView(this);
@@ -199,27 +197,27 @@ public class ConnectionActivity extends AppCompatActivity {
         }, 100);
     }
 
-    private void createDialog(String title, String messagge, int element, String[] value){
+    private void createDialog(String title, String messagge, String[] value){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle(title);
         builder.setMessage(messagge);
-        builder.setView(dialogView(element, value));
+        builder.setView(dialogView(value));
         builder.setPositiveButton("Conferma", ascoltatore);
         builder.setNegativeButton(android.R.string.cancel, ascoltatore);
         AlertDialog dialogElement = builder.create();
         dialog.add(dialogElement);
     }
 
-    private LinearLayout dialogView(int element, String[] value){
+    private LinearLayout dialogView(String[] value){
         LinearLayout l = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         l.setLayoutParams(lp);
-        l.setWeightSum(element);
+        l.setWeightSum(value.length);
         l.setOrientation(LinearLayout.HORIZONTAL);
-        for (int i = 0; i < element; i++) {
+        for (String aValue : value) {
             TextView testoDialog = new TextView(this);
-            testoDialog.setText(value[i]);
+            testoDialog.setText(aValue);
             lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.4f);
             testoDialog.setLayoutParams(lp);
             l.addView(testoDialog);
