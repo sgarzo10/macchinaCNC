@@ -4,8 +4,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
-
-import com.prova.gui.device.activity.ConnectionActivity;
 import com.prova.gui.device.utility.MyHandler;
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import java.util.Objects;
 public class ConnectionActivity extends AppCompatActivity {
 
     private ArrayList<EditText> input;
+    private ArrayList<CheckBox> check;
     private TextView posizioni;
     private TextView textLunghezze;
     private LinearLayout output;
@@ -44,6 +46,7 @@ public class ConnectionActivity extends AppCompatActivity {
     public boolean isResume() { return resume; }
     public void setResume(boolean resume) {this.resume = resume;}
     ArrayList<EditText> getInput() { return input; }
+    ArrayList<CheckBox> getCheck() { return check; }
     ArrayList<AlertDialog> getDialog() {return dialog;}
     Switch getRotazione_attiva() {return rotazione_attiva;}
     public QuadratoView getQuadratoView() {return quadratoView;}
@@ -58,6 +61,7 @@ public class ConnectionActivity extends AppCompatActivity {
         resume = false;
         setContentView(R.layout.activity_connection);
         input = new ArrayList<>();
+        check = new ArrayList<>();
         dialog = new ArrayList<>();
         joystickView = new JoystickView(this);
         quadratoView = new QuadratoView(this);
@@ -100,11 +104,11 @@ public class ConnectionActivity extends AppCompatActivity {
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
         createDialog("Scegli posizione", "Inserisci le coordinate", new String[]{"X", "Y", "Z"});
-        createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza"});
-        createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2"});
-        createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza"});
-        createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", new String[]{"Raggio"});
-        createDialog("Scegli dimensioni trapezio", "Inserisci le dimensioni", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza"});
+        createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza", "Riempi"});
+        createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2", "Riempi"});
+        createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza", "Riempi"});
+        createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", new String[]{"Raggio", "Riempi"});
+        createDialog("Scegli dimensioni trapezio", "Inserisci le dimensioni", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza", "Riempi"});
         mp = new MovePoint(this, joystickView);
         mp.start();
         TextView t = new TextView(this);
@@ -221,13 +225,22 @@ public class ConnectionActivity extends AppCompatActivity {
             lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.4f);
             testoDialog.setLayoutParams(lp);
             l.addView(testoDialog);
-            EditText inputDialog = new EditText(this);
-            lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
-            inputDialog.setLayoutParams(lp);
-            inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
-            inputDialog.setText("0");
-            input.add(inputDialog);
-            l.addView(inputDialog);
+            if (!Objects.equals(aValue, "Riempi")) {
+                EditText inputDialog = new EditText(this);
+                lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
+                inputDialog.setLayoutParams(lp);
+                inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
+                inputDialog.setText("0");
+                input.add(inputDialog);
+                l.addView(inputDialog);
+            } else {
+                CheckBox inputDialog = new CheckBox(this);
+                lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
+                inputDialog.setLayoutParams(lp);
+                inputDialog.setChecked(true);
+                check.add(inputDialog);
+                l.addView(inputDialog);
+            }
         }
         return l;
     }
