@@ -97,14 +97,21 @@ void ruota(String motore, boolean direzione, int velocita){
 //3200 pulsazioni giro completo 5mm - 640 pulsazioni 1mm 
 void sposta_millimetro(String motore, boolean direzione, int velocita){
   int pin = 0;
-  if (motore == "x")
+  int giri = 0;
+  if (motore == "x"){
     pin = ENA_MOT_X;
-  if (motore == "y")
+    giri = 640;
+  }
+  if (motore == "y"){
     pin = ENA_MOT_Y;
-  if (motore == "z")
+    giri = 640;
+  }
+  if (motore == "z"){
     pin = ENA_MOT_Z;
+    giri = 640;
+  }
   digitalWrite(pin,true);
-  for(int i=0;i<640;i++)
+  for(int i=0;i<giri;i++)
     ruota(motore, direzione, velocita);
 }
 
