@@ -19,6 +19,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     private DrawFigure drawFigure;
     private int[] lunghezze;
     private int[] posizioni;
+    private Map<String, Integer> map;
 
     public int[] getLunghezze(){ return lunghezze; }
     public int[] getPosizioni(){ return posizioni; }
@@ -35,6 +36,10 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             posizioni[i] = -1;
         }
         drawFigure = new DrawFigure(this);
+        map = new HashMap<>();
+        map.put("x", 0);
+        map.put("y", 1);
+        map.put("z", 2);
     }
 
     @Override
@@ -132,12 +137,61 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             app.getBluetooth().invia(messaggi.get(0));
     }
 
+    public void simulaAvanzamento(String messaggio, boolean addView){
+        String asse = messaggio.substring(1, 2);
+        String dir = messaggio.substring(2, 3);
+        if (dir.equals("s")) {
+            posizioni[map.get(asse)] = posizioni[map.get(asse)] + 1;
+            if (posizioni[map.get(asse)] > lunghezze[map.get(asse)])
+                posizioni[map.get(asse)] = lunghezze[map.get(asse)];
+        } else {
+            posizioni[map.get(asse)] = posizioni[map.get(asse)] - 1;
+            if (posizioni[map.get(asse)] < 0)
+                posizioni[map.get(asse)] = 0;
+        }
+        if (addView) {
+            app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), posizioni[0], posizioni[1], posizioni[2]));
+            if (asse.equals("x") || asse.equals("y"))
+                app.getQuadratoView().drawPoint(posizioni[0], posizioni[1]);
+            else
+                app.getQuadratoView().pulisci();
+        }
+    }
+
+    public void simulaDisegno(ArrayList<String> messaggi){
+        for (int i = 0; i < messaggi.size(); i++)
+            simulaAvanzamento(messaggi.get(i), false);
+    }
+
+    public ArrayList<String> posiziona(int x, int y, int z){
+        @SuppressLint("UseSparseArrays")
+        Map<Integer, String> map = new HashMap<>();
+        ArrayList<String> messaggi = new ArrayList<>();
+        int[] coordinate = {x, y, z};
+        map.put(0, "x");
+        map.put(1, "y");
+        map.put(2, "z");
+        for (int i = 0; i < 3; i++) {
+            int coordinata = coordinate[i];
+            if (coordinata > lunghezze[i])
+                coordinata = lunghezze[i];
+            if (coordinata > posizioni[i]){
+                for (int k = 0; k < (coordinata - posizioni[i]); k++)
+                    messaggi.add("m" + map.get(i) + "s1");
+            }
+            else{
+                for (int k = 0; k < (posizioni[i] - coordinata); k++)
+                    messaggi.add("m" + map.get(i) + "g1");
+            }
+        }
+        return  messaggi;
+    }
+
     @Override
     @SuppressLint("UseSparseArrays")
     public void onClick(DialogInterface dialog, int which) {
         dialog.dismiss();
         if (which == -1){
-            ArrayList<String> messaggi = new ArrayList<>();
             int j;
             boolean trovato = false;
             for (j = 0; j < app.getDialog().size() && !trovato; j++) {
@@ -147,40 +201,24 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             j = j -1;
             switch (j){
                 case 0:
-                    Map<Integer, String> map = new HashMap<>();
-                    map.put(0, "x");
-                    map.put(1, "y");
-                    map.put(2, "z");
-                    for (int i = 0; i < 3; i++) {
-                        int coordinata = Integer.parseInt(app.getInput().get(i).getText().toString());
-                        if (coordinata > lunghezze[i])
-                            coordinata = lunghezze[i];
-                        if (coordinata > posizioni[i]){
-                            for (int k = 0; k < (coordinata - posizioni[i]); k++)
-                                messaggi.add("m" + map.get(i) + "s1");
-                        }
-                        else{
-                            for (int k = 0; k < (posizioni[i] - coordinata); k++)
-                                messaggi.add("m" + map.get(i) + "g1");
-                        }
-                    }
+                    ArrayList<String> messaggi = posiziona(Integer.parseInt(app.getInput().get(0).getText().toString()), Integer.parseInt(app.getInput().get(1).getText().toString()), Integer.parseInt(app.getInput().get(2).getText().toString()));
                     if(messaggi.size() > 0)
                         addMex(messaggi);
                     break;
                 case 1:
-                    drawFigure.disegnaRettangolo(Integer.parseInt(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()), app.getCheck().get(0).isChecked());
+                    drawFigure.disegnaRettangolo(Integer.parseInt(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()), Integer.parseInt(app.getInput().get(5).getText().toString()), app.getCheck().get(0).isChecked());
                     break;
                 case 2:
-                    drawFigure.disegnaTriangolo(Integer.parseInt(app.getInput().get(5).getText().toString()), Integer.parseInt(app.getInput().get(6).getText().toString()), Integer.parseInt(app.getInput().get(7).getText().toString()), app.getCheck().get(1).isChecked());
+                    drawFigure.disegnaTriangolo(Integer.parseInt(app.getInput().get(6).getText().toString()), Integer.parseInt(app.getInput().get(7).getText().toString()), Integer.parseInt(app.getInput().get(8).getText().toString()), Integer.parseInt(app.getInput().get(9).getText().toString()), app.getCheck().get(1).isChecked());
                     break;
                 case 3:
-                    drawFigure.disegnaParallelo(Integer.parseInt(app.getInput().get(8).getText().toString()),Integer.parseInt(app.getInput().get(9).getText().toString()),Integer.parseInt(app.getInput().get(10).getText().toString()), app.getCheck().get(2).isChecked());
+                    drawFigure.disegnaParallelo(Integer.parseInt(app.getInput().get(10).getText().toString()),Integer.parseInt(app.getInput().get(11).getText().toString()),Integer.parseInt(app.getInput().get(12).getText().toString()), Integer.parseInt(app.getInput().get(13).getText().toString()), app.getCheck().get(2).isChecked());
                     break;
                 case 4:
-                    drawFigure.disegnaCerchio(Integer.parseInt(app.getInput().get(11).getText().toString()), app.getCheck().get(3).isChecked());
+                    drawFigure.disegnaCerchio(Integer.parseInt(app.getInput().get(14).getText().toString()), Integer.parseInt(app.getInput().get(15).getText().toString()), app.getCheck().get(3).isChecked());
                     break;
                 case 5:
-                    drawFigure.disegnaTrapezio(Integer.parseInt(app.getInput().get(12).getText().toString()), Integer.parseInt(app.getInput().get(13).getText().toString()), Integer.parseInt(app.getInput().get(14).getText().toString()), Integer.parseInt(app.getInput().get(15).getText().toString()), Integer.parseInt(app.getInput().get(16).getText().toString()), app.getCheck().get(4).isChecked());
+                    drawFigure.disegnaTrapezio(Integer.parseInt(app.getInput().get(16).getText().toString()), Integer.parseInt(app.getInput().get(17).getText().toString()), Integer.parseInt(app.getInput().get(18).getText().toString()), Integer.parseInt(app.getInput().get(19).getText().toString()), Integer.parseInt(app.getInput().get(20).getText().toString()), Integer.parseInt(app.getInput().get(21).getText().toString()), app.getCheck().get(4).isChecked());
                     break;
             }
         }

@@ -117,6 +117,7 @@ public class MyHandler extends android.os.Handler{
                                 app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
                                 if (mex.substring(1,2).equals("x") || mex.substring(1,2).equals("y"))
                                     app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+                                app.getQuadratoView().pulisci();
                                 app.getAscoltatore().shiftMessaggi();
                             } else
                                 app.getBluetooth().invia(app.getAscoltatore().getMessaggi().get(0));
@@ -132,23 +133,11 @@ public class MyHandler extends android.os.Handler{
                                 app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
                                 if (mex.substring(0,1).equals("x") || mex.substring(0,1).equals("y"))
                                     app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+                                else
+                                    app.getQuadratoView().pulisci();
                             }
-                            else {
-                                String asse = app.getAscoltatore().getMessaggi().get(0).substring(1, 2);
-                                String dir = app.getAscoltatore().getMessaggi().get(0).substring(2, 3);
-                                if (dir.equals("s")) {
-                                    app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] + 1;
-                                    if (app.getAscoltatore().getPosizioni()[map.get(asse)] > app.getAscoltatore().getLunghezze()[map.get(asse)])
-                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getLunghezze()[map.get(asse)];
-                                } else {
-                                    app.getAscoltatore().getPosizioni()[map.get(asse)] = app.getAscoltatore().getPosizioni()[map.get(asse)] - 1;
-                                    if (app.getAscoltatore().getPosizioni()[map.get(asse)] < 0)
-                                        app.getAscoltatore().getPosizioni()[map.get(asse)] = 0;
-                                }
-                                app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
-                                if (asse.equals("x") || asse.equals("y"))
-                                    app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
-                            }
+                            else
+                                app.getAscoltatore().simulaAvanzamento(app.getAscoltatore().getMessaggi().get(0), true);
                             app.getAscoltatore().shiftMessaggi();
                             ok = 0;
                         }

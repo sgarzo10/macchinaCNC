@@ -104,11 +104,11 @@ public class ConnectionActivity extends AppCompatActivity {
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
         createDialog("Scegli posizione", "Inserisci le coordinate", new String[]{"X", "Y", "Z"});
-        createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza", "Riempi"});
-        createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2", "Riempi"});
-        createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza", "Riempi"});
-        createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", new String[]{"Raggio", "Riempi"});
-        createDialog("Scegli dimensioni trapezio", "Inserisci le dimensioni", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza", "Riempi"});
+        createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza", "Profondità", "Riempi"});
+        createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2", "Profondità", "Riempi"});
+        createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza", "Profondità", "Riempi"});
+        createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", new String[]{"Raggio", "Profondità", "Riempi"});
+        createDialog("Scegli dimensioni trapezio", "Inserisci le dimensioni", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza", "Profondità", "Riempi"});
         mp = new MovePoint(this, joystickView);
         mp.start();
         TextView t = new TextView(this);
@@ -230,7 +230,10 @@ public class ConnectionActivity extends AppCompatActivity {
                 lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
                 inputDialog.setLayoutParams(lp);
                 inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
-                inputDialog.setText("0");
+                if (!Objects.equals(aValue, "Profondità"))
+                    inputDialog.setText("0");
+                else
+                    inputDialog.setText("1");
                 input.add(inputDialog);
                 l.addView(inputDialog);
             } else {

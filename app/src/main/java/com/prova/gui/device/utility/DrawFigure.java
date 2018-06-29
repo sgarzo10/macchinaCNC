@@ -3,7 +3,7 @@ package com.prova.gui.device.utility;
 import com.prova.gui.device.activity.AscoltatoreConnectionActivity;
 import java.util.ArrayList;
 
-//Do sempre sngoli esterni
+//Do sempre angoli esterni
 public class DrawFigure {
 
     private AscoltatoreConnectionActivity ascoltatore;
@@ -12,70 +12,94 @@ public class DrawFigure {
         this.ascoltatore = ascoltatore;
     }
 
-    public void disegnaRettangolo(int larghezza, int altezza, boolean riempi){
+    public void disegnaRettangolo(int larghezza, int altezza, int profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
+        messaggi.add("mzs1");
         int giri = 1;
+        int init_x = ascoltatore.getPosizioni()[0];
+        int init_y = ascoltatore.getPosizioni()[1];
         if (riempi)
             giri = Math.min(altezza, larghezza);
-        for (int i = 0; i < giri; i = i + 2) {
-            if (i > 0) {
-                messaggi.add("mxs1");
-                messaggi.add("mys1");
+        for (int j = 0; j < profondita; j++) {
+            ArrayList<String> messaggi2d = new ArrayList<>();
+            for (int i = 0; i < giri; i = i + 2) {
+                if (i > 0) {
+                    messaggi2d.add("mxs1");
+                    messaggi2d.add("mys1");
+                }
+                messaggi2d.addAll(disegnaLinea(larghezza - i, 0));
+                messaggi2d.addAll(disegnaLinea(altezza - i, 90));
+                messaggi2d.addAll(disegnaLinea(larghezza - i, 180));
+                messaggi2d.addAll(disegnaLinea(altezza - i, 270));
             }
-            messaggi.addAll(disegnaLinea(larghezza - i, 0));
-            messaggi.addAll(disegnaLinea(altezza - i, 90));
-            messaggi.addAll(disegnaLinea(larghezza - i, 180));
-            messaggi.addAll(disegnaLinea(altezza - i, 270));
+            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
         ascoltatore.addMex(messaggi);
     }
 
-    public void disegnaTriangolo(int base, int lato1, int lato2, boolean riempi){
+    public void disegnaTriangolo(int base, int lato1, int lato2, int profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
+        messaggi.add("mzs1");
         int giri = 1;
+        int init_x = ascoltatore.getPosizioni()[0];
+        int init_y = ascoltatore.getPosizioni()[1];
         long angolo1 = Math.round(Math.toDegrees(Math.acos((lato1 * lato1 + lato2 * lato2 - base * base) / (2d * lato1 * lato2))));
         long angolo2 = Math.round(Math.toDegrees(Math.acos((base * base + lato2 * lato2 - lato1 * lato1) / (2d * base * lato2))));
         long angolo3 = 180 - angolo1 - angolo2;
         if (!(angolo1 == 0 || angolo2 == 0 || angolo3 == 0)) {
             if (riempi)
                 giri = Math.min(Math.min(base, lato1), lato2);
-            for (int i = 0; i < giri; i = i + 2) {
-                if (i > 0){
-                    messaggi.add("mxs1");
-                    messaggi.add("mys1");
+            for (int j = 0; j < profondita; j++) {
+                ArrayList<String> messaggi2d = new ArrayList<>();
+                for (int i = 0; i < giri; i = i + 2) {
+                    if (i > 0) {
+                        messaggi2d.add("mxs1");
+                        messaggi2d.add("mys1");
+                    }
+                    messaggi2d.addAll(disegnaLinea(base - i, 0));
+                    messaggi2d.addAll(disegnaLinea(lato1 - i, 180 - angolo3));
+                    messaggi2d.addAll(disegnaLinea(lato2 - i, 270 - (angolo1 - (90 - angolo3))));
                 }
-                messaggi.addAll(disegnaLinea(base - i, 0));
-                messaggi.addAll(disegnaLinea(lato1 - i, 180 - angolo3));
-                messaggi.addAll(disegnaLinea(lato2 - i, 270 - (angolo1 - (90 - angolo3))));
+                messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
             }
             ascoltatore.addMex(messaggi);
         }
     }
 
-    public void disegnaParallelo(int base, double diagonale, double altezza, boolean riempi){
+    public void disegnaParallelo(int base, double diagonale, double altezza, int profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
+        messaggi.add("mzs1");
         double giri = 1;
+        int init_x = ascoltatore.getPosizioni()[0];
+        int init_y = ascoltatore.getPosizioni()[1];
         if (diagonale >= altezza) {
             long angolo = Math.round(90 - Math.toDegrees(Math.acos(altezza / diagonale)));
             if (riempi)
                 giri = Math.min(base, diagonale);
-            for (int i = 0; i < giri; i = i + 2) {
-                if (i > 0) {
-                    messaggi.add("mxs1");
-                    messaggi.add("mys1");
+            for (int j = 0; j < profondita; j++) {
+                ArrayList<String> messaggi2d = new ArrayList<>();
+                for (int i = 0; i < giri; i = i + 2) {
+                    if (i > 0) {
+                        messaggi2d.add("mxs1");
+                        messaggi2d.add("mys1");
+                    }
+                    messaggi2d.addAll(disegnaLinea(base - i, 0));
+                    messaggi2d.addAll(disegnaLinea((int) diagonale - i, angolo));
+                    messaggi2d.addAll(disegnaLinea(base - i, 180));
+                    messaggi2d.addAll(disegnaLinea((int) diagonale - i, 180 + angolo));
                 }
-                messaggi.addAll(disegnaLinea(base - i, 0));
-                messaggi.addAll(disegnaLinea((int) diagonale - i, angolo));
-                messaggi.addAll(disegnaLinea(base - i, 180));
-                messaggi.addAll(disegnaLinea((int) diagonale - i, 180 + angolo));
+                messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
             }
             ascoltatore.addMex(messaggi);
         }
     }
 
-    public void disegnaTrapezio(int baseMaggiore, double lato1, int baseMinore, double lato2, double altezza, boolean riempi){
+    public void disegnaTrapezio(int baseMaggiore, double lato1, int baseMinore, double lato2, double altezza, int profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
+        messaggi.add("mzs1");
         double giri = 1;
+        int init_x = ascoltatore.getPosizioni()[0];
+        int init_y = ascoltatore.getPosizioni()[1];
         if (lato2 >= altezza && lato1 >= altezza && baseMinore <= baseMaggiore) {
             double angolo1 = Math.toDegrees(Math.acos(altezza / lato1));
             double angolo2 = Math.toDegrees(Math.acos(altezza / lato2));
@@ -83,33 +107,44 @@ public class DrawFigure {
             if (tot == baseMaggiore) {
                 if (riempi)
                     giri = Math.min(Math.min(Math.min(baseMaggiore, lato1), baseMinore), lato2);
-                for (int i = 0; i < giri; i = i + 2) {
-                    if (i > 0) {
-                        messaggi.add("mxs1");
-                        messaggi.add("mys1");
+                for (int j = 0; j < profondita; j++) {
+                    ArrayList<String> messaggi2d = new ArrayList<>();
+                    for (int i = 0; i < giri; i = i + 2) {
+                        if (i > 0) {
+                            messaggi2d.add("mxs1");
+                            messaggi2d.add("mys1");
+                        }
+                        messaggi2d.addAll(disegnaLinea(baseMaggiore - 1, 0));
+                        messaggi2d.addAll(disegnaLinea((int) lato1 - 1, Math.round(90 + angolo1)));
+                        messaggi2d.addAll(disegnaLinea(baseMinore - 1, 180));
+                        messaggi2d.addAll(disegnaLinea((int) lato2 - 1, Math.round(270 - angolo2)));
                     }
-                    messaggi.addAll(disegnaLinea(baseMaggiore - 1, 0));
-                    messaggi.addAll(disegnaLinea((int) lato1- 1, Math.round(90 + angolo1)));
-                    messaggi.addAll(disegnaLinea(baseMinore - 1, 180));
-                    messaggi.addAll(disegnaLinea((int) lato2 - 1, Math.round(270 - angolo2)));
+                    messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
                 }
                 ascoltatore.addMex(messaggi);
             }
         }
     }
 
-    public void disegnaCerchio(int raggio, boolean riempi){
+    public void disegnaCerchio(int raggio, int profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
+        messaggi.add("mzs1");
         int giri = 1;
+        int init_x = ascoltatore.getPosizioni()[0];
+        int init_y = ascoltatore.getPosizioni()[1];
         if (riempi)
             giri = raggio;
-        for (int i = raggio; i > raggio - giri; i--) {
-            if (i < raggio)
-                messaggi.add("myg1");
-            messaggi.addAll(disegnaSemiCerchio(i, "mxs1", "myg1"));
-            messaggi.addAll(disegnaSemiCerchio(i, "myg1", "mxg1"));
-            messaggi.addAll(disegnaSemiCerchio(i, "mxg1", "mys1"));
-            messaggi.addAll(disegnaSemiCerchio(i, "mys1", "mxs1"));
+        for (int j = 0; j < profondita; j++) {
+            ArrayList<String> messaggi2d = new ArrayList<>();
+            for (int i = raggio; i > raggio - giri; i--) {
+                if (i < raggio)
+                    messaggi2d.add("myg1");
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mxs1", "myg1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "myg1", "mxg1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mxg1", "mys1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mys1", "mxs1"));
+            }
+            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
         ascoltatore.addMex(messaggi);
     }
@@ -178,6 +213,17 @@ public class DrawFigure {
                 currentY = y;
                 messaggi.add(messaggioX);
             }
+        }
+        return messaggi;
+    }
+
+    private ArrayList<String> scendi(int j, int profondita, ArrayList<String> messaggi2d, int x, int y){
+        ArrayList<String> messaggi = new ArrayList<>(messaggi2d);
+        if (j + 1 < profondita) {
+            ascoltatore.simulaDisegno(messaggi2d);
+            ArrayList<String> posiziona = new ArrayList<>(ascoltatore.posiziona(x, y, ascoltatore.getPosizioni()[2] + 1));
+            ascoltatore.simulaDisegno(posiziona);
+            messaggi.addAll(posiziona);
         }
         return messaggi;
     }
