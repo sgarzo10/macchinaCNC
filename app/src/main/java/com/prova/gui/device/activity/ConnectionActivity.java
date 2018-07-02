@@ -19,7 +19,18 @@ import com.prova.gui.device.view.JoystickView;
 import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
 import com.prova.gui.device.view.QuadratoView;
+
+import org.kabeja.dxf.DXFCircle;
+import org.kabeja.dxf.DXFConstants;
+import org.kabeja.dxf.DXFDocument;
+import org.kabeja.parser.DXFParser;
+import org.kabeja.parser.ParseException;
+import org.kabeja.parser.Parser;
+import org.kabeja.parser.ParserBuilder;
+import org.kabeja.dxf.DXFLayer;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ConnectionActivity extends AppCompatActivity {
@@ -56,6 +67,15 @@ public class ConnectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*Parser parser = ParserBuilder.createDefaultParser();
+        try {
+            parser.parse("path/file.dxf", DXFParser.DEFAULT_ENCODING);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        DXFDocument doc = parser.getDocument();
+        DXFLayer layer = doc.getDXFLayer("layer_name");
+        List<DXFCircle> arcs = layer.getDXFEntities(DXFConstants.ENTITY_TYPE_CIRCLE);*/
         resume = false;
         setContentView(R.layout.activity_connection);
         input = new ArrayList<>();
