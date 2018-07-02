@@ -1,5 +1,27 @@
 #include <SoftwareSerial.h>
 
+/*
+#define LUNGHEZZA_X 309 //lunghezza asse x in millimetri
+#define ENA_MOT_X 2 //define Enable Pin
+#define DIR_MOT_X 3 //define Direction
+#define PUL_MOT_X 4 //define Pulse pin
+#define SENS_MOT_X 22 //define sensor pin
+#define LUNGHEZZA_Y 309 //lunghezza asse y in millimetri
+#define ENA_MOT_Y 5 //define Enable Pin
+#define DIR_MOT_Y 6 //define Direction
+#define PUL_MOT_Y 7 //define Pulse pin
+#define SENS_MOT_Y 24 //define sensor pin
+#define LUNGHEZZA_Z 200 //lunghezza asse z in millimetri
+#define ENA_MOT_Z 8 //define Enable Pin
+#define DIR_MOT_Z 9 //define Direction
+#define PUL_MOT_Z 10 //define Pulse pin
+#define SENS_MOT_Z 26 //define sensor pin
+#define MANDRINO 23 // define mandrino pin
+#define LED 25 // define led pin
+#define BLUETOOTH_TX 18 //define bluetooth tx pin
+#define BLUETOOTH_RX 19 //define bluetooth rx pin
+ */
+
 #define LUNGHEZZA_X 309 //lunghezza asse x in millimetri
 #define ENA_MOT_X 2 //define Enable Pin
 #define DIR_MOT_X 3 //define Direction
