@@ -16,7 +16,7 @@ public class MyHandler extends android.os.Handler{
     private Map<String, Integer> map = new HashMap<>();
 
     public boolean isFine() { return fine; }
-    public void setFine(boolean fine) { this.fine = fine; }
+    public void setFine() { this.fine = false; }
 
     public MyHandler(ConnectionActivity app) {
         sb = new StringBuilder("");

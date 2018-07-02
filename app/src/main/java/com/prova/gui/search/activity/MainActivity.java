@@ -35,19 +35,19 @@ public class MainActivity extends AppCompatActivity {
     public LinearLayout getBottoni() {return bottoni;}
     public Switch getStato_bluetooth(){return stato_bluetooth;}
     public AscoltatoreMainActivity getAscoltatore() { return ascoltatore; }
-    public void setCollegato (boolean collegato){ this.collegato = collegato; }
+    public void setCollegato (){ this.collegato = collegato; }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        nomi = (ListView) findViewById(R.id.nomi);
-        address = (ListView)findViewById(R.id.address);
-        bottoni =(LinearLayout) findViewById(R.id.bottoni);
-        stato_bluetooth = (Switch) findViewById(R.id.stato_bluetooth);
-        messaggio = (TextView) findViewById(R.id.messaggio);
-        associati = (Button) findViewById(R.id.associati);
-        cerca = (ImageButton) findViewById(R.id.cerca);
+        nomi = findViewById(R.id.nomi);
+        address = findViewById(R.id.address);
+        bottoni = findViewById(R.id.bottoni);
+        stato_bluetooth = findViewById(R.id.stato_bluetooth);
+        messaggio = findViewById(R.id.messaggio);
+        associati = findViewById(R.id.associati);
+        cerca = findViewById(R.id.cerca);
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         changeView();
         if (collegato) {
-            TextView t = (TextView) findViewById(R.id.messaggio);
+            TextView t = findViewById(R.id.messaggio);
             t.setText(R.string.finish_connection);
             collegato = false;
         }

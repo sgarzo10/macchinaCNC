@@ -138,7 +138,7 @@ public class AscoltatoreMainActivity implements View.OnClickListener, CompoundBu
             openPage1.putExtra("nome", nomi.get(i));
             openPage1.putExtra("mac", mac.get(i));
             pulisci();
-            app.setCollegato(true);
+            app.setCollegato();
             app.getMessaggio().setText(R.string.connection);
             app.startActivity(openPage1);
         } catch (Exception e){

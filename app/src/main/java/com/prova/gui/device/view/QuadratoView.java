@@ -43,7 +43,7 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
         if (!app.isResume())
             mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config. ARGB_8888);
         else
-            app.setResume(false);
+            app.setResume();
     }
 
     @Override

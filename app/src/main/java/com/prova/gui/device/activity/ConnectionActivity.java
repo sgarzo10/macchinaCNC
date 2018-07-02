@@ -1,6 +1,5 @@
 package com.prova.gui.device.activity;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.AlertDialog;
@@ -44,7 +43,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
     public BluetoothConnection getBluetooth() { return bluetooth;}
     public boolean isResume() { return resume; }
-    public void setResume(boolean resume) {this.resume = resume;}
+    public void setResume() {this.resume = false;}
     ArrayList<EditText> getInput() { return input; }
     ArrayList<CheckBox> getCheck() { return check; }
     ArrayList<AlertDialog> getDialog() {return dialog;}
@@ -54,7 +53,6 @@ public class ConnectionActivity extends AppCompatActivity {
     public TextView getPosizioni() { return posizioni; }
     public TextView getTextLunghezze() { return textLunghezze; }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,25 +66,25 @@ public class ConnectionActivity extends AppCompatActivity {
         String nome = Objects.requireNonNull(getIntent().getExtras()).getString("nome");
         String mac = Objects.requireNonNull(getIntent().getExtras().getString("mac"));
         ascoltatore = new AscoltatoreConnectionActivity(this);
-        Button resetX = (Button) findViewById(R.id.resetx);
-        Button resetY = (Button) findViewById(R.id.resety);
-        Button resetZ = (Button) findViewById(R.id.resetz);
-        Button resetA = (Button) findViewById(R.id.reseta);
-        Button clear = (Button) findViewById(R.id.clear);
-        Button posiziona = (Button) findViewById(R.id.posiziona);
-        ImageButton rettangolo = (ImageButton) findViewById(R.id.rettangolo);
-        ImageButton triangolo = (ImageButton) findViewById(R.id.triangolo);
-        ImageButton parallelo = (ImageButton) findViewById(R.id.parallelo);
-        ImageButton cerchio = (ImageButton) findViewById(R.id.cerchio);
-        ImageButton trapezio = (ImageButton) findViewById(R.id.trapezio);
-        ImageButton sali = (ImageButton) findViewById(R.id.sali);
-        ImageButton scendi = (ImageButton) findViewById(R.id.scendi);
-        LinearLayout linearLayoutJoystick = (LinearLayout) findViewById(R.id.joystick);
-        RelativeLayout relativeLayoutQuadrato = (RelativeLayout) findViewById(R.id.quadrato);
-        rotazione_attiva = (Switch) findViewById(R.id.rotazione_attiva);
-        output = (LinearLayout) findViewById(R.id.outSeriale);
-        posizioni = (TextView) findViewById(R.id.posizioni);
-        textLunghezze = (TextView) findViewById(R.id.text_lunghezze);
+        Button resetX = findViewById(R.id.resetx);
+        Button resetY = findViewById(R.id.resety);
+        Button resetZ = findViewById(R.id.resetz);
+        Button resetA = findViewById(R.id.reseta);
+        Button clear = findViewById(R.id.clear);
+        Button posiziona = findViewById(R.id.posiziona);
+        ImageButton rettangolo = findViewById(R.id.rettangolo);
+        ImageButton triangolo = findViewById(R.id.triangolo);
+        ImageButton parallelo = findViewById(R.id.parallelo);
+        ImageButton cerchio = findViewById(R.id.cerchio);
+        ImageButton trapezio = findViewById(R.id.trapezio);
+        ImageButton sali = findViewById(R.id.sali);
+        ImageButton scendi = findViewById(R.id.scendi);
+        LinearLayout linearLayoutJoystick = findViewById(R.id.joystick);
+        RelativeLayout relativeLayoutQuadrato = findViewById(R.id.quadrato);
+        rotazione_attiva = findViewById(R.id.rotazione_attiva);
+        output = findViewById(R.id.outSeriale);
+        posizioni = findViewById(R.id.posizioni);
+        textLunghezze = findViewById(R.id.text_lunghezze);
         linearLayoutJoystick.addView(joystickView);
         relativeLayoutQuadrato.addView(quadratoView);
         resetX.setOnClickListener(ascoltatore);
@@ -183,14 +181,14 @@ public class ConnectionActivity extends AppCompatActivity {
                     if (!initLunghezze) {
                         ascoltatore.inviaMessaggio("la");
                         initLunghezze = true;
-                        bluetooth.getH().setFine(false);
+                        bluetooth.getH().setFine();
                         getValoriInziaili();
                     }
                     else {
                         if (!initPosizioni) {
                             ascoltatore.inviaMessaggio("da");
                             initPosizioni = true;
-                            bluetooth.getH().setFine(false);
+                            bluetooth.getH().setFine();
                             getValoriInziaili();
                         }
                         else

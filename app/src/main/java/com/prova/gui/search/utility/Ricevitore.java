@@ -40,7 +40,7 @@ public class Ricevitore extends BroadcastReceiver {
 
     private void finish(){
         app.getMessaggio().setText(R.string.search_finish);
-        ImageButton b = (ImageButton) app.findViewById(R.id.cerca);
+        ImageButton b = app.findViewById(R.id.cerca);
         b.setImageDrawable(ContextCompat.getDrawable(app, R.drawable.lente));
         app.getAscoltatore().setRicerca();
     }
