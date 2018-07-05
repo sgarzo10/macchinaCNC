@@ -92,6 +92,8 @@ public class ConnectionActivity extends AppCompatActivity {
         Button resetA = findViewById(R.id.reseta);
         Button clear = findViewById(R.id.clear);
         Button posiziona = findViewById(R.id.posiziona);
+        ImageButton linea = findViewById(R.id.linea);
+        ImageButton curva = findViewById(R.id.curva);
         ImageButton rettangolo = findViewById(R.id.rettangolo);
         ImageButton triangolo = findViewById(R.id.triangolo);
         ImageButton parallelo = findViewById(R.id.parallelo);
@@ -111,6 +113,8 @@ public class ConnectionActivity extends AppCompatActivity {
         resetY.setOnClickListener(ascoltatore);
         resetZ.setOnClickListener(ascoltatore);
         resetA.setOnClickListener(ascoltatore);
+        linea.setOnClickListener(ascoltatore);
+        curva.setOnClickListener(ascoltatore);
         rettangolo.setOnClickListener(ascoltatore);
         triangolo.setOnClickListener(ascoltatore);
         parallelo.setOnClickListener(ascoltatore);
@@ -122,6 +126,8 @@ public class ConnectionActivity extends AppCompatActivity {
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
         createDialog("Scegli posizione", "Inserisci le coordinate", new String[]{"X", "Y", "Z"});
+        createDialog("Scegli parametri linea", "Inserisci i parametri", new String[]{"Lunghezza", "Angolo"});
+        createDialog("Scegli parametri curva", "Inserisci i parametri", new String[]{"Raggio", "Quadrante"});
         createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza", "Profondità", "Riempi"});
         createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2", "Profondità", "Riempi"});
         createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza", "Profondità", "Riempi"});

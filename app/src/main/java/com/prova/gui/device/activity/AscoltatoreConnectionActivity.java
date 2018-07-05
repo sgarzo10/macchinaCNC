@@ -67,20 +67,26 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 messaggi.add("rez");
                 addMex(messaggi);
                 break;
-            case R.id.rettangolo:
+            case R.id.linea:
                 app.getDialog().get(1).show();
                 break;
-            case R.id.triangolo:
+            case R.id.curva:
                 app.getDialog().get(2).show();
                 break;
-            case R.id.parallelo:
+            case R.id.rettangolo:
                 app.getDialog().get(3).show();
                 break;
-            case R.id.cerchio:
+            case R.id.triangolo:
                 app.getDialog().get(4).show();
                 break;
-            case R.id.trapezio:
+            case R.id.parallelo:
                 app.getDialog().get(5).show();
+                break;
+            case R.id.cerchio:
+                app.getDialog().get(6).show();
+                break;
+            case R.id.trapezio:
+                app.getDialog().get(7).show();
                 break;
         }
     }
@@ -206,21 +212,49 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                         addMex(messaggi);
                     break;
                 case 1:
-                    drawFigure.disegnaRettangolo(Integer.parseInt(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()), Integer.parseInt(app.getInput().get(5).getText().toString()), app.getCheck().get(0).isChecked());
+                    addMex(drawFigure.disegnaLinea(Integer.parseInt(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString())));
                     break;
                 case 2:
-                    drawFigure.disegnaTriangolo(Integer.parseInt(app.getInput().get(6).getText().toString()), Integer.parseInt(app.getInput().get(7).getText().toString()), Integer.parseInt(app.getInput().get(8).getText().toString()), Integer.parseInt(app.getInput().get(9).getText().toString()), app.getCheck().get(1).isChecked());
+                    String[] s = calcolaStringhe(Integer.parseInt(app.getInput().get(6).getText().toString()));
+                    addMex(drawFigure.disegnaSemiCerchio(Integer.parseInt(app.getInput().get(5).getText().toString()), s[0], s[1]));
                     break;
                 case 3:
-                    drawFigure.disegnaParallelo(Integer.parseInt(app.getInput().get(10).getText().toString()),Integer.parseInt(app.getInput().get(11).getText().toString()),Integer.parseInt(app.getInput().get(12).getText().toString()), Integer.parseInt(app.getInput().get(13).getText().toString()), app.getCheck().get(2).isChecked());
+                    drawFigure.disegnaRettangolo(Integer.parseInt(app.getInput().get(7).getText().toString()), Integer.parseInt(app.getInput().get(8).getText().toString()), Integer.parseInt(app.getInput().get(9).getText().toString()), app.getCheck().get(0).isChecked());
                     break;
                 case 4:
-                    drawFigure.disegnaCerchio(Integer.parseInt(app.getInput().get(14).getText().toString()), Integer.parseInt(app.getInput().get(15).getText().toString()), app.getCheck().get(3).isChecked());
+                    drawFigure.disegnaTriangolo(Integer.parseInt(app.getInput().get(10).getText().toString()), Integer.parseInt(app.getInput().get(11).getText().toString()), Integer.parseInt(app.getInput().get(12).getText().toString()), Integer.parseInt(app.getInput().get(13).getText().toString()), app.getCheck().get(1).isChecked());
                     break;
                 case 5:
-                    drawFigure.disegnaTrapezio(Integer.parseInt(app.getInput().get(16).getText().toString()), Integer.parseInt(app.getInput().get(17).getText().toString()), Integer.parseInt(app.getInput().get(18).getText().toString()), Integer.parseInt(app.getInput().get(19).getText().toString()), Integer.parseInt(app.getInput().get(20).getText().toString()), Integer.parseInt(app.getInput().get(21).getText().toString()), app.getCheck().get(4).isChecked());
+                    drawFigure.disegnaParallelo(Integer.parseInt(app.getInput().get(14).getText().toString()),Integer.parseInt(app.getInput().get(15).getText().toString()),Integer.parseInt(app.getInput().get(16).getText().toString()), Integer.parseInt(app.getInput().get(17).getText().toString()), app.getCheck().get(2).isChecked());
+                    break;
+                case 6:
+                    drawFigure.disegnaCerchio(Integer.parseInt(app.getInput().get(18).getText().toString()), Integer.parseInt(app.getInput().get(19).getText().toString()), app.getCheck().get(3).isChecked());
+                    break;
+                case 7:
+                    drawFigure.disegnaTrapezio(Integer.parseInt(app.getInput().get(20).getText().toString()), Integer.parseInt(app.getInput().get(21).getText().toString()), Integer.parseInt(app.getInput().get(22).getText().toString()), Integer.parseInt(app.getInput().get(23).getText().toString()), Integer.parseInt(app.getInput().get(24).getText().toString()), Integer.parseInt(app.getInput().get(25).getText().toString()), app.getCheck().get(4).isChecked());
                     break;
             }
         }
+    }
+
+    private String[] calcolaStringhe(int quadrante){
+        String [] s = {"", ""};
+        if (quadrante == 1) {
+            s[0] = "mxs1";
+            s[1] = "myg1";
+        }
+        if (quadrante == 2) {
+            s[0] = "myg1";
+            s[1] = "mxg1";
+        }
+        if (quadrante == 3) {
+            s[0] = "mxg1";
+            s[1] = "mys1";
+        }
+        if (quadrante == 4) {
+            s[0] = "mys1";
+            s[1] = "mxs1";
+        }
+        return s;
     }
 }

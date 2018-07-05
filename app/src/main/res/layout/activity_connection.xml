@@ -34,8 +34,29 @@
             android:layout_height="match_parent"
             android:layout_weight="0.6"
             android:orientation="horizontal"
-            android:weightSum="5">
+            android:weightSum="7">
 
+            <ImageButton
+                android:id="@+id/linea"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:baselineAlignBottom="false"
+                android:contentDescription="@string/linea"
+                android:scaleType="fitCenter"
+                android:src="@drawable/linea" />
+
+            <ImageButton
+                android:id="@+id/curva"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:baselineAlignBottom="false"
+                android:contentDescription="@string/curva"
+                android:scaleType="fitCenter"
+                android:src="@drawable/curva" />
             <ImageButton
                 android:id="@+id/rettangolo"
                 android:layout_width="0dip"

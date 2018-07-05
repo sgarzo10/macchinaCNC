@@ -149,7 +149,7 @@ public class DrawFigure {
         ascoltatore.addMex(messaggi);
     }
 
-    private ArrayList<String> disegnaSemiCerchio(int raggio, String primo, String secondo){
+    public ArrayList<String> disegnaSemiCerchio(int raggio, String primo, String secondo){
         ArrayList<String> messaggi = new ArrayList<>();
         int myRaggio = raggio;
         for(int i = 1; i <= raggio; i++){
@@ -168,7 +168,7 @@ public class DrawFigure {
         return messaggi;
     }
 
-    private ArrayList<String> disegnaLinea(int lunghezza, long angolo) {
+    public ArrayList<String> disegnaLinea(int lunghezza, long angolo) {
         ArrayList<String> messaggi = new ArrayList<>();
         if (angolo == 0 || angolo == 90 || angolo == 180 || angolo == 270) {
             String messaggio = "mxs1";
