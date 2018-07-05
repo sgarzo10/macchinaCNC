@@ -19,10 +19,6 @@ import com.prova.gui.device.view.JoystickView;
 import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
 import com.prova.gui.device.view.QuadratoView;
-import com.prova.gui.settings.utility.ManageXml;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -44,7 +40,6 @@ public class ConnectionActivity extends AppCompatActivity {
     private boolean initPosizioni;
     private boolean primo;
     private boolean resume;
-    private ManageXml manageXml;
 
     public BluetoothConnection getBluetooth() { return bluetooth;}
     public boolean isResume() { return resume; }
@@ -141,20 +136,6 @@ public class ConnectionActivity extends AppCompatActivity {
     protected void onResume()
     {
         super.onResume();
-        manageXml = new ManageXml();
-        File f = new File(getFilesDir(), "config.xml");
-        if (f.exists()) {
-            try {
-                manageXml.setIst(openFileInput("config.xml"));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            manageXml.readXml(true);
-        }
-        else{
-            manageXml.setXrp(getResources().getXml(R.xml.config));
-            manageXml.readXml(false);
-        }
         if (!primo)
             resume = true;
         if (rotazione_attiva.isChecked())
@@ -245,7 +226,7 @@ public class ConnectionActivity extends AppCompatActivity {
             lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.4f);
             testoDialog.setLayoutParams(lp);
             l.addView(testoDialog);
-            if (!aValue.equals("Riempi") && !aValue.contains("Reset") && !aValue.equals("Materiale")) {
+            if (!aValue.equals("Riempi") && !aValue.contains("Reset")) {
                 EditText inputDialog = new EditText(this);
                 lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
                 inputDialog.setLayoutParams(lp);
