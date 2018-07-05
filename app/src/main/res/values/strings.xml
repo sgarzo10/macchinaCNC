@@ -34,7 +34,19 @@
     <string name="cerca">cerca</string>
     <string name="reset">reset</string>
     <string name="clear">pulisci</string>
+    <string name="settings">settings</string>
     <string name="posiziona">posiziona</string>
+    <string name="mandrino">Dimensione Mandrino:</string>
+    <string name="materiale">Materiale da lavorare:</string>
+    <string name="lunghezzeX">Lunghezza asse X:</string>
+    <string name="lunghezzeY">Lunghezza asse Y:</string>
+    <string name="lunghezzeZ">Lunghezza asse Z:</string>
     <string name="output_posizioni">X: %1$d Y: %2$d Z: %3$d</string>
     <string name="output_lunghezze">LX: %1$d LY: %2$d LZ: %3$d</string>
+    <string name="salva">salva</string>
+    <string-array name="materiali">
+        <item>Plastica</item>
+        <item>Alluminio</item>
+        <item>Legno</item>
+    </string-array>
 </resources>

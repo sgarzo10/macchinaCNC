@@ -153,7 +153,8 @@ public class MyHandler extends android.os.Handler{
         boolean ok = true;
         if (mex.substring(0, 1).equals("x") || mex.substring(0, 1).equals("y") || mex.substring(0, 1).equals("z")){
                 try {
-                    Integer.parseInt(mex.substring(1, mex.length()));
+                    if (!(Integer.parseInt(mex.substring(1, mex.length())) >= 0))
+                        ok = false;
                 } catch (NumberFormatException e) {
                     ok = false;
                 }

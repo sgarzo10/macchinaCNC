@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     public LinearLayout getBottoni() {return bottoni;}
     public Switch getStato_bluetooth(){return stato_bluetooth;}
     public AscoltatoreMainActivity getAscoltatore() { return ascoltatore; }
-    public void setCollegato (){ this.collegato = collegato; }
+    public void setCollegato (){ this.collegato = true; }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

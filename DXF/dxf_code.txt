@@ -1,0 +1,19 @@
+import org.kabeja.dxf.DXFCircle;
+import org.kabeja.dxf.DXFConstants;
+import org.kabeja.dxf.DXFDocument;
+import org.kabeja.parser.DXFParser;
+import org.kabeja.parser.ParseException;
+import org.kabeja.parser.Parser;
+import org.kabeja.parser.ParserBuilder;
+import org.kabeja.dxf.DXFLayer;
+import java.util.List;
+
+Parser parser = ParserBuilder.createDefaultParser();
+try {
+	parser.parse("path/file.dxf", DXFParser.DEFAULT_ENCODING);
+} catch (ParseException e) {
+	e.printStackTrace();
+}
+DXFDocument doc = parser.getDocument();
+DXFLayer layer = doc.getDXFLayer("layer_name");
+List<DXFCircle> arcs = layer.getDXFEntities(DXFConstants.ENTITY_TYPE_CIRCLE);

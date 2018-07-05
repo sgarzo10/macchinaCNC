@@ -19,18 +19,11 @@ import com.prova.gui.device.view.JoystickView;
 import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
 import com.prova.gui.device.view.QuadratoView;
+import com.prova.gui.settings.utility.ManageXml;
 
-import org.kabeja.dxf.DXFCircle;
-import org.kabeja.dxf.DXFConstants;
-import org.kabeja.dxf.DXFDocument;
-import org.kabeja.parser.DXFParser;
-import org.kabeja.parser.ParseException;
-import org.kabeja.parser.Parser;
-import org.kabeja.parser.ParserBuilder;
-import org.kabeja.dxf.DXFLayer;
-
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class ConnectionActivity extends AppCompatActivity {
@@ -51,6 +44,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private boolean initPosizioni;
     private boolean primo;
     private boolean resume;
+    private ManageXml manageXml;
 
     public BluetoothConnection getBluetooth() { return bluetooth;}
     public boolean isResume() { return resume; }
@@ -67,15 +61,6 @@ public class ConnectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*Parser parser = ParserBuilder.createDefaultParser();
-        try {
-            parser.parse("path/file.dxf", DXFParser.DEFAULT_ENCODING);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        DXFDocument doc = parser.getDocument();
-        DXFLayer layer = doc.getDXFLayer("layer_name");
-        List<DXFCircle> arcs = layer.getDXFEntities(DXFConstants.ENTITY_TYPE_CIRCLE);*/
         resume = false;
         setContentView(R.layout.activity_connection);
         input = new ArrayList<>();
@@ -98,6 +83,7 @@ public class ConnectionActivity extends AppCompatActivity {
         ImageButton trapezio = findViewById(R.id.trapezio);
         ImageButton sali = findViewById(R.id.sali);
         ImageButton scendi = findViewById(R.id.scendi);
+        ImageButton settings = findViewById(R.id.settings);
         LinearLayout linearLayoutJoystick = findViewById(R.id.joystick);
         RelativeLayout relativeLayoutQuadrato = findViewById(R.id.quadrato);
         rotazione_attiva = findViewById(R.id.rotazione_attiva);
@@ -116,6 +102,7 @@ public class ConnectionActivity extends AppCompatActivity {
         trapezio.setOnClickListener(ascoltatore);
         clear.setOnClickListener(ascoltatore);
         posiziona.setOnClickListener(ascoltatore);
+        settings.setOnClickListener(ascoltatore);
         sali.setOnTouchListener(ascoltatore);
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
@@ -154,6 +141,20 @@ public class ConnectionActivity extends AppCompatActivity {
     protected void onResume()
     {
         super.onResume();
+        manageXml = new ManageXml();
+        File f = new File(getFilesDir(), "config.xml");
+        if (f.exists()) {
+            try {
+                manageXml.setIst(openFileInput("config.xml"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            manageXml.readXml(true);
+        }
+        else{
+            manageXml.setXrp(getResources().getXml(R.xml.config));
+            manageXml.readXml(false);
+        }
         if (!primo)
             resume = true;
         if (rotazione_attiva.isChecked())
@@ -244,7 +245,7 @@ public class ConnectionActivity extends AppCompatActivity {
             lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.4f);
             testoDialog.setLayoutParams(lp);
             l.addView(testoDialog);
-            if (!aValue.equals("Riempi") && !aValue.contains("Reset")) {
+            if (!aValue.equals("Riempi") && !aValue.contains("Reset") && !aValue.equals("Materiale")) {
                 EditText inputDialog = new EditText(this);
                 lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
                 inputDialog.setLayoutParams(lp);

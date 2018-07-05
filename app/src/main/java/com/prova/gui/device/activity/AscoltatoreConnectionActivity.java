@@ -2,12 +2,14 @@ package com.prova.gui.device.activity;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import com.prova.bluetooth.R;
 import com.prova.gui.device.utility.DrawFigure;
-
+import com.prova.gui.settings.activity.SettingsActivity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +76,14 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 break;
             case R.id.reset:
                 app.getDialog().get(8).show();
+                break;
+            case R.id.settings:
+                try {
+                    Intent openPage1 = new Intent(app, SettingsActivity.class);
+                    app.startActivity(openPage1);
+                } catch (Exception e){
+                    Log.e("EXCEPTION FOUND", e.getMessage());
+                }
                 break;
         }
     }

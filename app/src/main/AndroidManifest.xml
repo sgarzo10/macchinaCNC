@@ -29,6 +29,11 @@
             android:screenOrientation="landscape">
         </activity>
 
+        <activity
+            android:name="com.prova.gui.settings.activity.SettingsActivity"
+            android:screenOrientation="landscape">
+        </activity>
+
     </application>
 
 </manifest>

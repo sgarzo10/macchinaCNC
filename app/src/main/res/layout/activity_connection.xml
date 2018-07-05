@@ -253,22 +253,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
                         android:text="@string/reset"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1.5"/>
 
-                    <RelativeLayout
+                    <ImageButton
+                        android:id="@+id/settings"
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:layout_weight="1"/>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="1"/>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="1"/>
+                        android:layout_weight="2.5"
+                        android:background="?android:selectableItemBackground"
+                        android:baselineAlignBottom="false"
+                        android:contentDescription="@string/settings"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/settings" />
 
                 </LinearLayout>
 
