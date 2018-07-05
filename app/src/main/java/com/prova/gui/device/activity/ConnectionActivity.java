@@ -86,10 +86,7 @@ public class ConnectionActivity extends AppCompatActivity {
         String nome = Objects.requireNonNull(getIntent().getExtras()).getString("nome");
         String mac = Objects.requireNonNull(getIntent().getExtras().getString("mac"));
         ascoltatore = new AscoltatoreConnectionActivity(this);
-        Button resetX = findViewById(R.id.resetx);
-        Button resetY = findViewById(R.id.resety);
-        Button resetZ = findViewById(R.id.resetz);
-        Button resetA = findViewById(R.id.reseta);
+        Button reset = findViewById(R.id.reset);
         Button clear = findViewById(R.id.clear);
         Button posiziona = findViewById(R.id.posiziona);
         ImageButton linea = findViewById(R.id.linea);
@@ -109,10 +106,7 @@ public class ConnectionActivity extends AppCompatActivity {
         textLunghezze = findViewById(R.id.text_lunghezze);
         linearLayoutJoystick.addView(joystickView);
         relativeLayoutQuadrato.addView(quadratoView);
-        resetX.setOnClickListener(ascoltatore);
-        resetY.setOnClickListener(ascoltatore);
-        resetZ.setOnClickListener(ascoltatore);
-        resetA.setOnClickListener(ascoltatore);
+        reset.setOnClickListener(ascoltatore);
         linea.setOnClickListener(ascoltatore);
         curva.setOnClickListener(ascoltatore);
         rettangolo.setOnClickListener(ascoltatore);
@@ -133,6 +127,7 @@ public class ConnectionActivity extends AppCompatActivity {
         createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza", "Profondità", "Riempi"});
         createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", new String[]{"Raggio", "Profondità", "Riempi"});
         createDialog("Scegli dimensioni trapezio", "Inserisci le dimensioni", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza", "Profondità", "Riempi"});
+        createDialog("RESET", "Scegli assi", new String[]{"Reset X", "Reset Y", "Reset Z"});
         mp = new MovePoint(this, joystickView);
         mp.start();
         TextView t = new TextView(this);
@@ -249,12 +244,12 @@ public class ConnectionActivity extends AppCompatActivity {
             lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.4f);
             testoDialog.setLayoutParams(lp);
             l.addView(testoDialog);
-            if (!Objects.equals(aValue, "Riempi")) {
+            if (!aValue.equals("Riempi") && !aValue.contains("Reset")) {
                 EditText inputDialog = new EditText(this);
                 lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
                 inputDialog.setLayoutParams(lp);
                 inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
-                if (!Objects.equals(aValue, "Profondità"))
+                if (aValue.equals("Profondità"))
                     inputDialog.setText("0");
                 else
                     inputDialog.setText("1");

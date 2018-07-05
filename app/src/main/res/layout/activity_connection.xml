@@ -249,31 +249,25 @@
                     android:weightSum="4">
 
                     <Button
-                        android:id="@+id/resetx"
+                        android:id="@+id/reset"
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/resetX"
+                        android:text="@string/reset"
                         android:layout_weight="1"/>
 
-                    <Button
-                        android:id="@+id/resety"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/resetY"
                         android:layout_weight="1"/>
 
-                    <Button
-                        android:id="@+id/resetz"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/resetZ"
                         android:layout_weight="1"/>
 
-                    <Button
-                        android:id="@+id/reseta"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/resetA"
                         android:layout_weight="1"/>
 
                 </LinearLayout>

@@ -32,10 +32,7 @@
     <string name="rot_on">Rotazione On</string>
     <string name="rot_off">Rotazione Off</string>
     <string name="cerca">cerca</string>
-    <string name="resetX">reset x</string>
-    <string name="resetY">reset y</string>
-    <string name="resetZ">reset z</string>
-    <string name="resetA">reset all</string>
+    <string name="reset">reset</string>
     <string name="clear">pulisci</string>
     <string name="posiziona">posiziona</string>
     <string name="output_posizioni">X: %1$d Y: %2$d Z: %3$d</string>

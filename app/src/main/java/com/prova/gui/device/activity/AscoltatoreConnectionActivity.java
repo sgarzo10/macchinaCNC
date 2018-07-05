@@ -51,22 +51,6 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             case R.id.posiziona:
                 app.getDialog().get(0).show();
                 break;
-            case R.id.resetx:
-                inviaMessaggio("rex");
-                break;
-            case R.id.resety:
-                inviaMessaggio("rey");
-                break;
-            case R.id.resetz:
-                inviaMessaggio("rez");
-                break;
-            case R.id.reseta:
-                ArrayList<String> messaggi = new ArrayList<>();
-                messaggi.add("rex");
-                messaggi.add("rey");
-                messaggi.add("rez");
-                addMex(messaggi);
-                break;
             case R.id.linea:
                 app.getDialog().get(1).show();
                 break;
@@ -87,6 +71,9 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 break;
             case R.id.trapezio:
                 app.getDialog().get(7).show();
+                break;
+            case R.id.reset:
+                app.getDialog().get(8).show();
                 break;
         }
     }
@@ -233,6 +220,9 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 case 7:
                     drawFigure.disegnaTrapezio(Integer.parseInt(app.getInput().get(20).getText().toString()), Integer.parseInt(app.getInput().get(21).getText().toString()), Integer.parseInt(app.getInput().get(22).getText().toString()), Integer.parseInt(app.getInput().get(23).getText().toString()), Integer.parseInt(app.getInput().get(24).getText().toString()), Integer.parseInt(app.getInput().get(25).getText().toString()), app.getCheck().get(4).isChecked());
                     break;
+                case 8:
+                    reset(app.getCheck().get(5).isChecked(), app.getCheck().get(6).isChecked(), app.getCheck().get(7).isChecked());
+                    break;
             }
         }
     }
@@ -256,5 +246,17 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             s[1] = "mxs1";
         }
         return s;
+    }
+
+    private void reset(boolean x, boolean y, boolean z){
+        ArrayList<String> messaggi = new ArrayList<>();
+        if (x)
+            messaggi.add("rex");
+        if(y)
+            messaggi.add("rey");
+        if (z)
+            messaggi.add("rez");
+        if (messaggi.size() > 0)
+            addMex(messaggi);
     }
 }
