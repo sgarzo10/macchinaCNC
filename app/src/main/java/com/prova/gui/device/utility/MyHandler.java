@@ -63,6 +63,13 @@ public class MyHandler extends android.os.Handler{
                             } else
                                 app.getBluetooth().invia("ssb");
                         }
+                        if (app.getAscoltatore().getMessaggi().get(0).contains("slx") || app.getAscoltatore().getMessaggi().get(0).contains("sly") || app.getAscoltatore().getMessaggi().get(0).contains("slz")){
+                            if (checkOtherMessagge(mex)) {
+                                app.addView("LUNGHEZZA ASSE " + app.getAscoltatore().getMessaggi().get(0).substring(2,3).toUpperCase() + " SETTATA");
+                                app.getAscoltatore().shiftMessaggi();
+                            } else
+                                app.getBluetooth().invia(app.getAscoltatore().getMessaggi().get(0));
+                        }
                         if (app.getAscoltatore().getMessaggi().get(0).equals("da")){
                             ricevuti = ricevuti + 1;
                             if (checkMessaggePosLung(mex)) {
@@ -172,7 +179,7 @@ public class MyHandler extends android.os.Handler{
             ok = true;
         if (app.getAscoltatore().getMessaggi().get(0).equals("rs") && mex.equals("sm"))
             ok = true;
-        if (app.getAscoltatore().getMessaggi().get(0).equals("ssb") && mex.equals("o"))
+        if ((app.getAscoltatore().getMessaggi().get(0).equals("ssb") || app.getAscoltatore().getMessaggi().get(0).contains("slx") || app.getAscoltatore().getMessaggi().get(0).contains("sly") || app.getAscoltatore().getMessaggi().get(0).contains("slz")) && mex.equals("o"))
             ok = true;
         return ok;
     }

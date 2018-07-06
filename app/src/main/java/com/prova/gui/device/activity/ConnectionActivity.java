@@ -1,5 +1,6 @@
 package com.prova.gui.device.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.AlertDialog;
@@ -19,7 +20,12 @@ import com.prova.gui.device.view.JoystickView;
 import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
 import com.prova.gui.device.view.QuadratoView;
+import com.prova.gui.settings.utility.ManageXml;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class ConnectionActivity extends AppCompatActivity {
@@ -40,6 +46,8 @@ public class ConnectionActivity extends AppCompatActivity {
     private boolean initPosizioni;
     private boolean primo;
     private boolean resume;
+    private ManageXml manageXml;
+    private Map<Integer, String> map;
 
     public BluetoothConnection getBluetooth() { return bluetooth;}
     public boolean isResume() { return resume; }
@@ -52,10 +60,16 @@ public class ConnectionActivity extends AppCompatActivity {
     public AscoltatoreConnectionActivity getAscoltatore() { return ascoltatore; }
     public TextView getPosizioni() { return posizioni; }
     public TextView getTextLunghezze() { return textLunghezze; }
+    public ManageXml getManageXml() { return manageXml; }
 
+    @SuppressLint("UseSparseArrays")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        map = new HashMap<>();
+        map.put(0, "x");
+        map.put(1, "y");
+        map.put(2, "z");
         resume = false;
         setContentView(R.layout.activity_connection);
         input = new ArrayList<>();
@@ -102,8 +116,8 @@ public class ConnectionActivity extends AppCompatActivity {
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
         createDialog("Scegli posizione", "Inserisci le coordinate", new String[]{"X", "Y", "Z"});
-        createDialog("Scegli parametri linea", "Inserisci i parametri", new String[]{"Lunghezza", "Angolo"});
-        createDialog("Scegli parametri curva", "Inserisci i parametri", new String[]{"Raggio", "Quadrante"});
+        createDialog("Scegli parametri linea", "Inserisci i parametri", new String[]{"Lunghezza", "Angolo", "Profondità"});
+        createDialog("Scegli parametri curva", "Inserisci i parametri", new String[]{"Raggio", "Quadrante", "Profondità"});
         createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza", "Profondità", "Riempi"});
         createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2", "Profondità", "Riempi"});
         createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza", "Profondità", "Riempi"});
@@ -136,8 +150,24 @@ public class ConnectionActivity extends AppCompatActivity {
     protected void onResume()
     {
         super.onResume();
-        if (!primo)
+        manageXml = new ManageXml();
+        File f = new File(getFilesDir(), "config.xml");
+        if (f.exists()) {
+            try {
+                manageXml.setIst(openFileInput("config.xml"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            manageXml.readXml(true);
+        }
+        else{
+            manageXml.setXrp(getResources().getXml(R.xml.config));
+            manageXml.readXml(false);
+        }
+        if (!primo) {
             resume = true;
+            checkLunghezze(false);
+        }
         if (rotazione_attiva.isChecked())
             rotazione_attiva.setText(getResources().getString(R.string.rot_on));
         else
@@ -189,13 +219,11 @@ public class ConnectionActivity extends AppCompatActivity {
                     }
                     else {
                         if (!initPosizioni) {
-                            ascoltatore.inviaMessaggio("da");
+                            checkLunghezze(true);
                             initPosizioni = true;
                             bluetooth.getH().setFine();
                             getValoriInziaili();
                         }
-                        else
-                            ascoltatore.getMessaggi().clear();
                     }
                 }
             }
@@ -231,7 +259,7 @@ public class ConnectionActivity extends AppCompatActivity {
                 lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
                 inputDialog.setLayoutParams(lp);
                 inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
-                if (aValue.equals("Profondità"))
+                if (!aValue.equals("Profondità"))
                     inputDialog.setText("0");
                 else
                     inputDialog.setText("1");
@@ -247,5 +275,19 @@ public class ConnectionActivity extends AppCompatActivity {
             }
         }
         return l;
+    }
+
+    private void checkLunghezze(boolean posizioni){
+        ArrayList<String> messaggi = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (!(ascoltatore.getLunghezze()[i] == manageXml.getLunghezze().get(i)))
+                messaggi.add("sl" + map.get(i) + manageXml.getLunghezze().get(i));
+        }
+        if (messaggi.size() > 0)
+            messaggi.add("la");
+        if (posizioni)
+            messaggi.add(0, "da");
+        if (messaggi.size() > 0)
+            ascoltatore.addMex(messaggi);
     }
 }

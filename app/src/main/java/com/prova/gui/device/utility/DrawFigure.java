@@ -18,6 +18,8 @@ public class DrawFigure {
         int giri = 1;
         int init_x = ascoltatore.getPosizioni()[0];
         int init_y = ascoltatore.getPosizioni()[1];
+        altezza = altezza - ascoltatore.getApp().getManageXml().getDiametro();
+        larghezza = larghezza - ascoltatore.getApp().getManageXml().getDiametro();
         if (riempi)
             giri = Math.min(altezza, larghezza);
         for (int j = 0; j < profondita; j++) {
@@ -47,6 +49,9 @@ public class DrawFigure {
         long angolo2 = Math.round(Math.toDegrees(Math.acos((base * base + lato2 * lato2 - lato1 * lato1) / (2d * base * lato2))));
         long angolo3 = 180 - angolo1 - angolo2;
         if (!(angolo1 == 0 || angolo2 == 0 || angolo3 == 0)) {
+            base = base - ascoltatore.getApp().getManageXml().getDiametro();
+            lato1 = lato1 - ascoltatore.getApp().getManageXml().getDiametro();
+            lato2 = lato2 - ascoltatore.getApp().getManageXml().getDiametro();
             if (riempi)
                 giri = Math.min(Math.min(base, lato1), lato2);
             for (int j = 0; j < profondita; j++) {
@@ -74,6 +79,8 @@ public class DrawFigure {
         int init_y = ascoltatore.getPosizioni()[1];
         if (diagonale >= altezza) {
             long angolo = Math.round(90 - Math.toDegrees(Math.acos(altezza / diagonale)));
+            base = base - ascoltatore.getApp().getManageXml().getDiametro();
+            diagonale = diagonale - ascoltatore.getApp().getManageXml().getDiametro();
             if (riempi)
                 giri = Math.min(base, diagonale);
             for (int j = 0; j < profondita; j++) {
@@ -105,6 +112,10 @@ public class DrawFigure {
             double angolo2 = Math.toDegrees(Math.acos(altezza / lato2));
             long tot = baseMinore + Math.round(lato1 * Math.sin(Math.toRadians(angolo1))) + Math.round(lato2 * Math.sin(Math.toRadians(angolo2)));
             if (tot == baseMaggiore) {
+                baseMaggiore = baseMaggiore - ascoltatore.getApp().getManageXml().getDiametro();
+                lato1 = lato1 - ascoltatore.getApp().getManageXml().getDiametro();
+                baseMinore = baseMinore - ascoltatore.getApp().getManageXml().getDiametro();
+                lato2 = lato2 - ascoltatore.getApp().getManageXml().getDiametro();
                 if (riempi)
                     giri = Math.min(Math.min(Math.min(baseMaggiore, lato1), baseMinore), lato2);
                 for (int j = 0; j < profondita; j++) {
@@ -149,7 +160,32 @@ public class DrawFigure {
         ascoltatore.addMex(messaggi);
     }
 
-    public ArrayList<String> disegnaSemiCerchio(int raggio, String primo, String secondo){
+    public ArrayList<String> disegnaLineaProfonda(int lunghezza, long angolo, int profondita) {
+        ArrayList<String> messaggi = new ArrayList<>();
+        int init_x = ascoltatore.getPosizioni()[0];
+        int init_y = ascoltatore.getPosizioni()[1];
+        messaggi.add("mzs1");
+        lunghezza = lunghezza - ascoltatore.getApp().getManageXml().getDiametro();
+        for (int j = 0; j < profondita; j++) {
+            ArrayList<String> messaggi2d = disegnaLinea(lunghezza, angolo);
+            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
+        }
+        return messaggi;
+    }
+
+    public ArrayList<String> disegnaSemiCerchioProfondo(int raggio, String mex1, String mex2, int profondita) {
+        ArrayList<String> messaggi = new ArrayList<>();
+        int init_x = ascoltatore.getPosizioni()[0];
+        int init_y = ascoltatore.getPosizioni()[1];
+        messaggi.add("mzs1");
+        for (int j = 0; j < profondita; j++) {
+            ArrayList<String> messaggi2d = disegnaSemiCerchio(raggio, mex1, mex2);
+            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
+        }
+        return messaggi;
+    }
+
+    private ArrayList<String> disegnaSemiCerchio(int raggio, String primo, String secondo){
         ArrayList<String> messaggi = new ArrayList<>();
         int myRaggio = raggio;
         for(int i = 1; i <= raggio; i++){
@@ -168,7 +204,7 @@ public class DrawFigure {
         return messaggi;
     }
 
-    public ArrayList<String> disegnaLinea(int lunghezza, long angolo) {
+    private ArrayList<String> disegnaLinea(int lunghezza, long angolo) {
         ArrayList<String> messaggi = new ArrayList<>();
         if (angolo == 0 || angolo == 90 || angolo == 180 || angolo == 270) {
             String messaggio = "mxs1";
