@@ -23,7 +23,7 @@ Sostituire bluetooth_seriale con Serial1
 rimuovere SoftwareSerial
 abilitare reset all all'avvio
 */
-#define LUNGHEZZA_X 309 //lunghezza asse x in millimetri
+#define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define ENA_MOT_X 2 //define Enable Pin
 #define DIR_MOT_X 3 //define Direction
 #define PUL_MOT_X 4 //define Pulse pin
@@ -35,7 +35,7 @@ abilitare reset all all'avvio
 #define DIR_MOT_Y 9 //define Direction
 #define PUL_MOT_Y 10 //define Pulse pin
 #define SENS_MOT_Y 11 //define sensor pin
-#define LUNGHEZZA_Z 200 //lunghezza asse z in millimetri
+#define LUNGHEZZA_Z 135 //lunghezza asse z in millimetri
 #define ENA_MOT_Z 12 //define Enable Pin
 #define DIR_MOT_Z 13 //define Direction
 #define PUL_MOT_Z 14 //define Pulse pin
@@ -142,8 +142,8 @@ void aggiorna_misura(movimento m){
   millimetri_totali[indice] = totali;
 }
 
-void sposta(String command, boolean aggiorna, boolean first){
-  movimento m = lettura_parametri(command, first);
+void sposta(String command, boolean aggiorna, boolean reset){
+  movimento m = lettura_parametri(command, reset);
   if (m.millimetri != 0){
     for(int i=0;i<m.millimetri;i++)
       sposta_millimetro(m.motore, m.direzione, m.velocita);
@@ -265,34 +265,27 @@ void bluetooth_command(String command){
     setta_seriale(command.substring(2,command.length()));
 }
 
-movimento lettura_parametri(String command, boolean first){
+movimento lettura_parametri(String command, boolean reset){
   String direzione;
   String millimetri;
   String velocita;
   String motore;
+  boolean vel = false;
   boolean ok = true;
   int indice = -1;
   movimento m;
-  m.velocita=0;
+  m.velocita=32;
   m.millimetri=0;
   m.motore="";
   m.direzione=NULL;
-  /*int ind = command.indexOf(" ");
-  if (ind > 0){
-    motore = command.substring(0, ind);
-    int ind1 = command.indexOf(" ", ind+1);
-    if (ind1 > 0){
-      direzione = command.substring(ind+1, ind1);
-      int ind2 = command.indexOf(" ", ind1+1);
-      if (ind2 > 0){
-        millimetri = command.substring(ind1+1,ind2);
-        velocita = command.substring(ind2+1,command.length());
-      }
-    }
-  }*/
   motore = command.substring(0,1);
   direzione = command.substring(1,2);
   millimetri = command.substring(2,command.length());
+  if (millimetri.indexOf(".") > 0){
+    velocita = millimetri.substring(millimetri.indexOf(".") + 1,millimetri.length());
+    millimetri = millimetri.substring(0, millimetri.indexOf("."));
+    vel = true;
+  }
   if (motore == "x" || motore == "y" || motore == "z"){
     m.motore = motore;
     if (motore == "x")
@@ -320,12 +313,11 @@ movimento lettura_parametri(String command, boolean first){
     my_print("e", true);
     ok = false;
     }
-  /*  
-  if (velocita.toInt() == 0 && ok){
+  if (vel && velocita.toInt() < 32 && ok){
     my_print("e", true);
     ok = false;
-    }*/
-  if (ok && !first){
+    }
+  if (ok && !reset){
     if (m.direzione){
        int mancante = lunghezze[indice] - millimetri_totali[indice];
        if (millimetri.toInt() > mancante)
@@ -339,16 +331,11 @@ movimento lettura_parametri(String command, boolean first){
        else
           m.millimetri = millimetri.toInt();
     }
-    /*if (velocita.toInt() < 32)
-      m.velocita = 32;
-    else
-      m.velocita = velocita.toInt();*/
-    m.velocita=32;
+    if (vel)
+      m.velocita = velocita.toInt();
   } else {
-    if (first){
+    if (reset)
       m.millimetri = millimetri.toInt();
-      m.velocita=32;
-    }
   }
   return m;
 }

@@ -99,4 +99,25 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
             getHolder().unlockCanvasAndPost(canvas);
         }
     }
+
+    public void drawLine(String asseS, int old, int asse){
+        int diff = Math.abs(old - app.getAscoltatore().getPosizioni()[asse]);
+        if (diff > 1) {
+            for (int i = 0; i < diff; i++) {
+                if (asseS.equals("x")) {
+                    if (old - app.getAscoltatore().getPosizioni()[asse] < 0)
+                        drawPoint(old + i, app.getAscoltatore().getPosizioni()[1]);
+                    else
+                        drawPoint(old - i, app.getAscoltatore().getPosizioni()[1]);
+                } else {
+                    if (old - app.getAscoltatore().getPosizioni()[asse] < 0)
+                        drawPoint(app.getAscoltatore().getPosizioni()[0], old + i);
+                    else
+                        drawPoint(app.getAscoltatore().getPosizioni()[0], old - i);
+                }
+            }
+        } else
+            drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+
+    }
 }

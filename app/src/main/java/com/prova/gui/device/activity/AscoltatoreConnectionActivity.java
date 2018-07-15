@@ -144,10 +144,14 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             app.getBluetooth().invia(messaggi.get(0));
     }
 
-    public void simulaAvanzamento(String messaggio, boolean addView){
+    public void simulaAvanzamento(String messaggio, boolean addView, int old){
         String asse = messaggio.substring(1, 2);
         String dir = messaggio.substring(2, 3);
-        int mm = Integer.parseInt(messaggio.substring(3, messaggio.length()));
+        int mm;
+        if (!messaggio.substring(3, messaggio.length()).contains("."))
+            mm = Integer.parseInt(messaggio.substring(3, messaggio.length()));
+        else
+            mm = Integer.parseInt(messaggio.substring(3, messaggio.indexOf(".")));
         if (dir.equals("s")) {
             posizioni[map.get(asse)] = posizioni[map.get(asse)] + mm;
             if (posizioni[map.get(asse)] > lunghezze[map.get(asse)])
@@ -160,7 +164,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         if (addView) {
             app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), posizioni[0], posizioni[1], posizioni[2]));
             if (asse.equals("x") || asse.equals("y"))
-                app.getQuadratoView().drawPoint(posizioni[0], posizioni[1]);
+                app.getQuadratoView().drawLine(asse, old, map.get(asse));
             else
                 app.getQuadratoView().pulisci();
         }
@@ -168,7 +172,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
 
     public void simulaDisegno(ArrayList<String> messaggi){
         for (int i = 0; i < messaggi.size(); i++)
-            simulaAvanzamento(messaggi.get(i), false);
+            simulaAvanzamento(messaggi.get(i), false, 0);
     }
 
     public ArrayList<String> posiziona(int x, int y, int z){
@@ -183,10 +187,12 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             int coordinata = coordinate[i];
             if (coordinata > lunghezze[i])
                 coordinata = lunghezze[i];
-            if (coordinata > posizioni[i])
-                messaggi.add("m" + map.get(i) + "s" + Integer.toString(coordinata - posizioni[i]));
-            else
-                messaggi.add("m" + map.get(i) + "g" + Integer.toString(posizioni[i] - coordinata));
+            if (coordinata - posizioni[i] > 0) {
+                if (coordinata > posizioni[i])
+                    messaggi.add("m" + map.get(i) + "s" + Integer.toString(coordinata - posizioni[i]));
+                else
+                    messaggi.add("m" + map.get(i) + "g" + Integer.toString(posizioni[i] - coordinata));
+            }
         }
         return  messaggi;
     }
@@ -241,20 +247,20 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     private String[] calcolaStringhe(int quadrante){
         String [] s = {"", ""};
         if (quadrante == 1) {
-            s[0] = "mxg1";
-            s[1] = "myg1";
+            s[0] = "mxg";
+            s[1] = "myg";
         }
         if (quadrante == 2) {
-            s[0] = "myg1";
-            s[1] = "mxs1";
+            s[0] = "myg";
+            s[1] = "mxs";
         }
         if (quadrante == 3) {
-            s[0] = "mxs1";
-            s[1] = "mys1";
+            s[0] = "mxs";
+            s[1] = "mys";
         }
         if (quadrante == 4) {
-            s[0] = "mys1";
-            s[1] = "mxg1";
+            s[0] = "mys";
+            s[1] = "mxg";
         }
         return s;
     }

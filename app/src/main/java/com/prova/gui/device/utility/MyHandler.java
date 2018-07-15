@@ -41,7 +41,7 @@ public class MyHandler extends android.os.Handler{
                     if (endOfLineIndex > 0) {
                         String mex = sb.substring(0, endOfLineIndex);
                         sb.delete(0, sb.length());
-                        //Log.i("RECIVE", mex);
+                        Log.i("RECIVE", mex);
                         if (app.getAscoltatore().getMessaggi().get(0).equals("ra")) {
                             if (checkOtherMessagge(mex)) {
                                 app.addView("MANDRINO ATTIVATO");
@@ -131,6 +131,7 @@ public class MyHandler extends android.os.Handler{
                             ok = 0;
                         }
                         if (app.getAscoltatore().getMessaggi().get(0).contains("mzg") || app.getAscoltatore().getMessaggi().get(0).contains("mzs") || app.getAscoltatore().getMessaggi().get(0).contains("mxg") || app.getAscoltatore().getMessaggi().get(0).contains("mxs") || app.getAscoltatore().getMessaggi().get(0).contains("myg") || app.getAscoltatore().getMessaggi().get(0).contains("mys")){
+                            int old = app.getAscoltatore().getPosizioni()[map.get(app.getAscoltatore().getMessaggi().get(0).substring(1,2))];
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
                                 app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
@@ -139,12 +140,12 @@ public class MyHandler extends android.os.Handler{
                             if (ok == 1) {
                                 app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
                                 if (mex.substring(0,1).equals("x") || mex.substring(0,1).equals("y"))
-                                    app.getQuadratoView().drawPoint(app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1]);
+                                    app.getQuadratoView().drawLine(mex.substring(0,1), old, map.get(mex.substring(0,1)));
                                 else
                                     app.getQuadratoView().pulisci();
                             }
                             else
-                                app.getAscoltatore().simulaAvanzamento(app.getAscoltatore().getMessaggi().get(0), true);
+                                app.getAscoltatore().simulaAvanzamento(app.getAscoltatore().getMessaggi().get(0), true, old);
                             app.getAscoltatore().shiftMessaggi();
                             ok = 0;
                         }

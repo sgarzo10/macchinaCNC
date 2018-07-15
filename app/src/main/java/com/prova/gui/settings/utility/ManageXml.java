@@ -16,13 +16,13 @@ public class ManageXml {
     private FileOutputStream ost;
     private XmlPullParser xrp;
     private int diametro;
-    private String materiale;
+    private int velocita;
     private ArrayList<Integer> lunghezze;
 
     public ManageXml(){
         lunghezze = new ArrayList<>(3);
         diametro = 0;
-        materiale = "";
+        velocita = 0;
     }
 
     public void writeXml() {
@@ -36,7 +36,7 @@ public class ManageXml {
             xmlSerializer.attribute("", "diametro", Integer.toString(diametro));
             xmlSerializer.endTag("", "mandrino");
             xmlSerializer.startTag("", "materiale");
-            xmlSerializer.attribute("", "tipo", materiale);
+            xmlSerializer.attribute("", "velocita", Integer.toString(velocita));
             xmlSerializer.endTag("", "materiale");
             xmlSerializer.startTag("", "lunghezze");
             xmlSerializer.attribute("", "x", Integer.toString(lunghezze.get(0)));
@@ -66,7 +66,7 @@ public class ManageXml {
                         if(name.equals("mandrino"))
                             diametro = Integer.parseInt(xrp.getAttributeValue(0));
                         if(name.equals("materiale"))
-                            materiale = xrp.getAttributeValue(0);
+                            velocita = Integer.parseInt(xrp.getAttributeValue(0));
                         if(name.equals("lunghezze")){
                             lunghezze.add(Integer.parseInt(xrp.getAttributeValue(0)));
                             lunghezze.add(Integer.parseInt(xrp.getAttributeValue(1)));
@@ -97,9 +97,9 @@ public class ManageXml {
 
     public int getDiametro() { return diametro; }
 
-    public String getMateriale() { return materiale; }
+    public int getVelocita() { return velocita; }
 
     public void setDiametro(int diametro) { this.diametro = diametro; }
 
-    public void setMateriale(String materiale) { this.materiale = materiale; }
+    public void setVelocita(int velocita) { this.velocita = velocita; }
 }

@@ -61,16 +61,17 @@
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="0.3"
-            android:text="@string/materiale"
+            android:text="@string/velocita"
             android:textAlignment="center"
             android:gravity="center" />
 
-        <Spinner
-            android:id="@+id/materiale"
+        <EditText
+            android:id="@+id/velocita"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="0.3"
-            android:entries="@array/materiali" />
+            android:inputType="number"
+            tools:ignore="LabelFor" />
 
         <RelativeLayout
             android:layout_width="0dip"

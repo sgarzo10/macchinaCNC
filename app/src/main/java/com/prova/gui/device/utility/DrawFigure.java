@@ -150,10 +150,10 @@ public class DrawFigure {
             for (int i = raggio; i > raggio - giri; i--) {
                 if (i < raggio)
                     messaggi2d.add("myg1");
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mxg1", "myg1"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "myg1", "mxs1"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mxs1", "mys1"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mys1", "mxg1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mxg", "myg"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "myg", "mxs"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mxs", "mys"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mys", "mxg"));
             }
             messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
@@ -191,31 +191,29 @@ public class DrawFigure {
         for(int i = 1; i <= raggio; i++){
             long y = Math.round(Math.sqrt(raggio*raggio - i*i ));
             if (y == myRaggio)
-                messaggi.add(primo);
+                messaggi.add(primo + "1");
             if (y < myRaggio) {
-                for (int j = 0; j < myRaggio - y; j++)
-                    messaggi.add(secondo);
-                messaggi.add(primo);
+                messaggi.add(aggiungiVelocita(secondo + Long.toString(myRaggio - y)));
+                messaggi.add(primo + "1");
                 myRaggio = myRaggio - (myRaggio - (int)y);
             }
         }
-        for (int j = 0; j < myRaggio; j++)
-            messaggi.add(secondo);
+        if (myRaggio > 0)
+            messaggi.add(aggiungiVelocita(secondo + Integer.toString(myRaggio)));
         return messaggi;
     }
 
     private ArrayList<String> disegnaLinea(int lunghezza, long angolo) {
         ArrayList<String> messaggi = new ArrayList<>();
         if (angolo == 0 || angolo == 90 || angolo == 180 || angolo == 270) {
-            String messaggio = "mxg1";
+            String messaggio = "mxg";
             if (angolo == 90)
-                messaggio = "mys1";
+                messaggio = "mys";
             if (angolo == 180)
-                messaggio = "mxs1";
+                messaggio = "mxs";
             if (angolo == 270)
-                messaggio = "myg1";
-            for (int i = 0; i < lunghezza; i++)
-                messaggi.add(messaggio);
+                messaggio = "myg";
+            messaggi.add(aggiungiVelocita(messaggio + Integer.toString(lunghezza)));
         } else {
             double base = 0;
             double coeff = Math.abs(Math.tan(Math.toRadians(angolo)));
@@ -223,29 +221,29 @@ public class DrawFigure {
             String messaggioY = "";
             if (angolo > 0 && angolo < 90){
                 messaggioX = "mxg1";
-                messaggioY = "mys1";
+                messaggioY = "mys";
                 base = lunghezza*Math.cos(Math.toRadians(angolo));
             }
             if (angolo > 90 && angolo < 180){
                 messaggioX = "mxs1";
-                messaggioY = "mys1";
+                messaggioY = "mys";
                 base = lunghezza*Math.cos(Math.toRadians(180 - angolo));
             }
             if (angolo > 180 && angolo < 270){
                 messaggioX = "mxs1";
-                messaggioY = "myg1";
+                messaggioY = "myg";
                 base = lunghezza*Math.cos(Math.toRadians(angolo - 180));
             }
             if (angolo > 270 && angolo < 359){
                 messaggioX = "mxg1";
-                messaggioY = "myg1";
+                messaggioY = "myg";
                 base = lunghezza*Math.cos(Math.toRadians(360 - angolo));
             }
             long currentY = 0;
             for(int i = 1; i <= Math.round(base); i++){
                 long y = Math.round(coeff * i);
-                for (int j = 0; j < y - currentY; j++)
-                    messaggi.add(messaggioY);
+                if (y - currentY > 0)
+                    messaggi.add(aggiungiVelocita(messaggioY + Long.toString(y - currentY)));
                 currentY = y;
                 messaggi.add(messaggioX);
             }
@@ -262,5 +260,11 @@ public class DrawFigure {
             messaggi.addAll(posiziona);
         }
         return messaggi;
+    }
+
+    private String aggiungiVelocita(String message){
+        if (Integer.parseInt(message.substring(3, message.length())) > 1)
+            message = message + "." + Integer.toString(ascoltatore.getApp().getManageXml().getVelocita());
+        return message;
     }
 }

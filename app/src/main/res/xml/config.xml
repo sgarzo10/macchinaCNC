@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings>
     <mandrino diametro="10"/>
-	<materiale tipo="A"/>
-	<lunghezze x="309" y = "309" z = "200"/>
+	<materiale velocita="32"/>
+	<lunghezze x="450" y = "309" z = "135"/>
 </settings>
