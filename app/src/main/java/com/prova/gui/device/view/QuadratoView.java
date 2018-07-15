@@ -59,6 +59,7 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
         if (maxX != 0) {
             x = (x * (getWidth() - 10)) / maxX;
             x = x + 5;
+            x = getWidth() - x;
         }
         if (maxY != 0) {
             y = (y * (getHeight() - 12)) / maxY;

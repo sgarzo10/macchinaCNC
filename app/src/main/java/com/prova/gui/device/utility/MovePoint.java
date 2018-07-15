@@ -30,10 +30,10 @@ public class MovePoint extends Thread {
         //Log.i("Y CALCOLATA", Integer.toString(Math.round(myY)));
         if (Math.round(myX) > 0){
             for (int i = 0; i < Math.round(myX); i++)
-                messaggi.add("mxs1");
+                messaggi.add("mxg1");
         } else{
             for (int i = Math.round(myX); i < 0; i++)
-                messaggi.add("mxg1");
+                messaggi.add("mxs1");
         }
         if (Math.round(myY) > 0){
             for (int i = 0; i < Math.round(myY); i++)

@@ -1,27 +1,28 @@
 #include <SoftwareSerial.h>
-
 /*
-#define LUNGHEZZA_X 309 //lunghezza asse x in millimetri
+Arduino MEGA 2560
+#define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define ENA_MOT_X 2 //define Enable Pin
 #define DIR_MOT_X 3 //define Direction
 #define PUL_MOT_X 4 //define Pulse pin
-#define SENS_MOT_X 22 //define sensor pin
+#define SENS_MOT_X 1 //define sensor pin
 #define LUNGHEZZA_Y 309 //lunghezza asse y in millimetri
 #define ENA_MOT_Y 5 //define Enable Pin
 #define DIR_MOT_Y 6 //define Direction
 #define PUL_MOT_Y 7 //define Pulse pin
-#define SENS_MOT_Y 24 //define sensor pin
-#define LUNGHEZZA_Z 200 //lunghezza asse z in millimetri
+#define SENS_MOT_Y 2 //define sensor pin
+#define LUNGHEZZA_Z 135 //lunghezza asse z in millimetri
 #define ENA_MOT_Z 8 //define Enable Pin
 #define DIR_MOT_Z 9 //define Direction
 #define PUL_MOT_Z 10 //define Pulse pin
-#define SENS_MOT_Z 26 //define sensor pin
+#define SENS_MOT_Z 12 //define sensor pin
 #define MANDRINO 23 // define mandrino pin
-#define LED 25 // define led pin
 #define BLUETOOTH_TX 18 //define bluetooth tx pin
 #define BLUETOOTH_RX 19 //define bluetooth rx pin
- */
-
+Sostituire bluetooth_seriale con Serial1
+rimuovere SoftwareSerial
+abilitare reset all all'avvio
+*/
 #define LUNGHEZZA_X 309 //lunghezza asse x in millimetri
 #define ENA_MOT_X 2 //define Enable Pin
 #define DIR_MOT_X 3 //define Direction
@@ -40,7 +41,6 @@
 #define PUL_MOT_Z 14 //define Pulse pin
 #define SENS_MOT_Z 15 //define sensor pin
 #define MANDRINO 16 // define mandrino pin
-#define LED 17 // define led pin
 
 struct movimento {
   String motore;
@@ -49,7 +49,7 @@ struct movimento {
   int velocita;
 };
 
-SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
+SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
 int millimetri_totali[3] = {0,0,0};
 int lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
 boolean seriale = true;
@@ -57,24 +57,19 @@ boolean seriale = true;
 void setup() {
   if (seriale)
     Serial.begin(9600);
-  bluetooth.begin(9600);
+  bluetooth_seriale.begin(9600);
   pinMode (PUL_MOT_X, OUTPUT);
   pinMode (DIR_MOT_X, OUTPUT);
   pinMode (ENA_MOT_X, OUTPUT);
-  pinMode (SENS_MOT_X, INPUT);
   pinMode (PUL_MOT_Y, OUTPUT);
   pinMode (DIR_MOT_Y, OUTPUT);
   pinMode (ENA_MOT_Y, OUTPUT);
-  pinMode (SENS_MOT_Y, INPUT);
   pinMode (PUL_MOT_Z, OUTPUT);
   pinMode (DIR_MOT_Z, OUTPUT);
   pinMode (ENA_MOT_Z, OUTPUT);
-  pinMode (SENS_MOT_Z, INPUT);
   pinMode (MANDRINO, OUTPUT);
-  pinMode (LED, OUTPUT);
   Serial.println("---------------  START  ---------------");
-  reset("a");
-  digitalWrite(LED,HIGH);
+  //reset("a");
 }
 
 void loop() {
@@ -85,8 +80,8 @@ void loop() {
 
 String bluetooth_read(){
   String lettura = "";
-  while (bluetooth.available()){
-    lettura += (char)bluetooth.read();
+  while (bluetooth_seriale.available()){
+    lettura += (char)bluetooth_seriale.read();
     delay(20);
   }
   return lettura;
@@ -130,7 +125,7 @@ void sposta_millimetro(String motore, boolean direzione, int velocita){
   }
   if (motore == "z"){
     pin = ENA_MOT_Z;
-    giri = 640;
+    giri = 427;
   }
   digitalWrite(pin,true);
   for(int i=0;i<giri;i++)
@@ -147,8 +142,8 @@ void aggiorna_misura(movimento m){
   millimetri_totali[indice] = totali;
 }
 
-void sposta(String command, boolean aggiorna){
-  movimento m = lettura_parametri(command);
+void sposta(String command, boolean aggiorna, boolean first){
+  movimento m = lettura_parametri(command, first);
   if (m.millimetri != 0){
     for(int i=0;i<m.millimetri;i++)
       sposta_millimetro(m.motore, m.direzione, m.velocita);
@@ -255,7 +250,7 @@ void bluetooth_command(String command){
   Serial.print("MESSAGGIO RICEVUTO: "); 
   Serial.println(command);
   if (command.substring(0,1) == "m")
-    sposta(command.substring(1,command.length()), true);
+    sposta(command.substring(1,command.length()), true, false);
   if (command.substring(0,1) == "r" && !(command.substring(1,2) == "e"))
     attiva_mandrino(command.substring(1,command.length()));
   if (command.substring(0,1) == "d")
@@ -270,7 +265,7 @@ void bluetooth_command(String command){
     setta_seriale(command.substring(2,command.length()));
 }
 
-movimento lettura_parametri(String command){
+movimento lettura_parametri(String command, boolean first){
   String direzione;
   String millimetri;
   String velocita;
@@ -326,12 +321,11 @@ movimento lettura_parametri(String command){
     ok = false;
     }
   /*  
-  if (velocita.toInt() == 0){
-    my_print("LA VELOCITA DEVE ESSERE UN NUMERO MAGGIORE DI 0, HAI INSERITO: ", false);
-    my_print(velocita, true);
+  if (velocita.toInt() == 0 && ok){
+    my_print("e", true);
     ok = false;
     }*/
-  if (ok){
+  if (ok && !first){
     if (m.direzione){
        int mancante = lunghezze[indice] - millimetri_totali[indice];
        if (millimetri.toInt() > mancante)
@@ -350,18 +344,23 @@ movimento lettura_parametri(String command){
     else
       m.velocita = velocita.toInt();*/
     m.velocita=32;
+  } else {
+    if (first){
+      m.millimetri = millimetri.toInt();
+      m.velocita=32;
+    }
   }
   return m;
 }
 
 void reset(String command){
   if (command == "x" || command == "y" || command == "z" || command == "a"){
+    if (command == "z" || command == "a")
+      reset_motore("z");
     if (command == "x" || command == "a")
       reset_motore("x");
     if (command == "y" || command == "a")
       reset_motore("y");
-    if (command == "z" || command == "a")
-      reset_motore("z");
   }
   else
     my_print("e", true);
@@ -375,13 +374,10 @@ void reset_motore(String asse){
     pin = SENS_MOT_X;
   if (asse == "y")
     pin = SENS_MOT_Y;
-  if (asse == "z"){
+  if (asse == "z")
     pin = SENS_MOT_Z;
-    dir = "s";
-  }else
-    dir = "g";
-  /*while(!digitalRead(pin))
-    sposta(asse+dir+"1", false);*/
+  while(analogRead(pin) < 1019)
+    sposta(asse+"g1", false, true);
   millimetri_totali[indice] = 0;
   my_print("r", false);
   my_print(asse, true);
@@ -396,11 +392,11 @@ void my_print(String s, boolean new_line){
   }
   else{
     if (new_line){
-      bluetooth.println(s);
+      bluetooth_seriale.println(s);
       delay(100);
     }
     else
-      bluetooth.print(s);
+      bluetooth_seriale.print(s);
   }
 }
 

@@ -130,7 +130,7 @@ public class MyHandler extends android.os.Handler{
                                 app.getBluetooth().invia(app.getAscoltatore().getMessaggi().get(0));
                             ok = 0;
                         }
-                        if (app.getAscoltatore().getMessaggi().get(0).equals("mzg1") || app.getAscoltatore().getMessaggi().get(0).equals("mzs1") || app.getAscoltatore().getMessaggi().get(0).equals("mxg1") || app.getAscoltatore().getMessaggi().get(0).equals("mxs1") || app.getAscoltatore().getMessaggi().get(0).equals("myg1") || app.getAscoltatore().getMessaggi().get(0).equals("mys1")){
+                        if (app.getAscoltatore().getMessaggi().get(0).contains("mzg") || app.getAscoltatore().getMessaggi().get(0).contains("mzs") || app.getAscoltatore().getMessaggi().get(0).contains("mxg") || app.getAscoltatore().getMessaggi().get(0).contains("mxs") || app.getAscoltatore().getMessaggi().get(0).contains("myg") || app.getAscoltatore().getMessaggi().get(0).contains("mys")){
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
                                 app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));

@@ -26,7 +26,7 @@ public class DrawFigure {
             ArrayList<String> messaggi2d = new ArrayList<>();
             for (int i = 0; i < giri; i = i + 2) {
                 if (i > 0) {
-                    messaggi2d.add("mxs1");
+                    messaggi2d.add("mxg1");
                     messaggi2d.add("mys1");
                 }
                 messaggi2d.addAll(disegnaLinea(larghezza - i, 0));
@@ -58,7 +58,7 @@ public class DrawFigure {
                 ArrayList<String> messaggi2d = new ArrayList<>();
                 for (int i = 0; i < giri; i = i + 2) {
                     if (i > 0) {
-                        messaggi2d.add("mxs1");
+                        messaggi2d.add("mxg1");
                         messaggi2d.add("mys1");
                     }
                     messaggi2d.addAll(disegnaLinea(base - i, 0));
@@ -87,7 +87,7 @@ public class DrawFigure {
                 ArrayList<String> messaggi2d = new ArrayList<>();
                 for (int i = 0; i < giri; i = i + 2) {
                     if (i > 0) {
-                        messaggi2d.add("mxs1");
+                        messaggi2d.add("mxg1");
                         messaggi2d.add("mys1");
                     }
                     messaggi2d.addAll(disegnaLinea(base - i, 0));
@@ -122,7 +122,7 @@ public class DrawFigure {
                     ArrayList<String> messaggi2d = new ArrayList<>();
                     for (int i = 0; i < giri; i = i + 2) {
                         if (i > 0) {
-                            messaggi2d.add("mxs1");
+                            messaggi2d.add("mxg1");
                             messaggi2d.add("mys1");
                         }
                         messaggi2d.addAll(disegnaLinea(baseMaggiore - 1, 0));
@@ -150,10 +150,10 @@ public class DrawFigure {
             for (int i = raggio; i > raggio - giri; i--) {
                 if (i < raggio)
                     messaggi2d.add("myg1");
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mxs1", "myg1"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "myg1", "mxg1"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mxg1", "mys1"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mys1", "mxs1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mxg1", "myg1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "myg1", "mxs1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mxs1", "mys1"));
+                messaggi2d.addAll(disegnaSemiCerchio(i, "mys1", "mxg1"));
             }
             messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
@@ -207,11 +207,11 @@ public class DrawFigure {
     private ArrayList<String> disegnaLinea(int lunghezza, long angolo) {
         ArrayList<String> messaggi = new ArrayList<>();
         if (angolo == 0 || angolo == 90 || angolo == 180 || angolo == 270) {
-            String messaggio = "mxs1";
+            String messaggio = "mxg1";
             if (angolo == 90)
                 messaggio = "mys1";
             if (angolo == 180)
-                messaggio = "mxg1";
+                messaggio = "mxs1";
             if (angolo == 270)
                 messaggio = "myg1";
             for (int i = 0; i < lunghezza; i++)
@@ -222,22 +222,22 @@ public class DrawFigure {
             String messaggioX = "";
             String messaggioY = "";
             if (angolo > 0 && angolo < 90){
-                messaggioX = "mxs1";
+                messaggioX = "mxg1";
                 messaggioY = "mys1";
                 base = lunghezza*Math.cos(Math.toRadians(angolo));
             }
             if (angolo > 90 && angolo < 180){
-                messaggioX = "mxg1";
+                messaggioX = "mxs1";
                 messaggioY = "mys1";
                 base = lunghezza*Math.cos(Math.toRadians(180 - angolo));
             }
             if (angolo > 180 && angolo < 270){
-                messaggioX = "mxg1";
+                messaggioX = "mxs1";
                 messaggioY = "myg1";
                 base = lunghezza*Math.cos(Math.toRadians(angolo - 180));
             }
             if (angolo > 270 && angolo < 359){
-                messaggioX = "mxs1";
+                messaggioX = "mxg1";
                 messaggioY = "myg1";
                 base = lunghezza*Math.cos(Math.toRadians(360 - angolo));
             }

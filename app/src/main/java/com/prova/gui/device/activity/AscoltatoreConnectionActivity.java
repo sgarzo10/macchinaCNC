@@ -45,6 +45,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         map.put("z", 2);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -52,6 +53,8 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 app.getQuadratoView().pulisci();
                 break;
             case R.id.posiziona:
+                for (int i =  0; i < 3; i++)
+                    app.getInput().get(i).setText(Integer.toString(posizioni[i]));
                 app.getDialog().get(0).show();
                 break;
             case R.id.linea:
@@ -144,12 +147,13 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     public void simulaAvanzamento(String messaggio, boolean addView){
         String asse = messaggio.substring(1, 2);
         String dir = messaggio.substring(2, 3);
+        int mm = Integer.parseInt(messaggio.substring(3, messaggio.length()));
         if (dir.equals("s")) {
-            posizioni[map.get(asse)] = posizioni[map.get(asse)] + 1;
+            posizioni[map.get(asse)] = posizioni[map.get(asse)] + mm;
             if (posizioni[map.get(asse)] > lunghezze[map.get(asse)])
                 posizioni[map.get(asse)] = lunghezze[map.get(asse)];
         } else {
-            posizioni[map.get(asse)] = posizioni[map.get(asse)] - 1;
+            posizioni[map.get(asse)] = posizioni[map.get(asse)] - mm;
             if (posizioni[map.get(asse)] < 0)
                 posizioni[map.get(asse)] = 0;
         }
@@ -179,14 +183,10 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             int coordinata = coordinate[i];
             if (coordinata > lunghezze[i])
                 coordinata = lunghezze[i];
-            if (coordinata > posizioni[i]){
-                for (int k = 0; k < (coordinata - posizioni[i]); k++)
-                    messaggi.add("m" + map.get(i) + "s1");
-            }
-            else{
-                for (int k = 0; k < (posizioni[i] - coordinata); k++)
-                    messaggi.add("m" + map.get(i) + "g1");
-            }
+            if (coordinata > posizioni[i])
+                messaggi.add("m" + map.get(i) + "s" + Integer.toString(coordinata - posizioni[i]));
+            else
+                messaggi.add("m" + map.get(i) + "g" + Integer.toString(posizioni[i] - coordinata));
         }
         return  messaggi;
     }
@@ -241,20 +241,20 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     private String[] calcolaStringhe(int quadrante){
         String [] s = {"", ""};
         if (quadrante == 1) {
-            s[0] = "mxs1";
+            s[0] = "mxg1";
             s[1] = "myg1";
         }
         if (quadrante == 2) {
             s[0] = "myg1";
-            s[1] = "mxg1";
+            s[1] = "mxs1";
         }
         if (quadrante == 3) {
-            s[0] = "mxg1";
+            s[0] = "mxs1";
             s[1] = "mys1";
         }
         if (quadrante == 4) {
             s[0] = "mys1";
-            s[1] = "mxs1";
+            s[1] = "mxg1";
         }
         return s;
     }

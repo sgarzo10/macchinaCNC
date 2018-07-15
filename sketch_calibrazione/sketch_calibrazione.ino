@@ -1,6 +1,6 @@
-#define ENA 5 //define Enable Pin
-#define DIR 6 //define Direction
-#define PUL 7 //define Pulse pin
+#define ENA 8 //define Enable Pin
+#define DIR 9 //define Direction
+#define PUL 10 //define Pulse pin
 
 struct movimento {
   boolean direzione;
@@ -46,7 +46,7 @@ void ruota(boolean direzione, int velocita){
 //3200 pulsazioni giro completo 5mm - 640 pulsazioni 1mm 
 void sposta_millimetro(boolean direzione, int velocita){
   digitalWrite(ENA,true);
-  for(int i=0;i<640;i++)
+  for(int i=0;i<427;i++)
     ruota(direzione, velocita);
 }
 
