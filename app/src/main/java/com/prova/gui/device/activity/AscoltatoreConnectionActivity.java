@@ -20,11 +20,13 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     private ArrayList<String> messaggi;
     private DrawFigure drawFigure;
     private int[] lunghezze;
-    private int[] posizioni;
+    private int[] giriMillimetro;
+    private float[] posizioni;
     private Map<String, Integer> map;
 
     public int[] getLunghezze(){ return lunghezze; }
-    public int[] getPosizioni(){ return posizioni; }
+    public int[] getGiriMillimetro(){ return giriMillimetro; }
+    public float[] getPosizioni(){ return posizioni; }
     public ConnectionActivity getApp() { return app; }
     public ArrayList<String> getMessaggi() { return messaggi; }
 
@@ -32,7 +34,8 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     {
         this.app=app;
         lunghezze = new int[3];
-        posizioni = new int[3];
+        giriMillimetro = new int[3];
+        posizioni = new float[3];
         messaggi = new ArrayList<>();
         for(int i=0;i<3;i++){
             lunghezze[i] = -1;
@@ -54,7 +57,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 break;
             case R.id.posiziona:
                 for (int i =  0; i < 3; i++)
-                    app.getInput().get(i).setText(Integer.toString(posizioni[i]));
+                    app.getInput().get(i).setText(Float.toString(posizioni[i]));
                 app.getDialog().get(0).show();
                 break;
             case R.id.linea:
@@ -110,10 +113,10 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         if(e.getAction() != MotionEvent.ACTION_UP) {
             switch (v.getId()) {
                 case R.id.sali:
-                    inviaMessaggio("mzg1");
+                    inviaMessaggio("mzg" + Long.toString(Math.round(giriMillimetro[2]*app.getManageXml().getPrecisioni().get(2))));
                     break;
                 case R.id.scendi:
-                    inviaMessaggio("mzs1");
+                    inviaMessaggio("mzs" + Long.toString(Math.round(giriMillimetro[2]*app.getManageXml().getPrecisioni().get(2))));
                     break;
             }
         }
@@ -144,20 +147,20 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             app.getBluetooth().invia(messaggi.get(0));
     }
 
-    public void simulaAvanzamento(String messaggio, boolean addView, int old){
+    public void simulaAvanzamento(String messaggio, boolean addView, float old){
         String asse = messaggio.substring(1, 2);
         String dir = messaggio.substring(2, 3);
-        int mm;
+        float giri;
         if (!messaggio.substring(3, messaggio.length()).contains("."))
-            mm = Integer.parseInt(messaggio.substring(3, messaggio.length()));
+            giri = Float.parseFloat(messaggio.substring(3, messaggio.length()));
         else
-            mm = Integer.parseInt(messaggio.substring(3, messaggio.indexOf(".")));
+            giri = Float.parseFloat(messaggio.substring(3, messaggio.indexOf(".")));
         if (dir.equals("s")) {
-            posizioni[map.get(asse)] = posizioni[map.get(asse)] + mm;
+            posizioni[map.get(asse)] = posizioni[map.get(asse)] + (giri / giriMillimetro[map.get(asse)]);
             if (posizioni[map.get(asse)] > lunghezze[map.get(asse)])
                 posizioni[map.get(asse)] = lunghezze[map.get(asse)];
         } else {
-            posizioni[map.get(asse)] = posizioni[map.get(asse)] - mm;
+            posizioni[map.get(asse)] = posizioni[map.get(asse)] - (giri / giriMillimetro[map.get(asse)]);
             if (posizioni[map.get(asse)] < 0)
                 posizioni[map.get(asse)] = 0;
         }
@@ -175,23 +178,23 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             simulaAvanzamento(messaggi.get(i), false, 0);
     }
 
-    public ArrayList<String> posiziona(int x, int y, int z){
+    public ArrayList<String> posiziona(float x, float y, float z){
         @SuppressLint("UseSparseArrays")
         Map<Integer, String> map = new HashMap<>();
         ArrayList<String> messaggi = new ArrayList<>();
-        int[] coordinate = {x, y, z};
+        float[] coordinate = {x, y, z};
         map.put(0, "x");
         map.put(1, "y");
         map.put(2, "z");
         for (int i = 0; i < 3; i++) {
-            int coordinata = coordinate[i];
+            float coordinata = coordinate[i];
             if (coordinata > lunghezze[i])
                 coordinata = lunghezze[i];
             if (coordinata - posizioni[i] > 0) {
                 if (coordinata > posizioni[i])
-                    messaggi.add("m" + map.get(i) + "s" + Integer.toString(coordinata - posizioni[i]));
+                    messaggi.add("m" + map.get(i) + "s" + Long.toString(Math.round(giriMillimetro[i]*(coordinata - posizioni[i]))));
                 else
-                    messaggi.add("m" + map.get(i) + "g" + Integer.toString(posizioni[i] - coordinata));
+                    messaggi.add("m" + map.get(i) + "g" + Long.toString(Math.round(giriMillimetro[i]*(posizioni[i] - coordinata))));
             }
         }
         return  messaggi;
@@ -211,31 +214,31 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             j = j -1;
             switch (j){
                 case 0:
-                    ArrayList<String> messaggi = posiziona(Integer.parseInt(app.getInput().get(0).getText().toString()), Integer.parseInt(app.getInput().get(1).getText().toString()), Integer.parseInt(app.getInput().get(2).getText().toString()));
+                    ArrayList<String> messaggi = posiziona(Float.parseFloat(app.getInput().get(0).getText().toString()), Float.parseFloat(app.getInput().get(1).getText().toString()), Float.parseFloat(app.getInput().get(2).getText().toString()));
                     if(messaggi.size() > 0)
                         addMex(messaggi);
                     break;
                 case 1:
-                    addMex(drawFigure.disegnaLineaProfonda(Integer.parseInt(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()), Integer.parseInt(app.getInput().get(5).getText().toString())));
+                    addMex(drawFigure.disegnaLineaProfonda(Float.parseFloat(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()), Float.parseFloat(app.getInput().get(5).getText().toString())));
                     break;
                 case 2:
                     String[] s = calcolaStringhe(Integer.parseInt(app.getInput().get(7).getText().toString()));
-                    addMex(drawFigure.disegnaSemiCerchioProfondo(Integer.parseInt(app.getInput().get(6).getText().toString()), s[0], s[1], Integer.parseInt(app.getInput().get(8).getText().toString())));
+                    addMex(drawFigure.disegnaSemiCerchioProfondo(Float.parseFloat(app.getInput().get(6).getText().toString()), s[0], s[1], Float.parseFloat(app.getInput().get(8).getText().toString())));
                     break;
                 case 3:
-                    drawFigure.disegnaRettangolo(Integer.parseInt(app.getInput().get(9).getText().toString()), Integer.parseInt(app.getInput().get(10).getText().toString()), Integer.parseInt(app.getInput().get(11).getText().toString()), app.getCheck().get(0).isChecked());
+                    drawFigure.disegnaRettangolo(Float.parseFloat(app.getInput().get(9).getText().toString()), Float.parseFloat(app.getInput().get(10).getText().toString()), Float.parseFloat(app.getInput().get(11).getText().toString()), app.getCheck().get(0).isChecked());
                     break;
                 case 4:
-                    drawFigure.disegnaTriangolo(Integer.parseInt(app.getInput().get(12).getText().toString()), Integer.parseInt(app.getInput().get(13).getText().toString()), Integer.parseInt(app.getInput().get(14).getText().toString()), Integer.parseInt(app.getInput().get(15).getText().toString()), app.getCheck().get(1).isChecked());
+                    drawFigure.disegnaTriangolo(Float.parseFloat(app.getInput().get(12).getText().toString()), Float.parseFloat(app.getInput().get(13).getText().toString()), Float.parseFloat(app.getInput().get(14).getText().toString()), Float.parseFloat(app.getInput().get(15).getText().toString()), app.getCheck().get(1).isChecked());
                     break;
                 case 5:
-                    drawFigure.disegnaParallelo(Integer.parseInt(app.getInput().get(16).getText().toString()),Integer.parseInt(app.getInput().get(17).getText().toString()),Integer.parseInt(app.getInput().get(18).getText().toString()), Integer.parseInt(app.getInput().get(19).getText().toString()), app.getCheck().get(2).isChecked());
+                    drawFigure.disegnaParallelo(Float.parseFloat(app.getInput().get(16).getText().toString()),Float.parseFloat(app.getInput().get(17).getText().toString()),Float.parseFloat(app.getInput().get(18).getText().toString()), Float.parseFloat(app.getInput().get(19).getText().toString()), app.getCheck().get(2).isChecked());
                     break;
                 case 6:
-                    drawFigure.disegnaCerchio(Integer.parseInt(app.getInput().get(20).getText().toString()), Integer.parseInt(app.getInput().get(21).getText().toString()), app.getCheck().get(3).isChecked());
+                    drawFigure.disegnaCerchio(Float.parseFloat(app.getInput().get(20).getText().toString()), Float.parseFloat(app.getInput().get(21).getText().toString()), app.getCheck().get(3).isChecked());
                     break;
                 case 7:
-                    drawFigure.disegnaTrapezio(Integer.parseInt(app.getInput().get(22).getText().toString()), Integer.parseInt(app.getInput().get(23).getText().toString()), Integer.parseInt(app.getInput().get(24).getText().toString()), Integer.parseInt(app.getInput().get(25).getText().toString()), Integer.parseInt(app.getInput().get(26).getText().toString()), Integer.parseInt(app.getInput().get(27).getText().toString()), app.getCheck().get(4).isChecked());
+                    drawFigure.disegnaTrapezio(Float.parseFloat(app.getInput().get(22).getText().toString()), Float.parseFloat(app.getInput().get(23).getText().toString()), Float.parseFloat(app.getInput().get(24).getText().toString()), Float.parseFloat(app.getInput().get(25).getText().toString()), Float.parseFloat(app.getInput().get(26).getText().toString()), Float.parseFloat(app.getInput().get(27).getText().toString()), app.getCheck().get(4).isChecked());
                     break;
                 case 8:
                     reset(app.getCheck().get(5).isChecked(), app.getCheck().get(6).isChecked(), app.getCheck().get(7).isChecked());

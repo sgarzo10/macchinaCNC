@@ -85,20 +85,23 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="0.2"
-        android:weightSum="1"
+        android:weightSum="7"
         android:orientation="horizontal">
-
-        <RelativeLayout
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.2"
-            tools:ignore="NestedWeights,UselessLeaf" />
 
         <TextView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:text="@string/lunghezzeX"
+            android:layout_weight="1"
+            android:text="@string/asseX"
+            android:textAlignment="center"
+            android:gravity="center"
+            tools:ignore="NestedWeights" />
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lunghezze"
             android:textAlignment="center"
             android:gravity="center" />
 
@@ -106,15 +109,41 @@
             android:id="@+id/lunghezzaX"
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
+            android:layout_weight="1"
             android:inputType="number"
             tools:ignore="LabelFor" />
 
-        <RelativeLayout
+        <TextView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.2"
-            tools:ignore="UselessLeaf" />
+            android:layout_weight="1"
+            android:text="@string/precisione"
+            android:textAlignment="center"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/precisioneX"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"
+            tools:ignore="LabelFor" />
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/giri"
+            android:textAlignment="center"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/giriX"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"
+            tools:ignore="LabelFor" />
 
     </LinearLayout>
 
@@ -122,20 +151,23 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="0.2"
-        android:weightSum="1"
+        android:weightSum="7"
         android:orientation="horizontal">
-
-        <RelativeLayout
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.2"
-            tools:ignore="NestedWeights,UselessLeaf" />
 
         <TextView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:text="@string/lunghezzeY"
+            android:layout_weight="1"
+            android:text="@string/asseY"
+            android:textAlignment="center"
+            android:gravity="center"
+            tools:ignore="NestedWeights" />
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lunghezze"
             android:textAlignment="center"
             android:gravity="center" />
 
@@ -143,15 +175,41 @@
             android:id="@+id/lunghezzaY"
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
+            android:layout_weight="1"
             android:inputType="number"
             tools:ignore="LabelFor" />
 
-        <RelativeLayout
+        <TextView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.2"
-            tools:ignore="UselessLeaf" />
+            android:layout_weight="1"
+            android:text="@string/precisione"
+            android:textAlignment="center"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/precisioneY"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"
+            tools:ignore="LabelFor" />
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/giri"
+            android:textAlignment="center"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/giriY"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"
+            tools:ignore="LabelFor" />
 
     </LinearLayout>
 
@@ -159,36 +217,65 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="0.2"
-        android:weightSum="1"
+        android:weightSum="7"
         android:orientation="horizontal">
-
-        <RelativeLayout
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.2"
-            tools:ignore="NestedWeights,UselessLeaf" />
 
         <TextView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:text="@string/lunghezzeZ"
+            android:layout_weight="1"
+            android:text="@string/asseZ"
             android:textAlignment="center"
-            android:gravity="center"/>
+            android:gravity="center"
+            tools:ignore="NestedWeights" />
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lunghezze"
+            android:textAlignment="center"
+            android:gravity="center" />
 
         <EditText
             android:id="@+id/lunghezzaZ"
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
+            android:layout_weight="1"
             android:inputType="number"
             tools:ignore="LabelFor" />
 
-        <RelativeLayout
+        <TextView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.2"
-            tools:ignore="UselessLeaf" />
+            android:layout_weight="1"
+            android:text="@string/precisione"
+            android:textAlignment="center"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/precisioneZ"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"
+            tools:ignore="LabelFor" />
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/giri"
+            android:textAlignment="center"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/giriZ"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"
+            tools:ignore="LabelFor" />
 
     </LinearLayout>
 

@@ -44,6 +44,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private ArrayList<AlertDialog> dialog;
     private boolean initLunghezze;
     private boolean initPosizioni;
+    private boolean initGiri;
     private boolean primo;
     private boolean resume;
     private ManageXml manageXml;
@@ -143,6 +144,7 @@ public class ConnectionActivity extends AppCompatActivity {
         primo = true;
         initLunghezze = false;
         initPosizioni = false;
+        initGiri = false;
         ascoltatore.inviaMessaggio("ssb");
     }
 
@@ -166,6 +168,7 @@ public class ConnectionActivity extends AppCompatActivity {
         }
         if (!primo) {
             resume = true;
+            checkGiri(false);
             checkLunghezze(false);
         }
         if (rotazione_attiva.isChecked())
@@ -211,18 +214,24 @@ public class ConnectionActivity extends AppCompatActivity {
                 if (!bluetooth.getH().isFine())
                     getValoriInziaili();
                 else {
-                    if (!initLunghezze) {
-                        ascoltatore.inviaMessaggio("la");
-                        initLunghezze = true;
+                    if (!initGiri) {
+                        ascoltatore.inviaMessaggio("ga");
+                        initGiri = true;
                         bluetooth.getH().setFine();
                         getValoriInziaili();
-                    }
-                    else {
-                        if (!initPosizioni) {
-                            checkLunghezze(true);
-                            initPosizioni = true;
+                    } else {
+                        if (!initLunghezze) {
+                            checkGiri(true);
+                            initLunghezze = true;
                             bluetooth.getH().setFine();
                             getValoriInziaili();
+                        } else {
+                            if (!initPosizioni) {
+                                checkLunghezze(true);
+                                initPosizioni = true;
+                                bluetooth.getH().setFine();
+                                getValoriInziaili();
+                            }
                         }
                     }
                 }
@@ -287,6 +296,20 @@ public class ConnectionActivity extends AppCompatActivity {
             messaggi.add("la");
         if (posizioni)
             messaggi.add(0, "da");
+        if (messaggi.size() > 0)
+            ascoltatore.addMex(messaggi);
+    }
+
+    private void checkGiri(boolean posizioni){
+        ArrayList<String> messaggi = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (!(ascoltatore.getGiriMillimetro()[i] == manageXml.getGiriMillimetro().get(i)))
+                messaggi.add("sg" + map.get(i) + manageXml.getGiriMillimetro().get(i));
+        }
+        if (messaggi.size() > 0)
+            messaggi.add("ga");
+        if (posizioni)
+            messaggi.add(0, "la");
         if (messaggi.size() > 0)
             ascoltatore.addMex(messaggi);
     }

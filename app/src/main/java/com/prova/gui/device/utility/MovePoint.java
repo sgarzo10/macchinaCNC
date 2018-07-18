@@ -30,17 +30,17 @@ public class MovePoint extends Thread {
         //Log.i("Y CALCOLATA", Integer.toString(Math.round(myY)));
         if (Math.round(myX) > 0){
             for (int i = 0; i < Math.round(myX); i++)
-                messaggi.add("mxg1");
+                messaggi.add("mxg" + Long.toString(Math.round(app.getAscoltatore().getGiriMillimetro()[0]*app.getManageXml().getPrecisioni().get(0))));
         } else{
             for (int i = Math.round(myX); i < 0; i++)
-                messaggi.add("mxs1");
+                messaggi.add("mxs" + Long.toString(Math.round(app.getAscoltatore().getGiriMillimetro()[0]*app.getManageXml().getPrecisioni().get(0))));
         }
         if (Math.round(myY) > 0){
             for (int i = 0; i < Math.round(myY); i++)
-                messaggi.add("myg1");
+                messaggi.add("myg" + Long.toString(Math.round(app.getAscoltatore().getGiriMillimetro()[1]*app.getManageXml().getPrecisioni().get(1))));
         } else{
             for (int i = Math.round(myY); i < 0; i++)
-                messaggi.add("mys1");
+                messaggi.add("mys" + Long.toString(Math.round(app.getAscoltatore().getGiriMillimetro()[1]*app.getManageXml().getPrecisioni().get(1))));
         }
         if(messaggi.size() > 0)
             app.getAscoltatore().addMex(messaggi);

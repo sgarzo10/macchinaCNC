@@ -15,12 +15,16 @@ public class ManageXml {
     private InputStream ist;
     private FileOutputStream ost;
     private XmlPullParser xrp;
-    private int diametro;
+    private double diametro;
     private int velocita;
     private ArrayList<Integer> lunghezze;
+    private ArrayList<Float> precisioni;
+    private ArrayList<Integer> giriMillimetro;
 
     public ManageXml(){
         lunghezze = new ArrayList<>(3);
+        precisioni = new ArrayList<>(3);
+        giriMillimetro = new ArrayList<>(3);
         diametro = 0;
         velocita = 0;
     }
@@ -33,7 +37,7 @@ public class ManageXml {
             xmlSerializer.startDocument("UTF-8", true);
             xmlSerializer.startTag("", "settings");
             xmlSerializer.startTag("", "mandrino");
-            xmlSerializer.attribute("", "diametro", Integer.toString(diametro));
+            xmlSerializer.attribute("", "diametro", Double.toString(diametro));
             xmlSerializer.endTag("", "mandrino");
             xmlSerializer.startTag("", "materiale");
             xmlSerializer.attribute("", "velocita", Integer.toString(velocita));
@@ -43,6 +47,16 @@ public class ManageXml {
             xmlSerializer.attribute("", "y", Integer.toString(lunghezze.get(1)));
             xmlSerializer.attribute("", "z", Integer.toString(lunghezze.get(2)));
             xmlSerializer.endTag("", "lunghezze");
+            xmlSerializer.startTag("", "precisioni");
+            xmlSerializer.attribute("", "x", Float.toString(precisioni.get(0)));
+            xmlSerializer.attribute("", "y", Float.toString(precisioni.get(1)));
+            xmlSerializer.attribute("", "z", Float.toString(precisioni.get(2)));
+            xmlSerializer.endTag("", "precisioni");
+            xmlSerializer.startTag("", "giri-millimetro");
+            xmlSerializer.attribute("", "x", Integer.toString(giriMillimetro.get(0)));
+            xmlSerializer.attribute("", "y", Integer.toString(giriMillimetro.get(1)));
+            xmlSerializer.attribute("", "z", Integer.toString(giriMillimetro.get(2)));
+            xmlSerializer.endTag("", "giri-millimetro");
             xmlSerializer.endTag("", "settings");
             xmlSerializer.endDocument();
             ost.write(writer.toString().getBytes());
@@ -72,6 +86,16 @@ public class ManageXml {
                             lunghezze.add(Integer.parseInt(xrp.getAttributeValue(1)));
                             lunghezze.add(Integer.parseInt(xrp.getAttributeValue(2)));
                         }
+                        if(name.equals("precisioni")){
+                            precisioni.add(Float.parseFloat(xrp.getAttributeValue(0)));
+                            precisioni.add(Float.parseFloat(xrp.getAttributeValue(1)));
+                            precisioni.add(Float.parseFloat(xrp.getAttributeValue(2)));
+                        }
+                        if(name.equals("giri-millimetro")){
+                            giriMillimetro.add(Integer.parseInt(xrp.getAttributeValue(0)));
+                            giriMillimetro.add(Integer.parseInt(xrp.getAttributeValue(1)));
+                            giriMillimetro.add(Integer.parseInt(xrp.getAttributeValue(2)));
+                        }
                         break;
                 }
                 event = xrp.next();
@@ -95,11 +119,15 @@ public class ManageXml {
 
     public ArrayList<Integer> getLunghezze() { return lunghezze; }
 
-    public int getDiametro() { return diametro; }
+    public double getDiametro() { return diametro; }
 
     public int getVelocita() { return velocita; }
 
-    public void setDiametro(int diametro) { this.diametro = diametro; }
+    public void setDiametro(double diametro) { this.diametro = diametro; }
 
     public void setVelocita(int velocita) { this.velocita = velocita; }
+
+    public ArrayList<Float> getPrecisioni() { return precisioni; }
+
+    public ArrayList<Integer> getGiriMillimetro() { return giriMillimetro; }
 }

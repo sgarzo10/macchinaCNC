@@ -100,8 +100,8 @@ public class QuadratoView extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    public void drawLine(String asseS, int old, int asse){
-        int diff = Math.abs(old - app.getAscoltatore().getPosizioni()[asse]);
+    public void drawLine(String asseS, float old, int asse){
+        float diff = Math.abs(old - app.getAscoltatore().getPosizioni()[asse]);
         if (diff > 1) {
             for (int i = 0; i < diff; i++) {
                 if (asseS.equals("x")) {

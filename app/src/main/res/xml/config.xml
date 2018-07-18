@@ -3,4 +3,6 @@
     <mandrino diametro="10"/>
 	<materiale velocita="32"/>
 	<lunghezze x="450" y = "309" z = "135"/>
+	<precisioni x="1" y="1" z="1"/>
+	<giri-millimetro x="640" y="640" z="430"/>
 </settings>

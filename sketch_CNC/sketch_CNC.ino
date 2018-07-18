@@ -2,6 +2,7 @@
 /*
 Arduino MEGA 2560
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
+#define GIRI_MM_XY 640 //numero di giri per fare un millimetro
 #define ENA_MOT_X 2 //define Enable Pin
 #define DIR_MOT_X 3 //define Direction
 #define PUL_MOT_X 4 //define Pulse pin
@@ -12,6 +13,7 @@ Arduino MEGA 2560
 #define PUL_MOT_Y 7 //define Pulse pin
 #define SENS_MOT_Y 2 //define sensor pin
 #define LUNGHEZZA_Z 135 //lunghezza asse z in millimetri
+#define GIRI_MM_Z 430 //numero di giri per fare un millimetro
 #define ENA_MOT_Z 8 //define Enable Pin
 #define DIR_MOT_Z 9 //define Direction
 #define PUL_MOT_Z 10 //define Pulse pin
@@ -24,6 +26,7 @@ rimuovere SoftwareSerial
 abilitare reset all all'avvio
 */
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
+#define GIRI_MM_X 640 //numero di giri per fare un millimetro
 #define ENA_MOT_X 2 //define Enable Pin
 #define DIR_MOT_X 3 //define Direction
 #define PUL_MOT_X 4 //define Pulse pin
@@ -31,11 +34,13 @@ abilitare reset all all'avvio
 #define BLUETOOTH_TX 6 //define bluetooth tx pin
 #define BLUETOOTH_RX 7 //define bluetooth rx pin
 #define LUNGHEZZA_Y 309 //lunghezza asse y in millimetri
+#define GIRI_MM_Y 640 //numero di giri per fare un millimetro
 #define ENA_MOT_Y 8 //define Enable Pin
 #define DIR_MOT_Y 9 //define Direction
 #define PUL_MOT_Y 10 //define Pulse pin
 #define SENS_MOT_Y 11 //define sensor pin
 #define LUNGHEZZA_Z 135 //lunghezza asse z in millimetri
+#define GIRI_MM_Z 430 //numero di giri per fare un millimetro
 #define ENA_MOT_Z 12 //define Enable Pin
 #define DIR_MOT_Z 13 //define Direction
 #define PUL_MOT_Z 14 //define Pulse pin
@@ -45,12 +50,13 @@ abilitare reset all all'avvio
 struct movimento {
   String motore;
   boolean direzione;
-  int millimetri;
+  int giri;
   int velocita;
 };
 
 SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
-int millimetri_totali[3] = {0,0,0};
+float millimetri_totali[3] = {0,0,0};
+int giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
 int lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
 boolean seriale = true;
 
@@ -112,21 +118,14 @@ void ruota(String motore, boolean direzione, int velocita){
 }
 
 //3200 pulsazioni giro completo 5mm - 640 pulsazioni 1mm 
-void sposta_millimetro(String motore, boolean direzione, int velocita){
+void sposta_millimetro(String motore, int giri, boolean direzione, int velocita){
   int pin = 0;
-  int giri = 0;
-  if (motore == "x"){
+  if (motore == "x")
     pin = ENA_MOT_X;
-    giri = 640;
-  }
-  if (motore == "y"){
+  if (motore == "y")
     pin = ENA_MOT_Y;
-    giri = 640;
-  }
-  if (motore == "z"){
+  if (motore == "z")
     pin = ENA_MOT_Z;
-    giri = 427;
-  }
   digitalWrite(pin,true);
   for(int i=0;i<giri;i++)
     ruota(motore, direzione, velocita);
@@ -134,19 +133,18 @@ void sposta_millimetro(String motore, boolean direzione, int velocita){
 
 void aggiorna_misura(movimento m){
   int indice = motoreToIndice(m.motore);
-  int totali = millimetri_totali[indice];
+  float totali = millimetri_totali[indice];
   if (m.direzione)
-    totali = totali + m.millimetri;
+    totali = totali + (m.giri / giri_millimetro[indice]);
   else
-    totali = totali - m.millimetri;
+    totali = totali - (m.giri / giri_millimetro[indice]);
   millimetri_totali[indice] = totali;
 }
 
 void sposta(String command, boolean aggiorna, boolean reset){
   movimento m = lettura_parametri(command, reset);
-  if (m.millimetri != 0){
-    for(int i=0;i<m.millimetri;i++)
-      sposta_millimetro(m.motore, m.direzione, m.velocita);
+  if (m.giri != 0){
+    sposta_millimetro(m.motore, m.giri, m.direzione, m.velocita);
     if (aggiorna)
       aggiorna_misura(m);
   }
@@ -185,7 +183,7 @@ void dove_sono(String command){
 void dove_print(String asse){
   int indice = motoreToIndice(asse);
   my_print(asse, false);
-  my_print(String(millimetri_totali[indice]), true);
+  my_print(String(millimetri_totali[indice], 7), true);
 }
 
 void dimmi_lunghezze(String command){
@@ -207,20 +205,31 @@ void print_lunghezze(String asse){
   my_print(String(lunghezze[indice]), true);
 }
 
+void dimmi_giri(String command){
+  if (command == "x" || command == "y" || command == "z" || command == "a"){
+    if (command == "x" || command == "a")
+      print_giri("x");
+    if (command == "y" || command == "a")
+      print_giri("y");
+    if (command == "z" || command == "a")
+      print_giri("z");
+  }
+  else
+    my_print("e", true);
+}
+
+void print_giri(String asse){
+  int indice = motoreToIndice(asse);
+  my_print(asse, false);
+  my_print(String(giri_millimetro[indice]), true);
+}
+
 void setta_lunghezze(String command){
-  int indice = -1;
   boolean ok = true;
   String motore = command.substring(0, 1);
   String lunghezza = command.substring(1, command.length());
-  if (motore == "x" || motore == "y" || motore == "z"){
-    if (motore == "x")
-     indice = 0;
-    if (motore == "y")
-     indice = 1;
-    if (motore == "z")
-     indice = 2;
-  }
-  else{
+  int indice = motoreToIndice(motore);
+  if (!(motore == "x" || motore == "y" || motore == "z")){
     my_print("e", true);
     ok = false;
   }
@@ -230,6 +239,25 @@ void setta_lunghezze(String command){
   }
   if (ok){
     lunghezze[indice] = lunghezza.toInt();
+    my_print("o", true);
+  }
+}
+
+void setta_giri(String command){
+  boolean ok = true;
+  String motore = command.substring(0, 1);
+  String giri = command.substring(1, command.length());
+  int indice = motoreToIndice(motore);
+  if (!(motore == "x" || motore == "y" || motore == "z")){
+    my_print("e", true);
+    ok = false;
+  }
+  if (giri.toInt() == 0 && ok){
+    my_print("e", true);
+    ok = false;
+  }
+  if (ok){
+    giri_millimetro[indice] = giri.toInt();
     my_print("o", true);
   }
 }
@@ -256,18 +284,22 @@ void bluetooth_command(String command){
   if (command.substring(0,1) == "d")
     dove_sono(command.substring(1,command.length()));
   if (command.substring(0,1) == "l")
-    dimmi_lunghezze(command.substring(1,command.length())); 
+    dimmi_lunghezze(command.substring(1,command.length()));
+  if (command.substring(0,1) == "g")
+    dimmi_giri(command.substring(1,command.length()));
   if (command.substring(0,2) == "re")
     reset(command.substring(2,command.length()));
   if (command.substring(0,2) == "sl")
     setta_lunghezze(command.substring(2,command.length()));
+  if (command.substring(0,2) == "sg")
+    setta_giri(command.substring(2,command.length()));
   if (command.substring(0,2) == "ss")
     setta_seriale(command.substring(2,command.length()));
 }
 
 movimento lettura_parametri(String command, boolean reset){
   String direzione;
-  String millimetri;
+  String giri;
   String velocita;
   String motore;
   boolean vel = false;
@@ -275,15 +307,15 @@ movimento lettura_parametri(String command, boolean reset){
   int indice = -1;
   movimento m;
   m.velocita=32;
-  m.millimetri=0;
+  m.giri=0;
   m.motore="";
   m.direzione=NULL;
   motore = command.substring(0,1);
   direzione = command.substring(1,2);
-  millimetri = command.substring(2,command.length());
-  if (millimetri.indexOf(".") > 0){
-    velocita = millimetri.substring(millimetri.indexOf(".") + 1,millimetri.length());
-    millimetri = millimetri.substring(0, millimetri.indexOf("."));
+  giri = command.substring(2,command.length());
+  if (giri.indexOf(".") > 0){
+    velocita = giri.substring(giri.indexOf(".") + 1,giri.length());
+    giri = giri.substring(0, giri.indexOf("."));
     vel = true;
   }
   if (motore == "x" || motore == "y" || motore == "z"){
@@ -309,7 +341,7 @@ movimento lettura_parametri(String command, boolean reset){
     my_print("e", true);
     ok = false;
   }
-  if (millimetri.toInt() == 0 && ok){
+  if (giri.toInt() == 0 && ok){
     my_print("e", true);
     ok = false;
     }
@@ -319,23 +351,23 @@ movimento lettura_parametri(String command, boolean reset){
     }
   if (ok && !reset){
     if (m.direzione){
-       int mancante = lunghezze[indice] - millimetri_totali[indice];
-       if (millimetri.toInt() > mancante)
-          m.millimetri = mancante;   
+       float mancante = lunghezze[indice] - millimetri_totali[indice];
+       if ((giri.toInt() / giri_millimetro[indice]) > mancante)
+          m.giri = mancante * giri_millimetro[indice];   
        else
-          m.millimetri = millimetri.toInt();
+          m.giri = giri.toInt();
     }
     else{
-       if (millimetri.toInt() > millimetri_totali[indice])
-          m.millimetri = millimetri_totali[indice];   
+       if ((giri.toInt() / giri_millimetro[indice]) > millimetri_totali[indice])
+          m.giri = millimetri_totali[indice] * giri_millimetro[indice];   
        else
-          m.millimetri = millimetri.toInt();
+          m.giri = giri.toInt();
     }
     if (vel)
       m.velocita = velocita.toInt();
   } else {
     if (reset)
-      m.millimetri = millimetri.toInt();
+      m.giri = giri.toInt();
   }
   return m;
 }
@@ -364,7 +396,7 @@ void reset_motore(String asse){
   if (asse == "z")
     pin = SENS_MOT_Z;
   while(analogRead(pin) < 1019)
-    sposta(asse+"g1", false, true);
+    sposta(asse+"g320", false, true);
   millimetri_totali[indice] = 0;
   my_print("r", false);
   my_print(asse, true);

@@ -11,21 +11,22 @@ import com.prova.gui.settings.utility.ManageXml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private EditText mandrino;
     private EditText velocita;
-    private EditText lunghezzaX;
-    private EditText lunghezzaY;
-    private EditText lunghezzaZ;
+    private ArrayList<EditText> lunghezze;
+    private ArrayList<EditText> precisioni;
+    private ArrayList<EditText> giriMillimetro;
     private ManageXml manageXml;
 
     public EditText getMandrino() { return mandrino; }
-    public EditText getLunghezzaX() { return lunghezzaX; }
-    public EditText getLunghezzaY() { return lunghezzaY; }
-    public EditText getLunghezzaZ() { return lunghezzaZ; }
     public EditText getVelocita() { return velocita; }
+    public ArrayList<EditText> getLunghezze() { return lunghezze; }
+    public ArrayList<EditText> getPrecisioni() { return precisioni; }
+    public ArrayList<EditText> getGiriMillimetro() { return giriMillimetro; }
     public ManageXml getManageXml() { return manageXml; }
 
 
@@ -34,12 +35,21 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        lunghezze = new ArrayList<>();
+        precisioni = new ArrayList<>();
+        giriMillimetro = new ArrayList<>();
         Button salva = findViewById(R.id.salva);
         mandrino = findViewById(R.id.mandrino);
         velocita = findViewById(R.id.velocita);
-        lunghezzaX = findViewById(R.id.lunghezzaX);
-        lunghezzaY = findViewById(R.id.lunghezzaY);
-        lunghezzaZ = findViewById(R.id.lunghezzaZ);
+        lunghezze.add((EditText) findViewById(R.id.lunghezzaX));
+        lunghezze.add((EditText) findViewById(R.id.lunghezzaY));
+        lunghezze.add((EditText) findViewById(R.id.lunghezzaZ));
+        precisioni.add((EditText) findViewById(R.id.precisioneX));
+        precisioni.add((EditText) findViewById(R.id.precisioneY));
+        precisioni.add((EditText) findViewById(R.id.precisioneZ));
+        giriMillimetro.add((EditText) findViewById(R.id.giriX));
+        giriMillimetro.add((EditText) findViewById(R.id.giriY));
+        giriMillimetro.add((EditText) findViewById(R.id.giriZ));
         manageXml = new ManageXml();
         AscoltatoreSettingsActivity ascoltatore = new AscoltatoreSettingsActivity(this);
         salva.setOnClickListener(ascoltatore);
@@ -56,11 +66,13 @@ public class SettingsActivity extends AppCompatActivity {
             manageXml.setXrp(getResources().getXml(R.xml.config));
             manageXml.readXml(false);
         }
-        mandrino.setText(Integer.toString(manageXml.getDiametro()));
+        mandrino.setText(Double.toString(manageXml.getDiametro()));
         velocita.setText(Integer.toString(manageXml.getVelocita()));
-        lunghezzaX.setText(Integer.toString(manageXml.getLunghezze().get(0)));
-        lunghezzaY.setText(Integer.toString(manageXml.getLunghezze().get(1)));
-        lunghezzaZ.setText(Integer.toString(manageXml.getLunghezze().get(2)));
+        for (int i = 0; i< 2; i++) {
+            lunghezze.get(i).setText(Integer.toString(manageXml.getLunghezze().get(i)));
+            precisioni.get(i).setText(Float.toString(manageXml.getPrecisioni().get(i)));
+            giriMillimetro.get(i).setText(Integer.toString(manageXml.getGiriMillimetro().get(i)));
+        }
     }
 
     @Override

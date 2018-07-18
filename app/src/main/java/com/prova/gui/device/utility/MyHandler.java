@@ -74,7 +74,7 @@ public class MyHandler extends android.os.Handler{
                             ricevuti = ricevuti + 1;
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
+                                app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Float.parseFloat(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
                             if (ricevuti == 3) {
@@ -88,6 +88,26 @@ public class MyHandler extends android.os.Handler{
                                 }
                                 else
                                     app.getBluetooth().invia("da");
+                                ok = 0;
+                            }
+                        }
+                        if (app.getAscoltatore().getMessaggi().get(0).equals("ga")){
+                            ricevuti = ricevuti + 1;
+                            if (checkMessaggePosLung(mex)) {
+                                ok = ok +1;
+                                app.getAscoltatore().getGiriMillimetro()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
+                            } else
+                                ok = 0;
+                            if (ricevuti == 3) {
+                                ricevuti = 0;
+                                if (ok == 3) {
+                                    app.addView("GIRI OTTENUTI CORRETTAMENTE");
+                                    //app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), app.getAscoltatore().getPosizioni()[0], app.getAscoltatore().getPosizioni()[1], app.getAscoltatore().getPosizioni()[2]));
+                                    app.getAscoltatore().shiftMessaggi();
+                                    fine = true;
+                                }
+                                else
+                                    app.getBluetooth().invia("ga");
                                 ok = 0;
                             }
                         }
@@ -131,10 +151,10 @@ public class MyHandler extends android.os.Handler{
                             ok = 0;
                         }
                         if (app.getAscoltatore().getMessaggi().get(0).contains("mzg") || app.getAscoltatore().getMessaggi().get(0).contains("mzs") || app.getAscoltatore().getMessaggi().get(0).contains("mxg") || app.getAscoltatore().getMessaggi().get(0).contains("mxs") || app.getAscoltatore().getMessaggi().get(0).contains("myg") || app.getAscoltatore().getMessaggi().get(0).contains("mys")){
-                            int old = app.getAscoltatore().getPosizioni()[map.get(app.getAscoltatore().getMessaggi().get(0).substring(1,2))];
+                            float old = app.getAscoltatore().getPosizioni()[map.get(app.getAscoltatore().getMessaggi().get(0).substring(1,2))];
                             if (checkMessaggePosLung(mex)) {
                                 ok = ok +1;
-                                app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Integer.parseInt(mex.substring(1,mex.length()));
+                                app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Float.parseFloat(mex.substring(1,mex.length()));
                             } else
                                 ok = 0;
                             if (ok == 1) {
