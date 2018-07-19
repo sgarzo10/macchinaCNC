@@ -165,7 +165,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 posizioni[map.get(asse)] = 0;
         }
         if (addView) {
-            app.getPosizioni().setText(String.format(app.getResources().getString(R.string.output_posizioni), posizioni[0], posizioni[1], posizioni[2]));
+            app.getTextPosizioni().get(map.get(asse)).setText(String.format(app.getResources().getString(R.string.output_posizione), asse.toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(asse)]));
             if (asse.equals("x") || asse.equals("y"))
                 app.getQuadratoView().drawLine(asse, old, map.get(asse));
             else

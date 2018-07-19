@@ -78,7 +78,7 @@ public class ManageXml {
                 switch (event){
                     case XmlPullParser.START_TAG:
                         if(name.equals("mandrino"))
-                            diametro = Integer.parseInt(xrp.getAttributeValue(0));
+                            diametro = Double.parseDouble(xrp.getAttributeValue(0));
                         if(name.equals("materiale"))
                             velocita = Integer.parseInt(xrp.getAttributeValue(0));
                         if(name.equals("lunghezze")){

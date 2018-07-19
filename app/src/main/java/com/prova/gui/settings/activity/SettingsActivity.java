@@ -68,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
         mandrino.setText(Double.toString(manageXml.getDiametro()));
         velocita.setText(Integer.toString(manageXml.getVelocita()));
-        for (int i = 0; i< 2; i++) {
+        for (int i = 0; i < 3; i++) {
             lunghezze.get(i).setText(Integer.toString(manageXml.getLunghezze().get(i)));
             precisioni.get(i).setText(Float.toString(manageXml.getPrecisioni().get(i)));
             giriMillimetro.get(i).setText(Integer.toString(manageXml.getGiriMillimetro().get(i)));

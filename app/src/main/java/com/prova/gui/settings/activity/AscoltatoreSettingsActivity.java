@@ -17,7 +17,7 @@ public class AscoltatoreSettingsActivity implements View.OnClickListener {
             case R.id.salva:
                 app.getManageXml().setDiametro(Double.parseDouble(app.getMandrino().getText().toString()));
                 app.getManageXml().setVelocita(Integer.parseInt(app.getVelocita().getText().toString()));
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < 3; i++) {
                     app.getManageXml().getLunghezze().set(i, Integer.parseInt(app.getLunghezze().get(i).getText().toString()));
                     app.getManageXml().getPrecisioni().set(i, Float.parseFloat(app.getPrecisioni().get(i).getText().toString()));
                     app.getManageXml().getGiriMillimetro().set(i, Integer.parseInt(app.getGiriMillimetro().get(i).getText().toString()));

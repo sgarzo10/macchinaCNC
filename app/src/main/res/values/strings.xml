@@ -44,7 +44,8 @@
     <string name="lunghezze">Lunghezza:</string>
     <string name="precisione">Precisione:</string>
     <string name="giri">Giri per millimetro:</string>
-    <string name="output_posizioni">X: %1$f Y: %2$f Z: %3$f</string>
+    <string name="output_posizione">%1$s: %2$f</string>
+    <string name="ouput_giri">GX: %1$d GY: %2$d GZ: %3$d</string>
     <string name="output_lunghezze">LX: %1$d LY: %2$d LZ: %3$d</string>
     <string name="salva">salva</string>
 </resources>

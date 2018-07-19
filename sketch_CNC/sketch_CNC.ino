@@ -56,7 +56,7 @@ struct movimento {
 
 SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
 float millimetri_totali[3] = {0,0,0};
-int giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
+float giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
 int lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
 boolean seriale = true;
 
@@ -396,7 +396,7 @@ void reset_motore(String asse){
   if (asse == "z")
     pin = SENS_MOT_Z;
   while(analogRead(pin) < 1019)
-    sposta(asse+"g320", false, true);
+    sposta(asse+"g"+String(giri_millimetro[indice]/2), false, true);
   millimetri_totali[indice] = 0;
   my_print("r", false);
   my_print(asse, true);

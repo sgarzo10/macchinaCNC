@@ -32,8 +32,9 @@ public class ConnectionActivity extends AppCompatActivity {
 
     private ArrayList<EditText> input;
     private ArrayList<CheckBox> check;
-    private TextView posizioni;
     private TextView textLunghezze;
+    private TextView textGiri;
+    private ArrayList<TextView> textPosizioni;
     private LinearLayout output;
     private BluetoothConnection bluetooth;
     private JoystickView joystickView;
@@ -59,8 +60,9 @@ public class ConnectionActivity extends AppCompatActivity {
     Switch getRotazione_attiva() {return rotazione_attiva;}
     public QuadratoView getQuadratoView() {return quadratoView;}
     public AscoltatoreConnectionActivity getAscoltatore() { return ascoltatore; }
-    public TextView getPosizioni() { return posizioni; }
+    public ArrayList<TextView> getTextPosizioni() { return textPosizioni; }
     public TextView getTextLunghezze() { return textLunghezze; }
+    public TextView getTextGiri() { return textGiri; }
     public ManageXml getManageXml() { return manageXml; }
 
     @SuppressLint("UseSparseArrays")
@@ -76,6 +78,7 @@ public class ConnectionActivity extends AppCompatActivity {
         input = new ArrayList<>();
         check = new ArrayList<>();
         dialog = new ArrayList<>();
+        textPosizioni = new ArrayList<>();
         joystickView = new JoystickView(this);
         quadratoView = new QuadratoView(this);
         String nome = Objects.requireNonNull(getIntent().getExtras()).getString("nome");
@@ -98,8 +101,11 @@ public class ConnectionActivity extends AppCompatActivity {
         RelativeLayout relativeLayoutQuadrato = findViewById(R.id.quadrato);
         rotazione_attiva = findViewById(R.id.rotazione_attiva);
         output = findViewById(R.id.outSeriale);
-        posizioni = findViewById(R.id.posizioni);
+        textPosizioni.add((TextView) findViewById(R.id.posizioneX));
+        textPosizioni.add((TextView) findViewById(R.id.posizioneY));
+        textPosizioni.add((TextView) findViewById(R.id.posizioneZ));
         textLunghezze = findViewById(R.id.text_lunghezze);
+        textGiri = findViewById(R.id.text_giri);
         linearLayoutJoystick.addView(joystickView);
         relativeLayoutQuadrato.addView(quadratoView);
         reset.setOnClickListener(ascoltatore);
@@ -168,8 +174,7 @@ public class ConnectionActivity extends AppCompatActivity {
         }
         if (!primo) {
             resume = true;
-            checkGiri(false);
-            checkLunghezze(false);
+            checkValori(false);
         }
         if (rotazione_attiva.isChecked())
             rotazione_attiva.setText(getResources().getString(R.string.rot_on));
@@ -182,9 +187,11 @@ public class ConnectionActivity extends AppCompatActivity {
         joystickView.calcolaDimensioni();
         joystickView.drawJoystick(joystickView.getWidth() / 2, joystickView.getHeight() / 2);
         quadratoView.calcolaDimensioni();
-        rotazione_attiva.setTextSize(rotazione_attiva.getHeight() / 10);
-        posizioni.setTextSize(posizioni.getHeight() / 4);
-        textLunghezze.setTextSize(textLunghezze.getHeight() / 4);
+        rotazione_attiva.setTextSize(rotazione_attiva.getHeight() / 4);
+        textGiri.setTextSize(textGiri.getHeight() / 4);
+        textLunghezze.setTextSize(textGiri.getHeight() / 4);
+        for (int i = 0; i < 3; i++)
+            textPosizioni.get(i).setTextSize(textGiri.getHeight() / 4);
         if (primo) {
             getValoriInziaili();
             primo = false;
@@ -221,13 +228,13 @@ public class ConnectionActivity extends AppCompatActivity {
                         getValoriInziaili();
                     } else {
                         if (!initLunghezze) {
-                            checkGiri(true);
+                            ascoltatore.inviaMessaggio("la");
                             initLunghezze = true;
                             bluetooth.getH().setFine();
                             getValoriInziaili();
                         } else {
                             if (!initPosizioni) {
-                                checkLunghezze(true);
+                                checkValori(true);
                                 initPosizioni = true;
                                 bluetooth.getH().setFine();
                                 getValoriInziaili();
@@ -267,7 +274,7 @@ public class ConnectionActivity extends AppCompatActivity {
                 EditText inputDialog = new EditText(this);
                 lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
                 inputDialog.setLayoutParams(lp);
-                inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
+                inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 if (!aValue.equals("Profondità"))
                     inputDialog.setText("0");
                 else
@@ -286,7 +293,7 @@ public class ConnectionActivity extends AppCompatActivity {
         return l;
     }
 
-    private void checkLunghezze(boolean posizioni){
+    private void checkValori(boolean posizioni){
         ArrayList<String> messaggi = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             if (!(ascoltatore.getLunghezze()[i] == manageXml.getLunghezze().get(i)))
@@ -294,14 +301,6 @@ public class ConnectionActivity extends AppCompatActivity {
         }
         if (messaggi.size() > 0)
             messaggi.add("la");
-        if (posizioni)
-            messaggi.add(0, "da");
-        if (messaggi.size() > 0)
-            ascoltatore.addMex(messaggi);
-    }
-
-    private void checkGiri(boolean posizioni){
-        ArrayList<String> messaggi = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             if (!(ascoltatore.getGiriMillimetro()[i] == manageXml.getGiriMillimetro().get(i)))
                 messaggi.add("sg" + map.get(i) + manageXml.getGiriMillimetro().get(i));
@@ -309,7 +308,7 @@ public class ConnectionActivity extends AppCompatActivity {
         if (messaggi.size() > 0)
             messaggi.add("ga");
         if (posizioni)
-            messaggi.add(0, "la");
+            messaggi.add(0, "da");
         if (messaggi.size() > 0)
             ascoltatore.addMex(messaggi);
     }
