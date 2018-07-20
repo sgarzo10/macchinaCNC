@@ -190,7 +190,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             float coordinata = coordinate[i];
             if (coordinata > lunghezze[i])
                 coordinata = lunghezze[i];
-            if (coordinata - posizioni[i] > 0) {
+            if (Math.abs(coordinata - posizioni[i]) > 0) {
                 if (coordinata > posizioni[i])
                     messaggi.add("m" + map.get(i) + "s" + Long.toString(Math.round(giriMillimetro[i]*(coordinata - posizioni[i]))));
                 else

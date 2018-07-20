@@ -50,7 +50,7 @@ abilitare reset all all'avvio
 struct movimento {
   String motore;
   boolean direzione;
-  int giri;
+  uint32_t giri;
   int velocita;
 };
 
@@ -118,7 +118,7 @@ void ruota(String motore, boolean direzione, int velocita){
 }
 
 //3200 pulsazioni giro completo 5mm - 640 pulsazioni 1mm 
-void sposta_millimetro(String motore, int giri, boolean direzione, int velocita){
+void sposta_millimetro(String motore, uint32_t giri, boolean direzione, int velocita){
   int pin = 0;
   if (motore == "x")
     pin = ENA_MOT_X;
@@ -127,7 +127,7 @@ void sposta_millimetro(String motore, int giri, boolean direzione, int velocita)
   if (motore == "z")
     pin = ENA_MOT_Z;
   digitalWrite(pin,true);
-  for(int i=0;i<giri;i++)
+  for(uint32_t i=0;i<giri;i++)
     ruota(motore, direzione, velocita);
 }
 
@@ -275,8 +275,8 @@ void setta_seriale(String command){
 }
 
 void bluetooth_command(String command){
-  Serial.print("MESSAGGIO RICEVUTO: "); 
-  Serial.println(command);
+  //Serial.print("MESSAGGIO RICEVUTO: "); 
+  //Serial.println(command);
   if (command.substring(0,1) == "m")
     sposta(command.substring(1,command.length()), true, false);
   if (command.substring(0,1) == "r" && !(command.substring(1,2) == "e"))
@@ -320,12 +320,7 @@ movimento lettura_parametri(String command, boolean reset){
   }
   if (motore == "x" || motore == "y" || motore == "z"){
     m.motore = motore;
-    if (motore == "x")
-     indice = 0;
-    if (motore == "y")
-     indice = 1;
-    if (motore == "z")
-     indice = 2;
+    indice = motoreToIndice(motore);
   }
   else{
     my_print("e", true);
@@ -352,13 +347,13 @@ movimento lettura_parametri(String command, boolean reset){
   if (ok && !reset){
     if (m.direzione){
        float mancante = lunghezze[indice] - millimetri_totali[indice];
-       if ((giri.toInt() / giri_millimetro[indice]) > mancante)
+       if (giri.toInt() / giri_millimetro[indice] > mancante)
           m.giri = mancante * giri_millimetro[indice];   
        else
           m.giri = giri.toInt();
     }
     else{
-       if ((giri.toInt() / giri_millimetro[indice]) > millimetri_totali[indice])
+       if (giri.toInt() / giri_millimetro[indice] > millimetri_totali[indice])
           m.giri = millimetri_totali[indice] * giri_millimetro[indice];   
        else
           m.giri = giri.toInt();

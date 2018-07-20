@@ -15,7 +15,7 @@ public class DrawFigure {
     public void disegnaRettangolo(double larghezza, double altezza, double profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add("mzs" + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
-        double giri = 1;
+        double giri = ascoltatore.getApp().getManageXml().getDiametro();
         float init_x = ascoltatore.getPosizioni()[0];
         float init_y = ascoltatore.getPosizioni()[1];
         altezza = altezza - ascoltatore.getApp().getManageXml().getDiametro();
@@ -42,7 +42,7 @@ public class DrawFigure {
     public void disegnaTriangolo(double base, double lato1, double lato2, double profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add("mzs" + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
-        double giri = 1;
+        double giri = ascoltatore.getApp().getManageXml().getDiametro();
         float init_x = ascoltatore.getPosizioni()[0];
         float init_y = ascoltatore.getPosizioni()[1];
         long angolo1 = Math.round(Math.toDegrees(Math.acos((lato1 * lato1 + lato2 * lato2 - base * base) / (2d * lato1 * lato2))));
@@ -74,7 +74,7 @@ public class DrawFigure {
     public void disegnaParallelo(double base, double diagonale, double altezza, double profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add("mzs" + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
-        double giri = 1;
+        double giri = ascoltatore.getApp().getManageXml().getDiametro();
         float init_x = ascoltatore.getPosizioni()[0];
         float init_y = ascoltatore.getPosizioni()[1];
         if (diagonale >= altezza) {
@@ -104,7 +104,7 @@ public class DrawFigure {
     public void disegnaTrapezio(double baseMaggiore, double lato1, double baseMinore, double lato2, double altezza, double profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add("mzs" + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
-        double giri = 1;
+        double giri = ascoltatore.getApp().getManageXml().getDiametro();
         float init_x = ascoltatore.getPosizioni()[0];
         float init_y = ascoltatore.getPosizioni()[1];
         if (lato2 >= altezza && lato1 >= altezza && baseMinore <= baseMaggiore) {
@@ -140,7 +140,7 @@ public class DrawFigure {
     public void disegnaCerchio(double raggio, double profondita, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add("mzs" + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
-        double giri = 1;
+        double giri = ascoltatore.getApp().getManageXml().getDiametro();
         float init_x = ascoltatore.getPosizioni()[0];
         float init_y = ascoltatore.getPosizioni()[1];
         if (riempi)
@@ -204,8 +204,8 @@ public class DrawFigure {
             double y = Math.sqrt(raggio*raggio - i*i );
             double giri = Math.round(giriMmY*(myRaggio - y));
             if (giri > 0){
-                messaggi.add(aggiungiVelocita(secondo + Double.toString(giri)));
-                myRaggio = myRaggio - (myRaggio - (giri / giriMmY));
+                messaggi.add(aggiungiVelocita(secondo + Long.toString(Math.round(giri))));
+                myRaggio = myRaggio - (giri / giriMmY);
             }
             messaggi.add(primo + Long.toString(Math.round(giriMmX*precisione)));
         }
@@ -259,7 +259,7 @@ public class DrawFigure {
                 double y = coeff * i;
                 double giri = Math.round(ascoltatore.getGiriMillimetro()[1]*(y - currentY));
                 if ( giri > 0) {
-                    messaggi.add(aggiungiVelocita(messaggioY + Double.toString(giri)));
+                    messaggi.add(aggiungiVelocita(messaggioY + Long.toString(Math.round(giri))));
                     currentY = currentY + (giri / ascoltatore.getGiriMillimetro()[1]);
                 }
                 messaggi.add(messaggioX + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[0]*precisione)));
@@ -280,7 +280,7 @@ public class DrawFigure {
     }
 
     private String aggiungiVelocita(String message){
-        if (Integer.parseInt(message.substring(3, message.length())) > 1)
+        if (Long.parseLong(message.substring(3, message.length())) > 1)
             message = message + "." + Integer.toString(ascoltatore.getApp().getManageXml().getVelocita());
         return message;
     }
