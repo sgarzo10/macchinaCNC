@@ -166,10 +166,10 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         }
         if (addView) {
             app.getTextPosizioni().get(map.get(asse)).setText(String.format(app.getResources().getString(R.string.output_posizione), asse.toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(asse)]));
-            if (asse.equals("x") || asse.equals("y"))
+            /*if (asse.equals("x") || asse.equals("y"))
                 app.getQuadratoView().drawLine(asse, old, map.get(asse));
             else
-                app.getQuadratoView().pulisci();
+                app.getQuadratoView().pulisci();*/
         }
     }
 
@@ -270,12 +270,12 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
 
     private void reset(boolean x, boolean y, boolean z){
         ArrayList<String> messaggi = new ArrayList<>();
-        if (x)
-            messaggi.add("rex");
-        if(y)
-            messaggi.add("rey");
         if (z)
             messaggi.add("rez");
+        if(y)
+            messaggi.add("rey");
+        if (x)
+            messaggi.add("rex");
         if (messaggi.size() > 0)
             addMex(messaggi);
     }

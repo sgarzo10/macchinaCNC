@@ -54,6 +54,7 @@ public class BluetoothConnection extends Thread {
 
     public boolean invia(String message) {
         try {
+            message = message + "!";
             byte[] msgBuffer = message.getBytes();
             outStream.write(msgBuffer);
             return true;

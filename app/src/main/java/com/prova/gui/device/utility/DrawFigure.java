@@ -36,6 +36,7 @@ public class DrawFigure {
             }
             messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
+        messaggi.addAll(resetPostDraw());
         ascoltatore.addMex(messaggi);
     }
 
@@ -67,6 +68,7 @@ public class DrawFigure {
                 }
                 messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
             }
+            messaggi.addAll(resetPostDraw());
             ascoltatore.addMex(messaggi);
         }
     }
@@ -97,6 +99,7 @@ public class DrawFigure {
                 }
                 messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
             }
+            messaggi.addAll(resetPostDraw());
             ascoltatore.addMex(messaggi);
         }
     }
@@ -132,6 +135,7 @@ public class DrawFigure {
                     }
                     messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
                 }
+                messaggi.addAll(resetPostDraw());
                 ascoltatore.addMex(messaggi);
             }
         }
@@ -157,6 +161,7 @@ public class DrawFigure {
             }
             messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
+        messaggi.addAll(resetPostDraw());
         ascoltatore.addMex(messaggi);
     }
 
@@ -170,6 +175,7 @@ public class DrawFigure {
             ArrayList<String> messaggi2d = disegnaLinea(lunghezza, angolo);
             messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
+        messaggi.addAll(resetPostDraw());
         return messaggi;
     }
 
@@ -182,6 +188,7 @@ public class DrawFigure {
             ArrayList<String> messaggi2d = disegnaSemiCerchio(raggio, mex1, mex2);
             messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
         }
+        messaggi.addAll(resetPostDraw());
         return messaggi;
     }
 
@@ -283,5 +290,12 @@ public class DrawFigure {
         if (Long.parseLong(message.substring(3, message.length())) > 1)
             message = message + "." + Integer.toString(ascoltatore.getApp().getManageXml().getVelocita());
         return message;
+    }
+
+    private ArrayList<String> resetPostDraw(){
+        ArrayList<String> messaggi = new ArrayList<>();
+        messaggi.add("rez");
+        messaggi.add("rey");
+        return messaggi;
     }
 }

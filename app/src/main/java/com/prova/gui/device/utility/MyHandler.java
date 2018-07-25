@@ -47,7 +47,7 @@ public class MyHandler extends android.os.Handler{
                     if (endOfLineIndex > 0) {
                         String mex = sb.substring(0, endOfLineIndex);
                         sb.delete(0, sb.length());
-                        //Log.i("RECIVE", mex);
+                        Log.i("RECIVE", mex);
                         if (app.getAscoltatore().getMessaggi().get(0).equals("ra")) {
                             if (checkOtherMessagge(mex)) {
                                 app.addView("MANDRINO ATTIVATO");
@@ -182,10 +182,10 @@ public class MyHandler extends android.os.Handler{
                                 ok = 0;
                             if (ok == 1) {
                                 app.getTextPosizioni().get(map.get(mex.substring(0,1))).setText(String.format(app.getResources().getString(R.string.output_posizione), mex.substring(0,1).toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))]));
-                                if (mex.substring(0,1).equals("x") || mex.substring(0,1).equals("y"))
+                                /*if (mex.substring(0,1).equals("x") || mex.substring(0,1).equals("y"))
                                     app.getQuadratoView().drawLine(mex.substring(0,1), old, map.get(mex.substring(0,1)));
                                 else
-                                    app.getQuadratoView().pulisci();
+                                    app.getQuadratoView().pulisci();*/
                             }
                             else
                                 app.getAscoltatore().simulaAvanzamento(app.getAscoltatore().getMessaggi().get(0), true, old);
