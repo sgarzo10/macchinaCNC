@@ -18,8 +18,8 @@ public class DrawFigure {
         double giri = ascoltatore.getApp().getManageXml().getDiametro();
         float init_x = ascoltatore.getPosizioni()[0];
         float init_y = ascoltatore.getPosizioni()[1];
-        altezza = altezza - ascoltatore.getApp().getManageXml().getDiametro();
-        larghezza = larghezza - ascoltatore.getApp().getManageXml().getDiametro();
+        altezza = altezza - giri;
+        larghezza = larghezza - giri;
         if (riempi)
             giri = Math.min(altezza, larghezza);
         for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
@@ -50,9 +50,9 @@ public class DrawFigure {
         long angolo2 = Math.round(Math.toDegrees(Math.acos((base * base + lato2 * lato2 - lato1 * lato1) / (2d * base * lato2))));
         long angolo3 = 180 - angolo1 - angolo2;
         if (!(angolo1 == 0 || angolo2 == 0 || angolo3 == 0)) {
-            base = base - ascoltatore.getApp().getManageXml().getDiametro();
-            lato1 = lato1 - ascoltatore.getApp().getManageXml().getDiametro();
-            lato2 = lato2 - ascoltatore.getApp().getManageXml().getDiametro();
+            base = base - giri;
+            lato1 = lato1 - giri;
+            lato2 = lato2 - giri;
             if (riempi)
                 giri = Math.min(Math.min(base, lato1), lato2);
             for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
@@ -81,8 +81,8 @@ public class DrawFigure {
         float init_y = ascoltatore.getPosizioni()[1];
         if (diagonale >= altezza) {
             long angolo = Math.round(90 - Math.toDegrees(Math.acos(altezza / diagonale)));
-            base = base - ascoltatore.getApp().getManageXml().getDiametro();
-            diagonale = diagonale - ascoltatore.getApp().getManageXml().getDiametro();
+            base = base - giri;
+            diagonale = diagonale - giri;
             if (riempi)
                 giri = Math.min(base, diagonale);
             for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
@@ -115,10 +115,10 @@ public class DrawFigure {
             double angolo2 = Math.toDegrees(Math.acos(altezza / lato2));
             double tot = baseMinore + Math.round(lato1 * Math.sin(Math.toRadians(angolo1))) + Math.round(lato2 * Math.sin(Math.toRadians(angolo2)));
             if (tot == baseMaggiore) {
-                baseMaggiore = baseMaggiore - ascoltatore.getApp().getManageXml().getDiametro();
-                lato1 = lato1 - ascoltatore.getApp().getManageXml().getDiametro();
-                baseMinore = baseMinore - ascoltatore.getApp().getManageXml().getDiametro();
-                lato2 = lato2 - ascoltatore.getApp().getManageXml().getDiametro();
+                baseMaggiore = baseMaggiore - giri;
+                lato1 = lato1 - giri;
+                baseMinore = baseMinore - giri;
+                lato2 = lato2 - giri;
                 if (riempi)
                     giri = Math.min(Math.min(Math.min(baseMaggiore, lato1), baseMinore), lato2);
                 for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
@@ -296,6 +296,7 @@ public class DrawFigure {
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add("rez");
         messaggi.add("rey");
+        messaggi.add("da");
         return messaggi;
     }
 }

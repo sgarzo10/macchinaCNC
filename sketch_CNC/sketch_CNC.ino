@@ -56,16 +56,17 @@ struct movimento {
   int velocita;
 };
 
-//SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
+SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
 float millimetri_totali[3] = {0,0,0};
 float giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
 int lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
 boolean seriale = true;
+boolean ultimo = false;
 
 void setup() {
   if (seriale)
     Serial.begin(9600);
-  Serial1.begin(9600);
+  bluetooth_seriale.begin(9600);
   pinMode (PUL_MOT_X, OUTPUT);
   pinMode (DIR_MOT_X, OUTPUT);
   pinMode (ENA_MOT_X, OUTPUT);
@@ -77,25 +78,36 @@ void setup() {
   pinMode (ENA_MOT_Z, OUTPUT);
   pinMode (MANDRINO, OUTPUT);
   Serial.println("---------------  START  ---------------");
-  reset("a");
+  //reset("a");
 }
 
 void loop() {
-  String bluetooth_buffer = bluetooth_read();
-  if (bluetooth_buffer != "")
-    bluetooth_command(bluetooth_buffer);
+  bluetooth_read();
 }
 
-String bluetooth_read(){
+void bluetooth_read(){
   String lettura = "";
   char c = 's';
-  while (Serial1.available() && c != '!'){
-    c = (char)Serial1.read();
+  while (bluetooth_seriale.available() && c != '!'){
+    c = (char)bluetooth_seriale.read();
     lettura += c;
     delay(20);
   }
   lettura = lettura.substring(0, lettura.length() - 1);
-  return lettura;
+  Serial.println(lettura);
+  int old_index = -1;
+  String mex = "";
+  for (int index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
+    mex = lettura.substring(old_index + 1, index);
+    Serial.println(mex);
+    //bluetooth_command(mex);
+    old_index = index;
+  }
+  mex = lettura.substring(old_index + 1, lettura.length());
+  Serial.println(mex);
+  ultimo = true;
+  //bluetooth_command(mex);
+  return;
 }
 
 //direzione: true orario(sale), false antiorario (scende)
@@ -154,51 +166,44 @@ void sposta(String command, boolean aggiorna, boolean reset){
       aggiorna_misura(m);
   }
   if (aggiorna)
-    dove_print(m.motore);
+    dove_print(m.motore, true);
 }
 
 void attiva_mandrino(String command){
   if (command == "a" || command == "s"){
-    if(command == "a"){
+    if(command == "a")
       digitalWrite(MANDRINO, true);
-      my_print("am", true);
-    }
-    else{
+    else
       digitalWrite(MANDRINO, false);
-      my_print("sm", true);
-    }
+    my_print("o", true);
   }
   else
     my_print("e", true); 
 }
 
 void dove_sono(String command){
-  if (command == "x" || command == "y" || command == "z" || command == "a"){
-    if (command == "x" || command == "a")
-      dove_print("x");
-    if (command == "y" || command == "a")
-      dove_print("y");
-    if (command == "z" || command == "a")
-      dove_print("z");
+  if (command == "a"){
+    dove_print("x", false);
+    dove_print("y", false);
+    dove_print("z", true);
   }
   else
     my_print("e", true); 
 }
 
-void dove_print(String asse){
+void dove_print(String asse, boolean new_line){
   int indice = motoreToIndice(asse);
   my_print(asse, false);
-  my_print(String(millimetri_totali[indice], 7), true);
+  my_print(String(millimetri_totali[indice], 7), new_line);
+  if (!new_line)
+    my_print("&", new_line);
 }
 
 void dimmi_lunghezze(String command){
-  if (command == "x" || command == "y" || command == "z" || command == "a"){
-    if (command == "x" || command == "a")
-      print_lunghezze("x");
-    if (command == "y" || command == "a")
-      print_lunghezze("y");
-    if (command == "z" || command == "a")
-      print_lunghezze("z");
+  if (command == "a"){
+    print_lunghezze("x");
+    print_lunghezze("y");
+    print_lunghezze("z");
   }
   else
     my_print("e", true);
@@ -207,17 +212,19 @@ void dimmi_lunghezze(String command){
 void print_lunghezze(String asse){
   int indice = motoreToIndice(asse);
   my_print(asse, false);
-  my_print(String(lunghezze[indice]), true);
+  if (asse == "z")
+    my_print(String(lunghezze[indice]), true);
+  else{
+    my_print(String(lunghezze[indice]), false);
+    my_print("&", false);
+  }
 }
 
 void dimmi_giri(String command){
-  if (command == "x" || command == "y" || command == "z" || command == "a"){
-    if (command == "x" || command == "a")
-      print_giri("x");
-    if (command == "y" || command == "a")
-      print_giri("y");
-    if (command == "z" || command == "a")
-      print_giri("z");
+  if (command == "a"){
+    print_giri("x");
+    print_giri("y");
+    print_giri("z");
   }
   else
     my_print("e", true);
@@ -226,7 +233,12 @@ void dimmi_giri(String command){
 void print_giri(String asse){
   int indice = motoreToIndice(asse);
   my_print(asse, false);
-  my_print(String(giri_millimetro[indice]), true);
+  if (asse == "z")
+    my_print(String(giri_millimetro[indice]), true);
+  else{
+    my_print(String(giri_millimetro[indice]), false);
+    my_print("&", false);
+  }
 }
 
 void setta_lunghezze(String command){
@@ -398,8 +410,7 @@ void reset_motore(String asse){
   while(analogRead(pin) < 1019)
     sposta(asse+"g"+String((int)giri_millimetro[indice]), false, true);
   millimetri_totali[indice] = 0;
-  my_print("r", false);
-  my_print(asse, true);
+  my_print("o", true);
 }
 
 void my_print(String s, boolean new_line){
@@ -410,12 +421,15 @@ void my_print(String s, boolean new_line){
       Serial.print(s);
   }
   else{
-    if (new_line){
-      Serial1.println(s);
-      delay(100);
+    if (ultimo){
+      if (new_line){
+        bluetooth_seriale.println(s);
+        ultimo = false;
+        delay(100);
+      }
+      else
+        bluetooth_seriale.print(s);
     }
-    else
-      Serial1.print(s);
   }
 }
 

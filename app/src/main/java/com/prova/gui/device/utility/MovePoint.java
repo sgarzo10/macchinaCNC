@@ -42,8 +42,11 @@ public class MovePoint extends Thread {
             for (int i = Math.round(myY); i < 0; i++)
                 messaggi.add("mys" + Long.toString(Math.round(app.getAscoltatore().getGiriMillimetro()[1]*app.getManageXml().getPrecisioni().get(1))));
         }
-        if(messaggi.size() > 0)
+        if(messaggi.size() > 0) {
+            if (messaggi.size() > 1)
+                messaggi.add("da");
             app.getAscoltatore().addMex(messaggi);
+        }
     }
 
     @Override

@@ -214,12 +214,10 @@
                     android:layout_weight="0.2"
                     android:weightSum="1">
 
-                    <Button
-                        android:id="@+id/clear"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
-                        android:text="@string/clear"
-                        android:layout_weight="0.5"/>
+                        android:layout_weight="0.5" />
 
                     <Button
                         android:id="@+id/posiziona"

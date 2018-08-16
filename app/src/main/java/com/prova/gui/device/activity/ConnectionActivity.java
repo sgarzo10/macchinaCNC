@@ -11,7 +11,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import com.prova.bluetooth.BluetoothConnection;
@@ -19,7 +18,6 @@ import com.prova.bluetooth.R;
 import com.prova.gui.device.view.JoystickView;
 import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
-import com.prova.gui.device.view.QuadratoView;
 import com.prova.gui.settings.utility.ManageXml;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,7 +36,6 @@ public class ConnectionActivity extends AppCompatActivity {
     private LinearLayout output;
     private BluetoothConnection bluetooth;
     private JoystickView joystickView;
-    private QuadratoView quadratoView;
     private MovePoint mp;
     private Switch rotazione_attiva;
     private AscoltatoreConnectionActivity ascoltatore;
@@ -47,18 +44,14 @@ public class ConnectionActivity extends AppCompatActivity {
     private boolean initPosizioni;
     private boolean initGiri;
     private boolean primo;
-    private boolean resume;
     private ManageXml manageXml;
     private Map<Integer, String> map;
 
     public BluetoothConnection getBluetooth() { return bluetooth;}
-    public boolean isResume() { return resume; }
-    public void setResume() {this.resume = false;}
     ArrayList<EditText> getInput() { return input; }
     ArrayList<CheckBox> getCheck() { return check; }
     ArrayList<AlertDialog> getDialog() {return dialog;}
     Switch getRotazione_attiva() {return rotazione_attiva;}
-    public QuadratoView getQuadratoView() {return quadratoView;}
     public AscoltatoreConnectionActivity getAscoltatore() { return ascoltatore; }
     public ArrayList<TextView> getTextPosizioni() { return textPosizioni; }
     public TextView getTextLunghezze() { return textLunghezze; }
@@ -73,19 +66,16 @@ public class ConnectionActivity extends AppCompatActivity {
         map.put(0, "x");
         map.put(1, "y");
         map.put(2, "z");
-        resume = false;
         setContentView(R.layout.activity_connection);
         input = new ArrayList<>();
         check = new ArrayList<>();
         dialog = new ArrayList<>();
         textPosizioni = new ArrayList<>();
         joystickView = new JoystickView(this);
-        quadratoView = new QuadratoView(this);
         String nome = Objects.requireNonNull(getIntent().getExtras()).getString("nome");
         String mac = Objects.requireNonNull(getIntent().getExtras().getString("mac"));
         ascoltatore = new AscoltatoreConnectionActivity(this);
         Button reset = findViewById(R.id.reset);
-        Button clear = findViewById(R.id.clear);
         Button posiziona = findViewById(R.id.posiziona);
         ImageButton linea = findViewById(R.id.linea);
         ImageButton curva = findViewById(R.id.curva);
@@ -98,7 +88,6 @@ public class ConnectionActivity extends AppCompatActivity {
         ImageButton scendi = findViewById(R.id.scendi);
         ImageButton settings = findViewById(R.id.settings);
         LinearLayout linearLayoutJoystick = findViewById(R.id.joystick);
-        RelativeLayout relativeLayoutQuadrato = findViewById(R.id.quadrato);
         rotazione_attiva = findViewById(R.id.rotazione_attiva);
         output = findViewById(R.id.outSeriale);
         textPosizioni.add((TextView) findViewById(R.id.posizioneX));
@@ -107,7 +96,6 @@ public class ConnectionActivity extends AppCompatActivity {
         textLunghezze = findViewById(R.id.text_lunghezze);
         textGiri = findViewById(R.id.text_giri);
         linearLayoutJoystick.addView(joystickView);
-        relativeLayoutQuadrato.addView(quadratoView);
         reset.setOnClickListener(ascoltatore);
         linea.setOnClickListener(ascoltatore);
         curva.setOnClickListener(ascoltatore);
@@ -116,7 +104,6 @@ public class ConnectionActivity extends AppCompatActivity {
         parallelo.setOnClickListener(ascoltatore);
         cerchio.setOnClickListener(ascoltatore);
         trapezio.setOnClickListener(ascoltatore);
-        clear.setOnClickListener(ascoltatore);
         posiziona.setOnClickListener(ascoltatore);
         settings.setOnClickListener(ascoltatore);
         sali.setOnTouchListener(ascoltatore);
@@ -173,8 +160,8 @@ public class ConnectionActivity extends AppCompatActivity {
             manageXml.readXml(false);
         }
         if (!primo) {
-            resume = true;
             checkValori(false);
+            getValoriInziaili();
         }
         if (rotazione_attiva.isChecked())
             rotazione_attiva.setText(getResources().getString(R.string.rot_on));
@@ -186,7 +173,6 @@ public class ConnectionActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus){
         joystickView.calcolaDimensioni();
         joystickView.drawJoystick(joystickView.getWidth() / 2, joystickView.getHeight() / 2);
-        quadratoView.calcolaDimensioni();
         rotazione_attiva.setTextSize(rotazione_attiva.getHeight() / 4);
         textGiri.setTextSize(textGiri.getHeight() / 4);
         textLunghezze.setTextSize(textGiri.getHeight() / 4);
@@ -196,8 +182,6 @@ public class ConnectionActivity extends AppCompatActivity {
             getValoriInziaili();
             primo = false;
         }
-        else
-            quadratoView.drawPoint(ascoltatore.getPosizioni()[0], ascoltatore.getPosizioni()[1]);
     }
 
     @Override
@@ -295,21 +279,27 @@ public class ConnectionActivity extends AppCompatActivity {
 
     private void checkValori(boolean posizioni){
         ArrayList<String> messaggi = new ArrayList<>();
+        int size = 0;
         for (int i = 0; i < 3; i++) {
             if (!(ascoltatore.getLunghezze()[i] == manageXml.getLunghezze().get(i)))
                 messaggi.add("sl" + map.get(i) + manageXml.getLunghezze().get(i));
         }
-        if (messaggi.size() > 0)
-            messaggi.add("la");
+        if (messaggi.size() > 0) {
+            initLunghezze = false;
+            size = messaggi.size();
+        }
         for (int i = 0; i < 3; i++) {
             if (!(ascoltatore.getGiriMillimetro()[i] == manageXml.getGiriMillimetro().get(i)))
                 messaggi.add("sg" + map.get(i) + manageXml.getGiriMillimetro().get(i));
         }
-        if (messaggi.size() > 0)
-            messaggi.add("ga");
+        if (messaggi.size() > size)
+            initGiri = false;
         if (posizioni)
             messaggi.add(0, "da");
-        if (messaggi.size() > 0)
+        if (messaggi.size() > 0) {
+            if (!posizioni)
+                bluetooth.getH().setFine();
             ascoltatore.addMex(messaggi);
+        }
     }
 }

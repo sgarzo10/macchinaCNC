@@ -13,11 +13,12 @@ import com.prova.gui.settings.activity.SettingsActivity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AscoltatoreConnectionActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, View.OnTouchListener, DialogInterface.OnClickListener  {
 
     private ConnectionActivity app;
-    private ArrayList<String> messaggi;
+    private String messaggio;
     private DrawFigure drawFigure;
     private int[] lunghezze;
     private int[] giriMillimetro;
@@ -28,7 +29,8 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     public int[] getGiriMillimetro(){ return giriMillimetro; }
     public float[] getPosizioni(){ return posizioni; }
     public ConnectionActivity getApp() { return app; }
-    public ArrayList<String> getMessaggi() { return messaggi; }
+    public String getMessaggio() { return messaggio; }
+    public void setMessaggio() { this.messaggio = ""; }
 
     AscoltatoreConnectionActivity(ConnectionActivity app)
     {
@@ -36,7 +38,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         lunghezze = new int[3];
         giriMillimetro = new int[3];
         posizioni = new float[3];
-        messaggi = new ArrayList<>();
+        messaggio = "";
         for(int i=0;i<3;i++){
             lunghezze[i] = -1;
             posizioni[i] = -1;
@@ -52,9 +54,6 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.clear:
-                app.getQuadratoView().pulisci();
-                break;
             case R.id.posiziona:
                 for (int i =  0; i < 3; i++)
                     app.getInput().get(i).setText(Float.toString(posizioni[i]));
@@ -124,30 +123,25 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     }
 
     public void addMex(ArrayList<String> mex){
-        if (messaggi.size() == 0) {
-           messaggi.addAll(mex);
-           if (!app.getBluetooth().invia(messaggi.get(0)))
+        if (Objects.equals(messaggio, "")) {
+            StringBuilder finalMex = new StringBuilder();
+            for (String messaggio: mex)
+                finalMex.append(messaggio).append("&");
+            messaggio = finalMex.toString().substring(0, finalMex.toString().length() - 1);
+            if (!app.getBluetooth().invia(messaggio))
                 app.addView(app.getResources().getString(R.string.error));
         }
     }
 
     void inviaMessaggio(String mex){
-        if (messaggi.size() == 0) {
-            messaggi.add(mex);
-            if (!app.getBluetooth().invia(messaggi.get(0)))
+        if (Objects.equals(messaggio, "")) {
+            messaggio = mex;
+            if (!app.getBluetooth().invia(messaggio))
                 app.addView(app.getResources().getString(R.string.error));
         }
     }
 
-    public void shiftMessaggi(){
-        for (int i = 0; i < messaggi.size() - 1; i++)
-            messaggi.set(i, messaggi.get(i + 1));
-        messaggi.remove(messaggi.size() - 1);
-        if (messaggi.size() > 0)
-            app.getBluetooth().invia(messaggi.get(0));
-    }
-
-    public void simulaAvanzamento(String messaggio, boolean addView, float old){
+    public void simulaAvanzamento(String messaggio, boolean addView){
         String asse = messaggio.substring(1, 2);
         String dir = messaggio.substring(2, 3);
         float giri;
@@ -164,18 +158,13 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             if (posizioni[map.get(asse)] < 0)
                 posizioni[map.get(asse)] = 0;
         }
-        if (addView) {
+        if (addView)
             app.getTextPosizioni().get(map.get(asse)).setText(String.format(app.getResources().getString(R.string.output_posizione), asse.toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(asse)]));
-            /*if (asse.equals("x") || asse.equals("y"))
-                app.getQuadratoView().drawLine(asse, old, map.get(asse));
-            else
-                app.getQuadratoView().pulisci();*/
-        }
     }
 
     public void simulaDisegno(ArrayList<String> messaggi){
         for (int i = 0; i < messaggi.size(); i++)
-            simulaAvanzamento(messaggi.get(i), false, 0);
+            simulaAvanzamento(messaggi.get(i), false);
     }
 
     public ArrayList<String> posiziona(float x, float y, float z){
@@ -215,8 +204,11 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             switch (j){
                 case 0:
                     ArrayList<String> messaggi = posiziona(Float.parseFloat(app.getInput().get(0).getText().toString()), Float.parseFloat(app.getInput().get(1).getText().toString()), Float.parseFloat(app.getInput().get(2).getText().toString()));
-                    if(messaggi.size() > 0)
+                    if(messaggi.size() > 0) {
+                        if (messaggi.size() > 1)
+                            messaggi.add("da");
                         addMex(messaggi);
+                    }
                     break;
                 case 1:
                     addMex(drawFigure.disegnaLineaProfonda(Float.parseFloat(app.getInput().get(3).getText().toString()), Integer.parseInt(app.getInput().get(4).getText().toString()), Float.parseFloat(app.getInput().get(5).getText().toString())));
@@ -272,11 +264,13 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         ArrayList<String> messaggi = new ArrayList<>();
         if (z)
             messaggi.add("rez");
-        if(y)
+        if (y)
             messaggi.add("rey");
         if (x)
             messaggi.add("rex");
-        if (messaggi.size() > 0)
+        if (messaggi.size() > 0) {
+            messaggi.add("da");
             addMex(messaggi);
+        }
     }
 }
