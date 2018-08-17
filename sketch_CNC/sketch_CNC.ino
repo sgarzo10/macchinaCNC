@@ -25,6 +25,7 @@ Arduino MEGA 2560
 Sostituire bluetooth_seriale con Serial1
 rimuovere SoftwareSerial
 abilitare reset all all'avvio
+abilitare while per reset
 */
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro
@@ -59,6 +60,7 @@ SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
 float millimetri_totali[3] = {0,0,0};
 float giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
 int lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
+String spostamenti[6] = {"xs", "xg", "ys", "yg", "zs", "zg"};
 boolean seriale = true;
 boolean ultimo = false;
 
@@ -87,16 +89,21 @@ void loop() {
 void bluetooth_read(){
   String lettura = "";
   char c = 's';
+  uint32_t numero = 0; 
   while (bluetooth_seriale.available() && c != '!'){
     c = (char)bluetooth_seriale.read();
+    //if (lettura. length() < 5)
     lettura += c;
+    numero = numero + 1;
+    /*if (numero % 500 == 0)
+      Serial.println(numero);*/
     delay(10);
   }
   if (lettura != ""){
-    Serial.println(lettura.length());
-    long old_index = -1;
+    Serial.println(numero);
+    int old_index = -1;
     String mex = "";
-    for (long index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
+    for (int index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
       mex = lettura.substring(old_index + 1, index);
       bluetooth_command(mex);
       old_index = index;
@@ -159,7 +166,7 @@ void aggiorna_misura(movimento m){
 }
 
 void sposta(String command, boolean aggiorna, boolean reset){
-  movimento m = lettura_parametri(command, reset);
+  movimento m = lettura_parametri(spostamenti[command.substring(0,1).toInt() - 1] + command.substring(1, command.length()), reset);
   if (m.giri != 0){
     sposta_millimetro(m.motore, m.giri, m.direzione, m.velocita);
     if (aggiorna)
@@ -294,8 +301,8 @@ void setta_seriale(String command){
 void bluetooth_command(String command){
   Serial.print("MESSAGGIO RICEVUTO: "); 
   Serial.println(command);
-  if (command.substring(0,1) == "m")
-    sposta(command.substring(1,command.length()), true, false);
+  if (command.substring(0,1).toInt() > 0)
+    sposta(command, true, false);
   if (command.substring(0,1) == "r" && !(command.substring(1,2) == "e"))
     attiva_mandrino(command.substring(1,command.length()));
   if (command.substring(0,1) == "d")
@@ -401,14 +408,20 @@ void reset_motore(String asse){
   int pin = 0;
   int indice = motoreToIndice(asse);
   String dir = "";
-  if (asse == "x")
+  if (asse == "x"){
     pin = SENS_MOT_X;
-  if (asse == "y")
+    dir = "2";
+  }
+  if (asse == "y"){
     pin = SENS_MOT_Y;
-  if (asse == "z")
+    dir = "4";
+  }
+  if (asse == "z"){
     pin = SENS_MOT_Z;
-  //while(analogRead(pin) < 1019)
-  //  sposta(asse+"g"+String((int)giri_millimetro[indice]), false, true);
+    dir = "6";
+  }
+  /*while(analogRead(pin) < 1019)
+    sposta(dir+String((int)giri_millimetro[indice]), false, true);*/
   millimetri_totali[indice] = 0;
   my_print("o", true);
 }

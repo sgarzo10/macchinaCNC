@@ -24,6 +24,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     private int[] giriMillimetro;
     private float[] posizioni;
     private Map<String, Integer> map;
+    private Map<String, String> spostamenti;
 
     public int[] getLunghezze(){ return lunghezze; }
     public int[] getGiriMillimetro(){ return giriMillimetro; }
@@ -31,6 +32,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     public ConnectionActivity getApp() { return app; }
     public String getMessaggio() { return messaggio; }
     public void setMessaggio() { this.messaggio = ""; }
+    public Map<String, String> getSpostamenti() { return spostamenti;}
 
     AscoltatoreConnectionActivity(ConnectionActivity app)
     {
@@ -48,6 +50,19 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         map.put("x", 0);
         map.put("y", 1);
         map.put("z", 2);
+        spostamenti = new HashMap<>();
+        spostamenti.put("mxs", "1");
+        spostamenti.put("mxg", "2");
+        spostamenti.put("mys", "3");
+        spostamenti.put("myg", "4");
+        spostamenti.put("mzs", "5");
+        spostamenti.put("mzg", "6");
+        spostamenti.put("1", "mxs");
+        spostamenti.put("2", "mxg");
+        spostamenti.put("3", "mys");
+        spostamenti.put("4", "myg");
+        spostamenti.put("5", "mzs");
+        spostamenti.put("6", "mzg");
     }
 
     @SuppressLint("SetTextI18n")
@@ -112,10 +127,10 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
         if(e.getAction() != MotionEvent.ACTION_UP) {
             switch (v.getId()) {
                 case R.id.sali:
-                    inviaMessaggio("mzg" + Long.toString(Math.round(giriMillimetro[2]*app.getManageXml().getPrecisioni().get(2))));
+                    inviaMessaggio(spostamenti.get("mzg") + Long.toString(Math.round(giriMillimetro[2]*app.getManageXml().getPrecisioni().get(2))));
                     break;
                 case R.id.scendi:
-                    inviaMessaggio("mzs" + Long.toString(Math.round(giriMillimetro[2]*app.getManageXml().getPrecisioni().get(2))));
+                    inviaMessaggio(spostamenti.get("mzs") + Long.toString(Math.round(giriMillimetro[2]*app.getManageXml().getPrecisioni().get(2))));
                     break;
             }
         }
@@ -125,8 +140,9 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     public void addMex(ArrayList<String> mex){
         if (Objects.equals(messaggio, "")) {
             StringBuilder finalMex = new StringBuilder();
-            for (String messaggio: mex)
+            for (String messaggio: mex) {
                 finalMex.append(messaggio).append("&");
+            }
             messaggio = finalMex.toString().substring(0, finalMex.toString().length() - 1);
             if (!app.getBluetooth().invia(messaggio))
                 app.addView(app.getResources().getString(R.string.error));
@@ -142,6 +158,7 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     }
 
     public void simulaAvanzamento(String messaggio, boolean addView){
+        messaggio = spostamenti.get(messaggio.substring(0,1)) + messaggio.substring(1, messaggio.length());
         String asse = messaggio.substring(1, 2);
         String dir = messaggio.substring(2, 3);
         float giri;
@@ -181,9 +198,9 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 coordinata = lunghezze[i];
             if (Math.abs(coordinata - posizioni[i]) > 0) {
                 if (coordinata > posizioni[i])
-                    messaggi.add("m" + map.get(i) + "s" + Long.toString(Math.round(giriMillimetro[i]*(coordinata - posizioni[i]))));
+                    messaggi.add(spostamenti.get("m" + map.get(i) + "s") + Long.toString(Math.round(giriMillimetro[i]*(coordinata - posizioni[i]))));
                 else
-                    messaggi.add("m" + map.get(i) + "g" + Long.toString(Math.round(giriMillimetro[i]*(posizioni[i] - coordinata))));
+                    messaggi.add(spostamenti.get("m" + map.get(i) + "g") + Long.toString(Math.round(giriMillimetro[i]*(posizioni[i] - coordinata))));
             }
         }
         return  messaggi;

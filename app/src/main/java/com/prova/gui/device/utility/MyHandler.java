@@ -126,7 +126,7 @@ public class MyHandler extends android.os.Handler{
                                 app.getBluetooth().invia(app.getAscoltatore().getMessaggio());
                             return;
                         }
-                        if (app.getAscoltatore().getMessaggio().contains("mz") || app.getAscoltatore().getMessaggio().contains("mx") || app.getAscoltatore().getMessaggio().contains("my")){
+                        if (Integer.parseInt(app.getAscoltatore().getMessaggio().substring(0,1)) > 0){
                             if (checkMessaggePosLung(mex, false)) {
                                 ok = 1;
                                 app.getAscoltatore().getPosizioni()[map.get(mex.substring(0,1))] = Float.parseFloat(mex.substring(1,mex.length()));
