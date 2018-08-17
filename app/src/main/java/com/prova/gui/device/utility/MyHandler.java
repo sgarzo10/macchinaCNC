@@ -59,7 +59,7 @@ public class MyHandler extends android.os.Handler{
                                 String[] pos = mex.split("&");
                                 for (int i = 0; i < 3; i++) {
                                     if (checkMessaggePosLung(pos[i], false)) {
-                                        app.getAscoltatore().getPosizioni()[map.get(pos[i].substring(0, 1))] = Float.parseFloat(mex.substring(1, pos[i].length()));
+                                        app.getAscoltatore().getPosizioni()[map.get(pos[i].substring(0, 1))] = Float.parseFloat(pos[i].substring(1, pos[i].length()));
                                         ok = ok + 1;
                                     }
                                 }
@@ -80,8 +80,8 @@ public class MyHandler extends android.os.Handler{
                             if (mex.split("&").length == 3) {
                                 String[] pos = mex.split("&");
                                 for (int i = 0; i < 3; i++) {
-                                    if (checkMessaggePosLung(mex, true)) {
-                                        app.getAscoltatore().getGiriMillimetro()[map.get(pos[i].substring(0, 1))] = (int) Float.parseFloat(mex.substring(1, pos[i].length()));
+                                    if (checkMessaggePosLung(pos[i], true)) {
+                                        app.getAscoltatore().getGiriMillimetro()[map.get(pos[i].substring(0, 1))] = (int) Float.parseFloat(pos[i].substring(1, pos[i].length()));
                                         ok = ok + 1;
                                     }
                                 }
@@ -101,8 +101,8 @@ public class MyHandler extends android.os.Handler{
                             if(mex.split("&").length == 3) {
                                 String[] pos = mex.split("&");
                                 for (int i = 0; i < 3; i++) {
-                                    if (checkMessaggePosLung(mex, true)) {
-                                        app.getAscoltatore().getLunghezze()[map.get(pos[i].substring(0, 1))] = (int) Float.parseFloat(mex.substring(1, pos[i].length()));
+                                    if (checkMessaggePosLung(pos[i], true)) {
+                                        app.getAscoltatore().getLunghezze()[map.get(pos[i].substring(0, 1))] = (int) Float.parseFloat(pos[i].substring(1, pos[i].length()));
                                         ok = ok +1;
                                     }
                                 }

@@ -1,7 +1,6 @@
 #include <SoftwareSerial.h>
 /*
 Arduino MEGA 2560
-*/
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro
 #define ENA_MOT_X 2 //define Enable Pin
@@ -23,10 +22,10 @@ Arduino MEGA 2560
 #define MANDRINO 23 // define mandrino pin
 #define BLUETOOTH_TX 18 //define bluetooth tx pin
 #define BLUETOOTH_RX 19 //define bluetooth rx pin
-/*Sostituire bluetooth_seriale con Serial1
+Sostituire bluetooth_seriale con Serial1
 rimuovere SoftwareSerial
 abilitare reset all all'avvio
-
+*/
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro
 #define ENA_MOT_X 2 //define Enable Pin
@@ -48,7 +47,7 @@ abilitare reset all all'avvio
 #define PUL_MOT_Z 14 //define Pulse pin
 #define SENS_MOT_Z 15 //define sensor pin
 #define MANDRINO 16 // define mandrino pin
-*/
+
 struct movimento {
   String motore;
   boolean direzione;
@@ -91,22 +90,23 @@ void bluetooth_read(){
   while (bluetooth_seriale.available() && c != '!'){
     c = (char)bluetooth_seriale.read();
     lettura += c;
-    delay(20);
+    delay(10);
   }
-  lettura = lettura.substring(0, lettura.length() - 1);
-  Serial.println(lettura);
-  int old_index = -1;
-  String mex = "";
-  for (int index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
-    mex = lettura.substring(old_index + 1, index);
-    Serial.println(mex);
-    //bluetooth_command(mex);
-    old_index = index;
+  if (lettura != ""){
+    Serial.println(lettura.length());
+    long old_index = -1;
+    String mex = "";
+    for (long index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
+      mex = lettura.substring(old_index + 1, index);
+      bluetooth_command(mex);
+      old_index = index;
+    }
+    mex = lettura.substring(old_index + 1, lettura.length() - 1);
+    if (mex != ""){
+      ultimo = true;
+      bluetooth_command(mex);
+    }
   }
-  mex = lettura.substring(old_index + 1, lettura.length());
-  Serial.println(mex);
-  ultimo = true;
-  //bluetooth_command(mex);
   return;
 }
 
@@ -407,8 +407,8 @@ void reset_motore(String asse){
     pin = SENS_MOT_Y;
   if (asse == "z")
     pin = SENS_MOT_Z;
-  while(analogRead(pin) < 1019)
-    sposta(asse+"g"+String((int)giri_millimetro[indice]), false, true);
+  //while(analogRead(pin) < 1019)
+  //  sposta(asse+"g"+String((int)giri_millimetro[indice]), false, true);
   millimetri_totali[indice] = 0;
   my_print("o", true);
 }
