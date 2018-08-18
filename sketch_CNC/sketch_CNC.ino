@@ -1,4 +1,7 @@
 #include <SoftwareSerial.h>
+#include <SPI.h>
+#include <SD.h>
+
 /*
 Arduino MEGA 2560
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
@@ -29,45 +32,51 @@ abilitare while per reset
 */
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro
-#define ENA_MOT_X 2 //define Enable Pin
+#define ENA_MOT_X 3 //define Enable Pin
 #define DIR_MOT_X 3 //define Direction
-#define PUL_MOT_X 4 //define Pulse pin
-#define SENS_MOT_X 5 //define sensor pin
-#define BLUETOOTH_TX 6 //define bluetooth tx pin
+#define PUL_MOT_X 3 //define Pulse pin
+#define SENS_MOT_X 3 //define sensor pin
+#define BLUETOOTH_TX  6//define bluetooth tx pin
 #define BLUETOOTH_RX 7 //define bluetooth rx pin
+#define BLUETOOTH_AT 9 //define bluetooth at pin
 #define LUNGHEZZA_Y 309 //lunghezza asse y in millimetri
 #define GIRI_MM_Y 640 //numero di giri per fare un millimetro
-#define ENA_MOT_Y 8 //define Enable Pin
-#define DIR_MOT_Y 9 //define Direction
-#define PUL_MOT_Y 10 //define Pulse pin
-#define SENS_MOT_Y 11 //define sensor pin
+#define ENA_MOT_Y 3 //define Enable Pin
+#define DIR_MOT_Y 3 //define Direction
+#define PUL_MOT_Y 3 //define Pulse pin
+#define SENS_MOT_Y 3 //define sensor pin
 #define LUNGHEZZA_Z 135 //lunghezza asse z in millimetri
 #define GIRI_MM_Z 430 //numero di giri per fare un millimetro
-#define ENA_MOT_Z 12 //define Enable Pin
-#define DIR_MOT_Z 13 //define Direction
-#define PUL_MOT_Z 14 //define Pulse pin
-#define SENS_MOT_Z 15 //define sensor pin
-#define MANDRINO 16 // define mandrino pin
+#define ENA_MOT_Z 3 //define Enable Pin
+#define DIR_MOT_Z 3 //define Direction
+#define PUL_MOT_Z 3 //define Pulse pin
+#define SENS_MOT_Z 3 //define sensor pin
+#define MANDRINO 3 // define mandrino pin
 
 struct movimento {
   String motore;
   boolean direzione;
   uint32_t giri;
-  int velocita;
+  uint16_t velocita;
 };
 
+File myFile;
 SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
 float millimetri_totali[3] = {0,0,0};
 float giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
-int lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
+uint16_t lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
 String spostamenti[6] = {"xs", "xg", "ys", "yg", "zs", "zg"};
 boolean seriale = true;
 boolean ultimo = false;
 
 void setup() {
   if (seriale)
-    Serial.begin(9600);
-  bluetooth_seriale.begin(9600);
+    Serial.begin(38400);
+  if (!SD.begin(4)) {
+    Serial.println("INIZIALIZZAZIONE SD FALLITA!");
+    return;
+  }
+  bluetooth_seriale.begin(38400);
   pinMode (PUL_MOT_X, OUTPUT);
   pinMode (DIR_MOT_X, OUTPUT);
   pinMode (ENA_MOT_X, OUTPUT);
@@ -87,41 +96,89 @@ void loop() {
 }
 
 void bluetooth_read(){
-  String lettura = "";
-  char c = 's';
-  uint32_t numero = 0; 
-  while (bluetooth_seriale.available() && c != '!'){
-    c = (char)bluetooth_seriale.read();
-    //if (lettura. length() < 5)
-    lettura += c;
-    numero = numero + 1;
-    /*if (numero % 500 == 0)
-      Serial.println(numero);*/
-    delay(10);
+  char c = '#';
+  if (bluetooth_seriale.available() > 0){
+    if (SD.exists("last.txt"))
+      SD.remove("last.txt");
+    myFile = SD.open("last.txt", FILE_WRITE);
+    while (c != '!'){
+      c = bluetooth_seriale.read();
+      if ((int)c > -1){
+        myFile.print(c);
+      }
+    }
   }
-  if (lettura != ""){
-    Serial.println(numero);
-    int old_index = -1;
-    String mex = "";
-    for (int index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
+  if (c != '#'){
+    myFile.close();
+    analyzeResponse();
+  }
+  return;
+}
+
+void analyzeResponse(){
+  String lettura = "";
+  String mex = "";
+  int8_t old_index = -1;
+  uint8_t dim = 10;
+  uint16_t numeroMex = countMessages();
+  uint32_t posizione = 0;
+  Serial.println("----------------------------");
+  Serial.print("CARATTERI: ");
+  Serial.print(myFile.size());
+  Serial.print(" MESSAGGI: ");
+  Serial.println(numeroMex);
+  myFile.close();
+  for (uint16_t i = 0; i < numeroMex; i = i + dim){
+    lettura = readMessages(posizione, dim);
+    posizione = posizione + lettura.length();
+    old_index = -1;
+    for (int8_t index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
       mex = lettura.substring(old_index + 1, index);
       bluetooth_command(mex);
       old_index = index;
     }
     mex = lettura.substring(old_index + 1, lettura.length() - 1);
-    if (mex != ""){
+    if (mex != "" && mex != "&"){
       ultimo = true;
       bluetooth_command(mex);
+      Serial.println("HO ANALIZZATO TUTTO IL FILE");
     }
   }
-  return;
+}
+
+String readMessages(uint32_t posizione, uint16_t numero){
+  uint16_t nMessages = 0;
+  String lettura = "";
+  char c = 'w';
+  myFile = SD.open("last.txt");
+  myFile.seek(posizione);
+  while (nMessages < numero && myFile.available()){
+    c = myFile.read();
+    if (c == '&' || c == '!')
+      nMessages = nMessages + 1;
+    lettura += c;
+  }
+  myFile.close();
+  return lettura;
+}
+
+uint16_t countMessages(){
+  uint16_t count = 0;
+  char c = 'w';
+  myFile = SD.open("last.txt");
+  while (myFile.available()){
+    c = myFile.read();
+    if (c == '&' || c == '!')
+      count = count + 1;
+  }
+  return count;
 }
 
 //direzione: true orario(sale), false antiorario (scende)
 //velocita: 20 velocissimo, 1000 lentissimo
-void ruota(String motore, boolean direzione, int velocita){
-  int pin_dir = 0;
-  int pin_pul = 0;
+void ruota(String motore, boolean direzione, uint16_t velocita){
+  uint8_t pin_dir = 0;
+  uint8_t pin_pul = 0;
   if (motore == "x"){
     pin_dir = DIR_MOT_X;
     pin_pul = PUL_MOT_X;
@@ -139,11 +196,12 @@ void ruota(String motore, boolean direzione, int velocita){
   delayMicroseconds(velocita);
   digitalWrite(pin_pul,LOW);
   delayMicroseconds(velocita);
+  return;
 }
 
 //3200 pulsazioni giro completo 5mm - 640 pulsazioni 1mm 
-void sposta_millimetro(String motore, uint32_t giri, boolean direzione, int velocita){
-  int pin = 0;
+void sposta_millimetro(String motore, uint32_t giri, boolean direzione, uint16_t velocita){
+  uint8_t pin = 0;
   if (motore == "x")
     pin = ENA_MOT_X;
   if (motore == "y")
@@ -153,16 +211,18 @@ void sposta_millimetro(String motore, uint32_t giri, boolean direzione, int velo
   digitalWrite(pin,true);
   for(uint32_t i=0;i<giri;i++)
     ruota(motore, direzione, velocita);
+  return;
 }
 
 void aggiorna_misura(movimento m){
-  int indice = motoreToIndice(m.motore);
+  uint8_t indice = motoreToIndice(m.motore);
   float totali = millimetri_totali[indice];
   if (m.direzione)
     totali = totali + (m.giri / giri_millimetro[indice]);
   else
     totali = totali - (m.giri / giri_millimetro[indice]);
   millimetri_totali[indice] = totali;
+  return;
 }
 
 void sposta(String command, boolean aggiorna, boolean reset){
@@ -174,6 +234,7 @@ void sposta(String command, boolean aggiorna, boolean reset){
   }
   if (aggiorna)
     dove_print(m.motore, true);
+  return;
 }
 
 void attiva_mandrino(String command){
@@ -185,7 +246,8 @@ void attiva_mandrino(String command){
     my_print("o", true);
   }
   else
-    my_print("e", true); 
+    my_print("e", true);
+  return;
 }
 
 void dove_sono(String command){
@@ -195,15 +257,17 @@ void dove_sono(String command){
     dove_print("z", true);
   }
   else
-    my_print("e", true); 
+    my_print("e", true);
+  return;
 }
 
 void dove_print(String asse, boolean new_line){
-  int indice = motoreToIndice(asse);
+  uint8_t indice = motoreToIndice(asse);
   my_print(asse, false);
   my_print(String(millimetri_totali[indice], 7), new_line);
   if (!new_line)
     my_print("&", new_line);
+  return;
 }
 
 void dimmi_lunghezze(String command){
@@ -214,10 +278,11 @@ void dimmi_lunghezze(String command){
   }
   else
     my_print("e", true);
+  return;
 }
 
 void print_lunghezze(String asse){
-  int indice = motoreToIndice(asse);
+  uint8_t indice = motoreToIndice(asse);
   my_print(asse, false);
   if (asse == "z")
     my_print(String(lunghezze[indice]), true);
@@ -225,6 +290,7 @@ void print_lunghezze(String asse){
     my_print(String(lunghezze[indice]), false);
     my_print("&", false);
   }
+  return;
 }
 
 void dimmi_giri(String command){
@@ -235,10 +301,11 @@ void dimmi_giri(String command){
   }
   else
     my_print("e", true);
+  return;
 }
 
 void print_giri(String asse){
-  int indice = motoreToIndice(asse);
+  uint8_t indice = motoreToIndice(asse);
   my_print(asse, false);
   if (asse == "z")
     my_print(String(giri_millimetro[indice]), true);
@@ -246,6 +313,7 @@ void print_giri(String asse){
     my_print(String(giri_millimetro[indice]), false);
     my_print("&", false);
   }
+  return;
 }
 
 void setta_lunghezze(String command){
@@ -265,6 +333,7 @@ void setta_lunghezze(String command){
     lunghezze[indice] = lunghezza.toInt();
     my_print("o", true);
   }
+  return;
 }
 
 void setta_giri(String command){
@@ -284,6 +353,7 @@ void setta_giri(String command){
     giri_millimetro[indice] = giri.toInt();
     my_print("o", true);
   }
+  return;
 }
 
 void setta_seriale(String command){
@@ -295,12 +365,11 @@ void setta_seriale(String command){
     my_print("o", true);
   }
   else
-    my_print("e", true); 
+    my_print("e", true);
+  return;
 }
 
 void bluetooth_command(String command){
-  Serial.print("MESSAGGIO RICEVUTO: "); 
-  Serial.println(command);
   if (command.substring(0,1).toInt() > 0)
     sposta(command, true, false);
   if (command.substring(0,1) == "r" && !(command.substring(1,2) == "e"))
@@ -319,6 +388,7 @@ void bluetooth_command(String command){
     setta_giri(command.substring(2,command.length()));
   if (command.substring(0,2) == "ss")
     setta_seriale(command.substring(2,command.length()));
+  return;
 }
 
 movimento lettura_parametri(String command, boolean reset){
@@ -328,7 +398,7 @@ movimento lettura_parametri(String command, boolean reset){
   String motore;
   boolean vel = false;
   boolean ok = true;
-  int indice = -1;
+  uint8_t indice = 0;
   movimento m;
   m.velocita=32;
   m.giri=0;
@@ -402,11 +472,12 @@ void reset(String command){
   }
   else
     my_print("e", true);
+  return;
 }
 
 void reset_motore(String asse){
-  int pin = 0;
-  int indice = motoreToIndice(asse);
+  uint8_t pin = 0;
+  uint8_t indice = motoreToIndice(asse);
   String dir = "";
   if (asse == "x"){
     pin = SENS_MOT_X;
@@ -424,6 +495,7 @@ void reset_motore(String asse){
     sposta(dir+String((int)giri_millimetro[indice]), false, true);*/
   millimetri_totali[indice] = 0;
   my_print("o", true);
+  return;
 }
 
 void my_print(String s, boolean new_line){
@@ -438,16 +510,16 @@ void my_print(String s, boolean new_line){
       if (new_line){
         bluetooth_seriale.println(s);
         ultimo = false;
-        delay(100);
       }
       else
         bluetooth_seriale.print(s);
     }
   }
+  return;
 }
 
-int motoreToIndice(String motore){
-  int indice = -1;
+uint8_t motoreToIndice(String motore){
+  uint8_t indice = -1;
   if (motore == "x")
     indice = 0;
   if (motore == "y")

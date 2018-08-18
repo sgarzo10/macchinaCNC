@@ -53,27 +53,22 @@ public class BluetoothConnection extends Thread {
     }
 
     public boolean invia(String message) {
+        String mex;
+        int size = 63;
         try {
             message = message + "!";
-            Log.i("WRITE", Integer.toString(message.length()) + " BYTE");
-            for (int i = 0; i < message.length(); i = i + 5) {
-                if (i > 50)
-                    sleep(50);
-                else{
-                    if (i > 1000)
-                        sleep(100);
-                    else {
-                        if (i > 10000)
-                            sleep(120);
-                    }
+            Log.i("WRITE", Integer.toString(message.getBytes().length) + " BYTE");
+            if (message.length() > 63) {
+                for (int i = 0; i < message.length(); i = i + size) {
+                    if (i + size < message.length())
+                        mex = message.substring(i, i + size);
+                    else
+                        mex = message.substring(i, message.length());
+                    outStream.write(mex.getBytes());
+                    sleep(600);
                 }
-                String mex;
-                if (i + 5 < message.length())
-                    mex = message.substring(i, i + 5);
-                else
-                    mex = message.substring(i, message.length());
-                outStream.write(mex.getBytes());
-            }
+            } else
+                outStream.write(message.getBytes());
             Log.i("WRITE", "FINISH");
             return true;
         } catch (Exception e) {
