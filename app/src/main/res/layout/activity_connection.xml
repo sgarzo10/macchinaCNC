@@ -238,13 +238,42 @@
                 android:orientation="horizontal"
                 tools:ignore="NestedWeights,UselessLeaf">
 
-                <RelativeLayout
-                    android:id="@+id/quadrato"
+                <LinearLayout
                     android:layout_width="0dip"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.3">
+                    android:layout_weight="0.3"
+                    android:orientation="vertical"
+                    android:weightSum="1">
 
-                </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="0.3" />
+
+                    <TextView
+                        android:id="@+id/numeroMex"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="0.2" />
+
+                    <ProgressBar
+                        android:id="@+id/avanzamento"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="0.2"
+                        android:clickable="false"
+                        android:max="100"
+                        android:progressBackgroundTint="@android:color/holo_blue_light"
+                        android:progressTint="@color/colorPrimary"
+                        android:scaleY="5" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="0.3" />
+
+                </LinearLayout>
 
                 <ImageButton
                     android:id="@+id/scendi"

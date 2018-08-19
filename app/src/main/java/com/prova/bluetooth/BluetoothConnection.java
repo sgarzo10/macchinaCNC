@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
+
+import com.prova.gui.device.activity.ConnectionActivity;
 import com.prova.gui.device.utility.MyHandler;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,15 +17,21 @@ public class BluetoothConnection extends Thread {
     private InputStream input;
     private BluetoothAdapter bluetoothAdapter;
     private MyHandler h;
+    private ConnectionActivity app;
+    private int progresso;
+    private String message;
 
     public MyHandler getH() { return h; }
+    public void setProgresso() {this.progresso = 0;}
 
-    public BluetoothConnection (MyHandler h){
+    public BluetoothConnection (MyHandler h, ConnectionActivity app){
         this.h = h;
+        this.app = app;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mmSocket = null;
         outStream = null;
         input = null;
+        progresso = 0;
     }
 
     public boolean connetti(String mac) {
@@ -52,29 +60,38 @@ public class BluetoothConnection extends Thread {
         }
     }
 
-    public boolean invia(String message) {
-        String mex;
-        int size = 63;
-        try {
-            message = message + "!";
-            Log.i("WRITE", Integer.toString(message.getBytes().length) + " BYTE");
-            if (message.length() > 63) {
-                for (int i = 0; i < message.length(); i = i + size) {
-                    if (i + size < message.length())
-                        mex = message.substring(i, i + size);
-                    else
-                        mex = message.substring(i, message.length());
-                    outStream.write(mex.getBytes());
-                    sleep(600);
+    public void invia(String toSend) {
+        message = toSend + "!";
+        new Thread(new Runnable() {
+
+            int size = 63, i;
+            String mex;
+
+            public void run() {
+                try {
+                    app.getNumMex().setText(String.format(app.getResources().getString(R.string.numero_messaggi), message.length()));
+                    if (message.length() > size) {
+                        for (i = 0; i < message.length(); i = i + size) {
+                            if (i + size < message.length()) {
+                                mex = message.substring(i, i + size);
+                                progresso = ((i + size) * 100) / message.length();
+                            } else
+                                mex = message.substring(i, message.length());
+                            outStream.write(mex.getBytes());
+                            if (i == 0)
+                                sleep(450);
+                            else
+                                sleep(320);
+                        }
+                    } else
+                        outStream.write(message.getBytes());
+                    progresso = 100;
+                } catch (Exception e) {
+                    Log.e("EXCEPTION SEND", e.getMessage());
+                    app.addView(app.getResources().getString(R.string.error));
                 }
-            } else
-                outStream.write(message.getBytes());
-            Log.i("WRITE", "FINISH");
-            return true;
-        } catch (Exception e) {
-            Log.e("EXCEPTION SEND",e.getMessage());
-            return false;
-        }
+            }
+        }).start();
     }
 
     @Override
@@ -90,6 +107,7 @@ public class BluetoothConnection extends Thread {
                         h.obtainMessage(1, bytes, -1, buffer).sendToTarget();
                     }
                 }
+                app.getProgressBar().setProgress(progresso);
             } catch (Exception ignored) {
                 Log.e("EXCEPTION CONNEC RECIVE", ignored.getMessage());
             }

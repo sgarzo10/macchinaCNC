@@ -47,5 +47,6 @@
     <string name="output_posizione">%1$s: %2$f</string>
     <string name="ouput_giri">GX: %1$d GY: %2$d GZ: %3$d</string>
     <string name="output_lunghezze">LX: %1$d LY: %2$d LZ: %3$d</string>
+    <string name="numero_messaggi">INVIO %1$d BYTE</string>
     <string name="salva">salva</string>
 </resources>

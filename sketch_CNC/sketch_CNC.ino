@@ -38,7 +38,6 @@ abilitare while per reset
 #define SENS_MOT_X 3 //define sensor pin
 #define BLUETOOTH_TX  6//define bluetooth tx pin
 #define BLUETOOTH_RX 7 //define bluetooth rx pin
-#define BLUETOOTH_AT 9 //define bluetooth at pin
 #define LUNGHEZZA_Y 309 //lunghezza asse y in millimetri
 #define GIRI_MM_Y 640 //numero di giri per fare un millimetro
 #define ENA_MOT_Y 3 //define Enable Pin
@@ -52,6 +51,7 @@ abilitare while per reset
 #define PUL_MOT_Z 3 //define Pulse pin
 #define SENS_MOT_Z 3 //define sensor pin
 #define MANDRINO 3 // define mandrino pin
+#define BUFFER_SIZE 10 //numero di messaggi da leggere dalla scheda SD
 
 struct movimento {
   String motore;
@@ -98,13 +98,19 @@ void loop() {
 void bluetooth_read(){
   char c = '#';
   if (bluetooth_seriale.available() > 0){
+    /*Serial.print("A");
+    Serial.println(millis());*/
     if (SD.exists("last.txt"))
       SD.remove("last.txt");
     myFile = SD.open("last.txt", FILE_WRITE);
     while (c != '!'){
+      /*Serial.print("I");
+      Serial.println(millis());*/
       c = bluetooth_seriale.read();
       if ((int)c > -1){
         myFile.print(c);
+        /*Serial.print("F");
+        Serial.println(millis());*/
       }
     }
   }
@@ -119,38 +125,54 @@ void analyzeResponse(){
   String lettura = "";
   String mex = "";
   int8_t old_index = -1;
-  uint8_t dim = 10;
+  uint8_t ripetizioni = 1;
+  uint8_t mexPos = 0;
   uint16_t numeroMex = countMessages();
+  uint16_t currentMex = 0;
   uint32_t posizione = 0;
   Serial.println("----------------------------");
   Serial.print("CARATTERI: ");
   Serial.print(myFile.size());
   Serial.print(" MESSAGGI: ");
   Serial.println(numeroMex);
-  myFile.close();
-  for (uint16_t i = 0; i < numeroMex; i = i + dim){
-    lettura = readMessages(posizione, dim);
-    posizione = posizione + lettura.length();
-    old_index = -1;
-    for (int8_t index = lettura.indexOf("&"); index > 0; index = lettura.indexOf("&", old_index + 1)){
-      mex = lettura.substring(old_index + 1, index);
-      bluetooth_command(mex);
-      old_index = index;
-    }
-    mex = lettura.substring(old_index + 1, lettura.length() - 1);
-    if (mex != "" && mex != "&"){
-      ultimo = true;
-      bluetooth_command(mex);
-      Serial.println("HO ANALIZZATO TUTTO IL FILE");
+  for(uint8_t j = 0; j < ripetizioni; j++){
+    for (uint16_t i = 0; i < numeroMex; i = i + BUFFER_SIZE){
+      lettura = readMessages(posizione, BUFFER_SIZE);
+      posizione = posizione + lettura.length();
+      old_index = -1;
+      for (int8_t index = lettura.indexOf("&"); index > 0 && posizione != 0; index = lettura.indexOf("&", old_index + 1)){
+        currentMex = currentMex + 1;
+        mex = lettura.substring(old_index + 1, index);
+        if (mex.indexOf("*") > -1){
+          ripetizioni = mex.substring(1, mex.indexOf("-")).toInt();
+          if (j < ripetizioni - 1){
+            posizione = 0;
+            currentMex = 0;
+          }
+          if (j == ripetizioni - 2)
+            mexPos = mex.substring(mex.indexOf("-") + 1, mex.length()).toInt();
+        }
+        if (!(currentMex >= numeroMex - mexPos - 3 && currentMex < numeroMex - 3))
+          bluetooth_command(mex);
+        old_index = index;
+      }
+      if (posizione != 0){
+        mex = lettura.substring(old_index + 1, lettura.length() - 1);
+        if (mex != "" && mex != "&"){
+          ultimo = true;
+          bluetooth_command(mex);
+          Serial.println("HO ANALIZZATO TUTTO IL FILE");
+        }
+      }
     }
   }
+  myFile.close();
 }
 
 String readMessages(uint32_t posizione, uint16_t numero){
   uint16_t nMessages = 0;
   String lettura = "";
   char c = 'w';
-  myFile = SD.open("last.txt");
   myFile.seek(posizione);
   while (nMessages < numero && myFile.available()){
     c = myFile.read();
@@ -158,7 +180,6 @@ String readMessages(uint32_t posizione, uint16_t numero){
       nMessages = nMessages + 1;
     lettura += c;
   }
-  myFile.close();
   return lettura;
 }
 
@@ -320,7 +341,7 @@ void setta_lunghezze(String command){
   boolean ok = true;
   String motore = command.substring(0, 1);
   String lunghezza = command.substring(1, command.length());
-  int indice = motoreToIndice(motore);
+  uint8_t indice = motoreToIndice(motore);
   if (!(motore == "x" || motore == "y" || motore == "z")){
     my_print("e", true);
     ok = false;
@@ -340,7 +361,7 @@ void setta_giri(String command){
   boolean ok = true;
   String motore = command.substring(0, 1);
   String giri = command.substring(1, command.length());
-  int indice = motoreToIndice(motore);
+  uint8_t indice = motoreToIndice(motore);
   if (!(motore == "x" || motore == "y" || motore == "z")){
     my_print("e", true);
     ok = false;

@@ -46,6 +46,8 @@ public class MyHandler extends android.os.Handler{
                         String mex = sb.substring(0, endOfLineIndex);
                         sb.delete(0, sb.length());
                         Log.i("RECIVE", mex);
+                        app.getBluetooth().setProgresso();
+                        app.getNumMex().setText("");
                         if (app.getAscoltatore().getMessaggio().equals("ra") || app.getAscoltatore().getMessaggio().equals("rs")) {
                             if (mex.equals("o")) {
                                 app.addView("MANDRINO");

@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import com.prova.bluetooth.BluetoothConnection;
@@ -19,6 +20,9 @@ import com.prova.gui.device.view.JoystickView;
 import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
 import com.prova.gui.settings.utility.ManageXml;
+
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -32,6 +36,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private ArrayList<CheckBox> check;
     private TextView textLunghezze;
     private TextView textGiri;
+    private TextView numMex;
     private ArrayList<TextView> textPosizioni;
     private LinearLayout output;
     private BluetoothConnection bluetooth;
@@ -40,6 +45,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private Switch rotazione_attiva;
     private AscoltatoreConnectionActivity ascoltatore;
     private ArrayList<AlertDialog> dialog;
+    private ProgressBar progressBar;
     private boolean initLunghezze;
     private boolean initPosizioni;
     private boolean initGiri;
@@ -56,7 +62,9 @@ public class ConnectionActivity extends AppCompatActivity {
     public ArrayList<TextView> getTextPosizioni() { return textPosizioni; }
     public TextView getTextLunghezze() { return textLunghezze; }
     public TextView getTextGiri() { return textGiri; }
+    public TextView getNumMex() { return numMex; }
     public ManageXml getManageXml() { return manageXml; }
+    public ProgressBar getProgressBar() { return progressBar; }
 
     @SuppressLint("UseSparseArrays")
     @Override
@@ -95,6 +103,8 @@ public class ConnectionActivity extends AppCompatActivity {
         textPosizioni.add((TextView) findViewById(R.id.posizioneZ));
         textLunghezze = findViewById(R.id.text_lunghezze);
         textGiri = findViewById(R.id.text_giri);
+        progressBar = findViewById(R.id.avanzamento);
+        numMex = findViewById(R.id.numeroMex);
         linearLayoutJoystick.addView(joystickView);
         reset.setOnClickListener(ascoltatore);
         linea.setOnClickListener(ascoltatore);
@@ -122,7 +132,7 @@ public class ConnectionActivity extends AppCompatActivity {
         mp.start();
         TextView t = new TextView(this);
         boolean connesso = false;
-        bluetooth = new BluetoothConnection(new MyHandler(this));
+        bluetooth = new BluetoothConnection(new MyHandler(this), this);
         while (!connesso) {
             if (bluetooth.connetti(mac)) {
                 t.setText(String.format("%s %s", getResources().getString(R.string.connected), nome));

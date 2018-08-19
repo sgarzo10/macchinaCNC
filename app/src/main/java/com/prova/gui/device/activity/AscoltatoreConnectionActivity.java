@@ -144,16 +144,14 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                 finalMex.append(messaggio).append("&");
             }
             messaggio = finalMex.toString().substring(0, finalMex.toString().length() - 1);
-            if (!app.getBluetooth().invia(messaggio))
-                app.addView(app.getResources().getString(R.string.error));
+            app.getBluetooth().invia(messaggio);
         }
     }
 
     void inviaMessaggio(String mex){
         if (Objects.equals(messaggio, "")) {
             messaggio = mex;
-            if (!app.getBluetooth().invia(messaggio))
-                app.addView(app.getResources().getString(R.string.error));
+            app.getBluetooth().invia(messaggio);
         }
     }
 

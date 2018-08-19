@@ -22,20 +22,22 @@ public class DrawFigure {
         larghezza = larghezza - giri;
         if (riempi)
             giri = Math.min(altezza, larghezza);
-        for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
-            ArrayList<String> messaggi2d = new ArrayList<>();
-            for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
-                if (i > 0) {
-                    messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
-                    messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
-                }
-                messaggi2d.addAll(disegnaLinea(larghezza - i, 0));
-                messaggi2d.addAll(disegnaLinea(altezza - i, 90));
-                messaggi2d.addAll(disegnaLinea(larghezza - i, 180));
-                messaggi2d.addAll(disegnaLinea(altezza - i, 270));
+        ArrayList<String> messaggi2d = new ArrayList<>();
+        for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+            if (i > 0) {
+                messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+                messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
             }
-            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
+            messaggi2d.addAll(disegnaLinea(larghezza - i, 0));
+            messaggi2d.addAll(disegnaLinea(altezza - i, 90));
+            messaggi2d.addAll(disegnaLinea(larghezza - i, 180));
+            messaggi2d.addAll(disegnaLinea(altezza - i, 270));
         }
+        if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
+            messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))) + "-" + Integer.toString(messaggi.size() - messaggi2d.size() - 1));
+        } else
+            messaggi.addAll(messaggi2d);
         messaggi.addAll(resetPostDraw());
         ascoltatore.addMex(messaggi);
     }
@@ -55,19 +57,21 @@ public class DrawFigure {
             lato2 = lato2 - giri;
             if (riempi)
                 giri = Math.min(Math.min(base, lato1), lato2);
-            for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
-                ArrayList<String> messaggi2d = new ArrayList<>();
-                for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
-                    if (i > 0) {
-                        messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
-                        messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
-                    }
-                    messaggi2d.addAll(disegnaLinea(base - i, 0));
-                    messaggi2d.addAll(disegnaLinea(lato1 - i, 180 - angolo3));
-                    messaggi2d.addAll(disegnaLinea(lato2 - i, 270 - (angolo1 - (90 - angolo3))));
+            ArrayList<String> messaggi2d = new ArrayList<>();
+            for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+                if (i > 0) {
+                    messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+                    messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
                 }
-                messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
+                messaggi2d.addAll(disegnaLinea(base - i, 0));
+                messaggi2d.addAll(disegnaLinea(lato1 - i, 180 - angolo3));
+                messaggi2d.addAll(disegnaLinea(lato2 - i, 270 - (angolo1 - (90 - angolo3))));
             }
+            if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
+                messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+                messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+            } else
+                messaggi.addAll(messaggi2d);
             messaggi.addAll(resetPostDraw());
             ascoltatore.addMex(messaggi);
         }
@@ -85,20 +89,22 @@ public class DrawFigure {
             diagonale = diagonale - giri;
             if (riempi)
                 giri = Math.min(base, diagonale);
-            for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
-                ArrayList<String> messaggi2d = new ArrayList<>();
-                for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
-                    if (i > 0) {
-                        messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
-                        messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
-                    }
-                    messaggi2d.addAll(disegnaLinea(base - i, 0));
-                    messaggi2d.addAll(disegnaLinea((int) diagonale - i, angolo));
-                    messaggi2d.addAll(disegnaLinea(base - i, 180));
-                    messaggi2d.addAll(disegnaLinea((int) diagonale - i, 180 + angolo));
+            ArrayList<String> messaggi2d = new ArrayList<>();
+            for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+                if (i > 0) {
+                    messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+                    messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
                 }
-                messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
+                messaggi2d.addAll(disegnaLinea(base - i, 0));
+                messaggi2d.addAll(disegnaLinea((int) diagonale - i, angolo));
+                messaggi2d.addAll(disegnaLinea(base - i, 180));
+                messaggi2d.addAll(disegnaLinea((int) diagonale - i, 180 + angolo));
             }
+            if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
+                messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+                messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+            } else
+                messaggi.addAll(messaggi2d);
             messaggi.addAll(resetPostDraw());
             ascoltatore.addMex(messaggi);
         }
@@ -121,20 +127,22 @@ public class DrawFigure {
                 lato2 = lato2 - giri;
                 if (riempi)
                     giri = Math.min(Math.min(Math.min(baseMaggiore, lato1), baseMinore), lato2);
-                for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
-                    ArrayList<String> messaggi2d = new ArrayList<>();
-                    for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
-                        if (i > 0) {
-                            messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
-                            messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
-                        }
-                        messaggi2d.addAll(disegnaLinea(baseMaggiore - 1, 0));
-                        messaggi2d.addAll(disegnaLinea((int) lato1 - 1, Math.round(90 + angolo1)));
-                        messaggi2d.addAll(disegnaLinea(baseMinore - 1, 180));
-                        messaggi2d.addAll(disegnaLinea((int) lato2 - 1, Math.round(270 - angolo2)));
+                ArrayList<String> messaggi2d = new ArrayList<>();
+                for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+                    if (i > 0) {
+                        messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+                        messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
                     }
-                    messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
+                    messaggi2d.addAll(disegnaLinea(baseMaggiore - 1, 0));
+                    messaggi2d.addAll(disegnaLinea((int) lato1 - 1, Math.round(90 + angolo1)));
+                    messaggi2d.addAll(disegnaLinea(baseMinore - 1, 180));
+                    messaggi2d.addAll(disegnaLinea((int) lato2 - 1, Math.round(270 - angolo2)));
                 }
+                if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
+                    messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+                    messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+                } else
+                    messaggi.addAll(messaggi2d);
                 messaggi.addAll(resetPostDraw());
                 ascoltatore.addMex(messaggi);
             }
@@ -149,18 +157,20 @@ public class DrawFigure {
         float init_y = ascoltatore.getPosizioni()[1];
         if (riempi)
             giri = raggio;
-        for (double j = 0; j < profondita; j = j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
-            ArrayList<String> messaggi2d = new ArrayList<>();
-            for (double i = raggio; i > raggio - giri; i = i - ascoltatore.getApp().getManageXml().getDiametro()) {
-                if (i < raggio)
-                    messaggi2d.add(ascoltatore.getSpostamenti().get("myg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mxg", "myg"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "myg", "mxs"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mxs", "mys"));
-                messaggi2d.addAll(disegnaSemiCerchio(i, "mys", "mxg"));
-            }
-            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
+        ArrayList<String> messaggi2d = new ArrayList<>();
+        for (double i = raggio; i > raggio - giri; i = i - ascoltatore.getApp().getManageXml().getDiametro()) {
+            if (i < raggio)
+                messaggi2d.add(ascoltatore.getSpostamenti().get("myg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
+            messaggi2d.addAll(disegnaSemiCerchio(i, "mxg", "myg"));
+            messaggi2d.addAll(disegnaSemiCerchio(i, "myg", "mxs"));
+            messaggi2d.addAll(disegnaSemiCerchio(i, "mxs", "mys"));
+            messaggi2d.addAll(disegnaSemiCerchio(i, "mys", "mxg"));
         }
+        if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
+            messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+        } else
+            messaggi.addAll(messaggi2d);
         messaggi.addAll(resetPostDraw());
         ascoltatore.addMex(messaggi);
     }
@@ -171,10 +181,12 @@ public class DrawFigure {
         float init_y = ascoltatore.getPosizioni()[1];
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
         lunghezza = lunghezza - ascoltatore.getApp().getManageXml().getDiametro();
-        for (int j = 0; j < profondita; j++) {
-            ArrayList<String> messaggi2d = disegnaLinea(lunghezza, angolo);
-            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
-        }
+        ArrayList<String> messaggi2d = disegnaLinea(lunghezza, angolo);
+        if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
+            messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+        } else
+            messaggi.addAll(messaggi2d);
         messaggi.addAll(resetPostDraw());
         return messaggi;
     }
@@ -184,10 +196,12 @@ public class DrawFigure {
         float init_x = ascoltatore.getPosizioni()[0];
         float init_y = ascoltatore.getPosizioni()[1];
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
-        for (int j = 0; j < profondita; j++) {
-            ArrayList<String> messaggi2d = disegnaSemiCerchio(raggio, mex1, mex2);
-            messaggi.addAll(scendi(j, profondita, messaggi2d, init_x, init_y));
-        }
+        ArrayList<String> messaggi2d = disegnaSemiCerchio(raggio, mex1, mex2);
+        if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
+            messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+        } else
+            messaggi.addAll(messaggi2d);
         messaggi.addAll(resetPostDraw());
         return messaggi;
     }
@@ -275,14 +289,12 @@ public class DrawFigure {
         return messaggi;
     }
 
-    private ArrayList<String> scendi(double j, double profondita, ArrayList<String> messaggi2d, float x, float y){
+    private ArrayList<String> simulaAndPosiziona(ArrayList<String> messaggi2d, float x, float y){
         ArrayList<String> messaggi = new ArrayList<>(messaggi2d);
-        if (j + ascoltatore.getApp().getManageXml().getPrecisioni().get(2) < profondita) {
-            ascoltatore.simulaDisegno(messaggi2d);
-            ArrayList<String> posiziona = new ArrayList<>(ascoltatore.posiziona(x, y, ascoltatore.getPosizioni()[2] + ascoltatore.getApp().getManageXml().getPrecisioni().get(2)));
-            ascoltatore.simulaDisegno(posiziona);
-            messaggi.addAll(posiziona);
-        }
+        ascoltatore.simulaDisegno(messaggi2d);
+        ArrayList<String> posiziona = new ArrayList<>(ascoltatore.posiziona(x, y, ascoltatore.getPosizioni()[2]));
+        ascoltatore.simulaDisegno(posiziona);
+        messaggi.addAll(posiziona);
         return messaggi;
     }
 
