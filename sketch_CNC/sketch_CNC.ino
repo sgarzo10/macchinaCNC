@@ -25,10 +25,13 @@ Arduino MEGA 2560
 #define MANDRINO 23 // define mandrino pin
 #define BLUETOOTH_TX 18 //define bluetooth tx pin
 #define BLUETOOTH_RX 19 //define bluetooth rx pin
+#define BUFFER_SIZE 10 //numero di messaggi da leggere dalla scheda SD
+#define BAUD_RATE 38400 //velocita seriale
 Sostituire bluetooth_seriale con Serial1
 rimuovere SoftwareSerial
 abilitare reset all all'avvio
 abilitare while per reset
+provare buffer piu grande
 */
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro
@@ -52,6 +55,7 @@ abilitare while per reset
 #define SENS_MOT_Z 3 //define sensor pin
 #define MANDRINO 3 // define mandrino pin
 #define BUFFER_SIZE 10 //numero di messaggi da leggere dalla scheda SD
+#define BAUD_RATE 38400 //velocita seriale
 
 struct movimento {
   String motore;
@@ -60,23 +64,30 @@ struct movimento {
   uint16_t velocita;
 };
 
+struct coppia {
+  char chiave;
+  String valore;
+};
+
 File myFile;
 SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
 float millimetri_totali[3] = {0,0,0};
 float giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
 uint16_t lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
 String spostamenti[6] = {"xs", "xg", "ys", "yg", "zs", "zg"};
+coppia dizionario[10];
 boolean seriale = true;
 boolean ultimo = false;
+boolean diz = false;
 
 void setup() {
   if (seriale)
-    Serial.begin(38400);
+    Serial.begin(BAUD_RATE);
   if (!SD.begin(4)) {
     Serial.println("INIZIALIZZAZIONE SD FALLITA!");
     return;
   }
-  bluetooth_seriale.begin(38400);
+  bluetooth_seriale.begin(BAUD_RATE);
   pinMode (PUL_MOT_X, OUTPUT);
   pinMode (DIR_MOT_X, OUTPUT);
   pinMode (ENA_MOT_X, OUTPUT);
@@ -87,6 +98,7 @@ void setup() {
   pinMode (DIR_MOT_Z, OUTPUT);
   pinMode (ENA_MOT_Z, OUTPUT);
   pinMode (MANDRINO, OUTPUT);
+  pulisciDizionario();
   Serial.println("---------------  START  ---------------");
   //reset("a");
 }
@@ -129,24 +141,36 @@ void analyzeResponse(){
   uint8_t mexPos = 0;
   uint16_t numeroMex = countMessages();
   uint16_t currentMex = 0;
-  uint32_t posizione = 0;
+  boolean riparti = false;
   Serial.println("----------------------------");
   Serial.print("CARATTERI: ");
   Serial.print(myFile.size());
   Serial.print(" MESSAGGI: ");
   Serial.println(numeroMex);
+  if (diz)
+    readDictionary();
+  else
+    myFile.seek(0);
   for(uint8_t j = 0; j < ripetizioni; j++){
     for (uint16_t i = 0; i < numeroMex; i = i + BUFFER_SIZE){
-      lettura = readMessages(posizione, BUFFER_SIZE);
-      posizione = posizione + lettura.length();
+      lettura = readMessages(BUFFER_SIZE);
       old_index = -1;
-      for (int8_t index = lettura.indexOf("&"); index > 0 && posizione != 0; index = lettura.indexOf("&", old_index + 1)){
+      for (int8_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
         currentMex = currentMex + 1;
         mex = lettura.substring(old_index + 1, index);
+        if (mex.length() == 1){
+          for (uint8_t k = 0; k < 10; k++){
+            if (dizionario[k].chiave == mex.charAt(0)){
+              mex = dizionario[k].valore;
+              k = 10;
+            }
+          }
+        }
         if (mex.indexOf("*") > -1){
           ripetizioni = mex.substring(1, mex.indexOf("-")).toInt();
           if (j < ripetizioni - 1){
-            posizione = 0;
+            myFile.seek(0);
+            riparti = true;
             currentMex = 0;
           }
           if (j == ripetizioni - 2)
@@ -156,7 +180,7 @@ void analyzeResponse(){
           bluetooth_command(mex);
         old_index = index;
       }
-      if (posizione != 0){
+      if (!riparti){
         mex = lettura.substring(old_index + 1, lettura.length() - 1);
         if (mex != "" && mex != "&"){
           ultimo = true;
@@ -167,13 +191,13 @@ void analyzeResponse(){
     }
   }
   myFile.close();
+  pulisciDizionario();
 }
 
-String readMessages(uint32_t posizione, uint16_t numero){
+String readMessages(uint16_t numero){
   uint16_t nMessages = 0;
   String lettura = "";
   char c = 'w';
-  myFile.seek(posizione);
   while (nMessages < numero && myFile.available()){
     c = myFile.read();
     if (c == '&' || c == '!')
@@ -189,10 +213,41 @@ uint16_t countMessages(){
   myFile = SD.open("last.txt");
   while (myFile.available()){
     c = myFile.read();
-    if (c == '&' || c == '!')
+    if (c == '&' || c == '!' || c == '|'){
       count = count + 1;
+      if (c == '|')
+        diz = true;
+    }
   }
   return count;
+}
+
+void readDictionary(){
+  char c = 'w';
+  String valore = "";
+  boolean val = false;
+  uint8_t i = 0;
+  myFile.seek(0);
+  while (c != '|'){
+    c = myFile.read();
+    if (c == ':'){
+      val = true;
+      c = myFile.read();
+    }
+    if (c == '&' || c == '|'){
+      dizionario[i].valore = valore;
+      i++;
+      valore = "";
+      val = false;
+      if (c != '|')
+        c = myFile.read();
+    }
+    if (!val)
+      dizionario[i].chiave = c;
+    else
+      valore += c;
+  }
+  return;
 }
 
 //direzione: true orario(sale), false antiorario (scende)
@@ -271,14 +326,10 @@ void attiva_mandrino(String command){
   return;
 }
 
-void dove_sono(String command){
-  if (command == "a"){
-    dove_print("x", false);
-    dove_print("y", false);
-    dove_print("z", true);
-  }
-  else
-    my_print("e", true);
+void dove_sono(){
+  dove_print("x", false);
+  dove_print("y", false);
+  dove_print("z", true);
   return;
 }
 
@@ -291,14 +342,10 @@ void dove_print(String asse, boolean new_line){
   return;
 }
 
-void dimmi_lunghezze(String command){
-  if (command == "a"){
-    print_lunghezze("x");
-    print_lunghezze("y");
-    print_lunghezze("z");
-  }
-  else
-    my_print("e", true);
+void dimmi_lunghezze(){
+  print_lunghezze("x");
+  print_lunghezze("y");
+  print_lunghezze("z");
   return;
 }
 
@@ -314,14 +361,10 @@ void print_lunghezze(String asse){
   return;
 }
 
-void dimmi_giri(String command){
-  if (command == "a"){
-    print_giri("x");
-    print_giri("y");
-    print_giri("z");
-  }
-  else
-    my_print("e", true);
+void dimmi_giri(){
+  print_giri("x");
+  print_giri("y");
+  print_giri("z");
   return;
 }
 
@@ -377,39 +420,40 @@ void setta_giri(String command){
   return;
 }
 
-void setta_seriale(String command){
-  if (command == "b" || command == "s"){
-    if (command == "b")
-      seriale = false;
-    else
-      seriale = true;
-    my_print("o", true);
-  }
-  else
-    my_print("e", true);
-  return;
-}
-
 void bluetooth_command(String command){
-  if (command.substring(0,1).toInt() > 0)
+  Serial.println(command);
+  if (command.substring(0,1).toInt() > 0){
     sposta(command, true, false);
-  if (command.substring(0,1) == "r" && !(command.substring(1,2) == "e"))
+    return;
+  }
+  if (command == "da"){
+    dove_sono();
+    return;
+  }
+  if (command == "la"){
+    dimmi_lunghezze();
+    return;
+  }
+  if (command == "ga"){
+    dimmi_giri();
+    return;
+  }
+  if (command == "ra" || command == "rs"){
     attiva_mandrino(command.substring(1,command.length()));
-  if (command.substring(0,1) == "d")
-    dove_sono(command.substring(1,command.length()));
-  if (command.substring(0,1) == "l")
-    dimmi_lunghezze(command.substring(1,command.length()));
-  if (command.substring(0,1) == "g")
-    dimmi_giri(command.substring(1,command.length()));
-  if (command.substring(0,2) == "re")
+    return;
+  }
+  if (command.substring(0,2) == "re"){
     reset(command.substring(2,command.length()));
-  if (command.substring(0,2) == "sl")
+    return;
+  }
+  if (command.substring(0,2) == "sl"){
     setta_lunghezze(command.substring(2,command.length()));
-  if (command.substring(0,2) == "sg")
+    return;
+  }
+  if (command.substring(0,2) == "sg"){
     setta_giri(command.substring(2,command.length()));
-  if (command.substring(0,2) == "ss")
-    setta_seriale(command.substring(2,command.length()));
-  return;
+    return;
+  }
 }
 
 movimento lettura_parametri(String command, boolean reset){
@@ -520,21 +564,13 @@ void reset_motore(String asse){
 }
 
 void my_print(String s, boolean new_line){
-  if (seriale){
-    if (new_line)
-      Serial.println(s);
-    else
-      Serial.print(s);
-  }
-  else{
-    if (ultimo){
-      if (new_line){
-        bluetooth_seriale.println(s);
-        ultimo = false;
-      }
-      else
-        bluetooth_seriale.print(s);
+  if (ultimo){
+    if (new_line){
+      bluetooth_seriale.println(s);
+      ultimo = false;
     }
+    else
+      bluetooth_seriale.print(s);
   }
   return;
 }
@@ -548,4 +584,13 @@ uint8_t motoreToIndice(String motore){
   if (motore == "z")
     indice = 2;
   return indice;
+}
+
+void pulisciDizionario(){
+  diz = false;
+  for (uint8_t i = 0; i < 10; i++){
+    dizionario[i].chiave = 'w';
+    dizionario[i].valore = "";
+  }
+  return;
 }

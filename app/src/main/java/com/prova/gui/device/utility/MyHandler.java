@@ -18,13 +18,13 @@ public class MyHandler extends android.os.Handler{
     private Map<Integer, String> iMap = new HashMap<>();
 
     public boolean isFine() { return fine; }
-    public void setFine() { this.fine = false; }
+    public void setFine(boolean fine) { this.fine = fine; }
 
     public MyHandler(ConnectionActivity app) {
         sb = new StringBuilder("");
         this.app = app;
         ok = 0;
-        fine = false;
+        fine = true;
         map.put("x", 0);
         map.put("y", 1);
         map.put("z", 2);
@@ -120,7 +120,7 @@ public class MyHandler extends android.os.Handler{
                                 app.getBluetooth().invia("la");
                             return;
                         }
-                        if (app.getAscoltatore().getMessaggio().contains("sl") || app.getAscoltatore().getMessaggio().contains("sg") || app.getAscoltatore().getMessaggio().equals("ssb")){
+                        if (app.getAscoltatore().getMessaggio().contains("sl") || app.getAscoltatore().getMessaggio().contains("sg")){
                             if (mex.equals("o")) {
                                 app.getAscoltatore().setMessaggio();
                                 fine = true;

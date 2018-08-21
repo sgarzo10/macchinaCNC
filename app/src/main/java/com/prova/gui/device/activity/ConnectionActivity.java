@@ -20,9 +20,6 @@ import com.prova.gui.device.view.JoystickView;
 import com.prova.gui.device.utility.MovePoint;
 import com.prova.gui.device.utility.MyHandler;
 import com.prova.gui.settings.utility.ManageXml;
-
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -148,7 +145,6 @@ public class ConnectionActivity extends AppCompatActivity {
         initLunghezze = false;
         initPosizioni = false;
         initGiri = false;
-        ascoltatore.inviaMessaggio("ssb");
     }
 
     @Override
@@ -218,19 +214,19 @@ public class ConnectionActivity extends AppCompatActivity {
                     if (!initGiri) {
                         ascoltatore.inviaMessaggio("ga");
                         initGiri = true;
-                        bluetooth.getH().setFine();
+                        bluetooth.getH().setFine(false);
                         getValoriInziaili();
                     } else {
                         if (!initLunghezze) {
                             ascoltatore.inviaMessaggio("la");
                             initLunghezze = true;
-                            bluetooth.getH().setFine();
+                            bluetooth.getH().setFine(false);
                             getValoriInziaili();
                         } else {
                             if (!initPosizioni) {
                                 checkValori(true);
                                 initPosizioni = true;
-                                bluetooth.getH().setFine();
+                                bluetooth.getH().setFine(false);
                                 getValoriInziaili();
                             }
                         }
@@ -308,7 +304,7 @@ public class ConnectionActivity extends AppCompatActivity {
             messaggi.add(0, "da");
         if (messaggi.size() > 0) {
             if (!posizioni)
-                bluetooth.getH().setFine();
+                bluetooth.getH().setFine(true);
             ascoltatore.addMex(messaggi);
         }
     }
