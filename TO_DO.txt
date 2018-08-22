@@ -1,0 +1,4 @@
+- per i riempimenti delle figure muoversi a linee e non ridisegnare ogni volta la figura
+	TRIANGOLO 100 100 100 1 -> tempo 482177
+- non utilizzare file per messaggi piccoli
+- inserire lo spessore della figura (solo perimetro, 3mm, iena, ecc..) come parametro 

@@ -1,5 +1,7 @@
 package com.prova.gui.device.utility;
 
+import android.util.Log;
+
 import com.prova.gui.device.activity.AscoltatoreConnectionActivity;
 import java.util.ArrayList;
 
@@ -276,15 +278,19 @@ public class DrawFigure {
             }
             double currentY = 0;
             double precisione = ascoltatore.getApp().getManageXml().getPrecisioni().get(0);
+            double maxGiri = 0;
+            double giri;
+            double y;
             for(double i = precisione; i <= base; i = i + precisione){
-                double y = coeff * i;
-                double giri = Math.round(ascoltatore.getGiriMillimetro()[1]*(y - currentY));
+                y = coeff * i;
+                giri = Math.round(ascoltatore.getGiriMillimetro()[1]*(y - currentY));
                 if ( giri > 0) {
-                    messaggi.add(aggiungiVelocita(ascoltatore.getSpostamenti().get(messaggioY) + Long.toString(Math.round(giri))));
-                    currentY = currentY + (giri / ascoltatore.getGiriMillimetro()[1]);
+                    if (giri > maxGiri)
+                        maxGiri = giri;
+                    currentY = currentY + (maxGiri / ascoltatore.getGiriMillimetro()[1]);
                 }
-                messaggi.add(ascoltatore.getSpostamenti().get(messaggioX) + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[0]*precisione)));
             }
+            messaggi.add(aggiungiVelocita(ascoltatore.getSpostamenti().get(messaggioY) + Long.toString(Math.round(maxGiri))) + "-" + ascoltatore.getSpostamenti().get(messaggioX) + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[0]*precisione)) + "#" + Integer.toString((int)(base / precisione)));
         }
         return messaggi;
     }

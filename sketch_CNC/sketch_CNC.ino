@@ -79,6 +79,7 @@ coppia dizionario[10];
 boolean seriale = true;
 boolean ultimo = false;
 boolean diz = false;
+uint8_t dimDiz = 0;
 
 void setup() {
   if (seriale)
@@ -108,7 +109,7 @@ void loop() {
 }
 
 void bluetooth_read(){
-  char c = '#';
+  char c = 'w';
   if (bluetooth_seriale.available() > 0){
     /*Serial.print("A");
     Serial.println(millis());*/
@@ -126,7 +127,7 @@ void bluetooth_read(){
       }
     }
   }
-  if (c != '#'){
+  if (c != 'w'){
     myFile.close();
     analyzeResponse();
   }
@@ -138,6 +139,9 @@ void analyzeResponse(){
   String mex = "";
   int8_t old_index = -1;
   uint8_t ripetizioni = 1;
+  uint16_t ripetizioniCoppia = 0;
+  String mexX = "";
+  String mexY = "";
   uint8_t mexPos = 0;
   uint16_t numeroMex = countMessages();
   uint16_t currentMex = 0;
@@ -148,36 +152,42 @@ void analyzeResponse(){
   Serial.print(" MESSAGGI: ");
   Serial.println(numeroMex);
   if (diz)
-    readDictionary();
+    myFile.seek(dimDiz);
   else
     myFile.seek(0);
   for(uint8_t j = 0; j < ripetizioni; j++){
-    for (uint16_t i = 0; i < numeroMex; i = i + BUFFER_SIZE){
+    Serial.println(millis());
+    for (uint16_t i = 0; i < numeroMex && !riparti; i = i + BUFFER_SIZE){
       lettura = readMessages(BUFFER_SIZE);
       old_index = -1;
       for (int8_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
         currentMex = currentMex + 1;
         mex = lettura.substring(old_index + 1, index);
-        if (mex.length() == 1){
-          for (uint8_t k = 0; k < 10; k++){
-            if (dizionario[k].chiave == mex.charAt(0)){
-              mex = dizionario[k].valore;
-              k = 10;
+        if(mex.indexOf("#") > -1){
+          mexY = mex.substring(0, mex.indexOf("-"));
+          mexX = mex.substring(mex.indexOf("-") + 1, mex.indexOf("#"));
+          ripetizioniCoppia = mex.substring(mex.indexOf("#") + 1, mex.length()).toInt();
+          for(uint16_t k = 0; k < ripetizioniCoppia; k++){
+            bluetooth_command(mexY);
+            bluetooth_command(mexX);
+          }
+        } else {
+          if (mex.indexOf("*") > -1){
+            ripetizioni = mex.substring(1, mex.indexOf("-")).toInt();
+            if (j < ripetizioni - 1){
+              if(diz)
+                myFile.seek(dimDiz);
+              else
+                myFile.seek(0);
+              riparti = true;
+              currentMex = 0;
             }
+            if (j == ripetizioni - 2)
+              mexPos = mex.substring(mex.indexOf("-") + 1, mex.length()).toInt();
           }
+          if (!(currentMex >= numeroMex - mexPos - 3 && currentMex < numeroMex - 3))
+            bluetooth_command(mex);
         }
-        if (mex.indexOf("*") > -1){
-          ripetizioni = mex.substring(1, mex.indexOf("-")).toInt();
-          if (j < ripetizioni - 1){
-            myFile.seek(0);
-            riparti = true;
-            currentMex = 0;
-          }
-          if (j == ripetizioni - 2)
-            mexPos = mex.substring(mex.indexOf("-") + 1, mex.length()).toInt();
-        }
-        if (!(currentMex >= numeroMex - mexPos - 3 && currentMex < numeroMex - 3))
-          bluetooth_command(mex);
         old_index = index;
       }
       if (!riparti){
@@ -189,6 +199,8 @@ void analyzeResponse(){
         }
       }
     }
+    Serial.println(millis());
+    riparti = false;
   }
   myFile.close();
   pulisciDizionario();
@@ -198,11 +210,24 @@ String readMessages(uint16_t numero){
   uint16_t nMessages = 0;
   String lettura = "";
   char c = 'w';
+  boolean inDict = false;
   while (nMessages < numero && myFile.available()){
     c = myFile.read();
-    if (c == '&' || c == '!')
+    if (diz){
+      for (uint8_t k = 0; k < 10; k++){
+        if (dizionario[k].chiave == c){
+          lettura += dizionario[k].valore + "&";
+          k = 10;
+          inDict = true;
+        }
+      }
+    }
+    if (c == '&' || c == '!' || inDict)
       nMessages = nMessages + 1;
-    lettura += c;
+    if (!inDict)
+      lettura += c;
+    else
+      inDict = false;
   }
   return lettura;
 }
@@ -210,13 +235,24 @@ String readMessages(uint16_t numero){
 uint16_t countMessages(){
   uint16_t count = 0;
   char c = 'w';
+  boolean inDict = false;
   myFile = SD.open("last.txt");
+  c = myFile.read();
+  if (c == 'D')
+    readDictionary();
   while (myFile.available()){
     c = myFile.read();
-    if (c == '&' || c == '!' || c == '|'){
+    if (diz){
+      for (uint8_t k = 0; k < 10; k++){
+        if (dizionario[k].chiave == c){
+          k = 10;
+          inDict = true;
+        }
+      }
+    }
+    if (c == '&' || c == '!' || inDict){
       count = count + 1;
-      if (c == '|')
-        diz = true;
+      inDict = false;
     }
   }
   return count;
@@ -227,26 +263,31 @@ void readDictionary(){
   String valore = "";
   boolean val = false;
   uint8_t i = 0;
-  myFile.seek(0);
+  diz = true;
   while (c != '|'){
     c = myFile.read();
+    dimDiz++;
     if (c == ':'){
       val = true;
       c = myFile.read();
+      dimDiz++;
     }
     if (c == '&' || c == '|'){
       dizionario[i].valore = valore;
       i++;
       valore = "";
-      val = false;
-      if (c != '|')
+      if (c != '|'){
         c = myFile.read();
+        dimDiz++;
+        val = false;
+      }
     }
     if (!val)
       dizionario[i].chiave = c;
     else
       valore += c;
   }
+  dimDiz++;
   return;
 }
 
@@ -421,7 +462,6 @@ void setta_giri(String command){
 }
 
 void bluetooth_command(String command){
-  Serial.println(command);
   if (command.substring(0,1).toInt() > 0){
     sposta(command, true, false);
     return;
@@ -588,6 +628,7 @@ uint8_t motoreToIndice(String motore){
 
 void pulisciDizionario(){
   diz = false;
+  dimDiz = 0;
   for (uint8_t i = 0; i < 10; i++){
     dizionario[i].chiave = 'w';
     dizionario[i].valore = "";

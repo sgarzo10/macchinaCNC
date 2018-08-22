@@ -129,7 +129,8 @@ public class BluetoothConnection extends Thread {
         String newMex = message;
         StringBuilder dict = new StringBuilder("");
         String[] messages = message.split("&");
-        List<String> chiavi = new ArrayList<>(Arrays.asList("a", "b", "c", "d", "f", "g", "h", "i", "l", "m", "n"));
+        //NON USARE a d e g l r s x y z  w D & | : ! # - *
+        List<String> chiavi = new ArrayList<>(Arrays.asList("b", "c", "f", "h", "i", "m", "n", "o", "p", "q"));
         HashMap<String, Integer> count = new HashMap<>();
         int n = 0;
         for (String message1 : messages) {
@@ -147,12 +148,12 @@ public class BluetoothConnection extends Thread {
             HashMap.Entry<String, Integer> e = it.next();
             if (e.getValue() > 1) {
                 dict.append(chiavi.get(n)).append(":").append(e.getKey()).append("&");
-                newMex = newMex.replace(e.getKey(), chiavi.get(n));
+                newMex = newMex.replace(e.getKey() + "&", chiavi.get(n));
                 n++;
             }
         }
         if (!dict.toString().equals(""))
-            newMex = dict.toString().substring(0, dict.toString().length() - 1) + "|" + newMex;
+            newMex = "D" + dict.toString().substring(0, dict.toString().length() - 1) + "|" + newMex;
         message = newMex;
     }
 
