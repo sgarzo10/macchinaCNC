@@ -72,6 +72,7 @@ public class BluetoothConnection extends Thread {
         message = toSend + "!";
         if (message.contains("&"))
             compress();
+        message = Integer.toString(message.length()) + "L" + message;
         Log.i("SEND", message);
         new Thread(new Runnable() {
 
@@ -129,7 +130,7 @@ public class BluetoothConnection extends Thread {
         String newMex = message;
         StringBuilder dict = new StringBuilder("");
         String[] messages = message.split("&");
-        //NON USARE a d e g l r s x y z  w D & | : ! # - *
+        //NON USARE a d e g l r s x y z  w D L & | : ! # - *
         List<String> chiavi = new ArrayList<>(Arrays.asList("b", "c", "f", "h", "i", "m", "n", "o", "p", "q"));
         HashMap<String, Integer> count = new HashMap<>();
         int n = 0;
