@@ -25,13 +25,15 @@ Arduino MEGA 2560
 #define MANDRINO 23 // define mandrino pin
 #define BLUETOOTH_TX 18 //define bluetooth tx pin
 #define BLUETOOTH_RX 19 //define bluetooth rx pin
-#define BUFFER_SIZE 10 //numero di messaggi da leggere dalla scheda SD
+#define BUFFER_SIZE 20 //dimensione massima del messaggio oltre la quale viene salvato sull SD
+#define BASKET_SIZE 10 //numero di messaggi da leggere dalla scheda SD
 #define BAUD_RATE 38400 //velocita seriale
 Sostituire bluetooth_seriale con Serial1
 rimuovere SoftwareSerial
 abilitare reset all all'avvio
 abilitare while per reset
-provare buffer piu grande
+privare ad alzare la baud rate del bluetooth
+provare buffer e basket piu grande
 */
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro
@@ -54,7 +56,8 @@ provare buffer piu grande
 #define PUL_MOT_Z 3 //define Pulse pin
 #define SENS_MOT_Z 3 //define sensor pin
 #define MANDRINO 3 // define mandrino pin
-#define BUFFER_SIZE 10 //numero di messaggi da leggere dalla scheda SD
+#define BUFFER_SIZE 20 //dimensione massima del messaggio oltre la quale viene salvato sull SD
+#define BASKET_SIZE 10 //numero di messaggi da leggere dalla scheda SD
 #define BAUD_RATE 38400 //velocita seriale
 
 struct movimento {
@@ -120,7 +123,7 @@ void bluetooth_read(){
       if ((int)c > -1)
         lettura += c;
     }
-    if (lettura.substring(0, lettura.length() - 1).toInt() > 20){
+    if (lettura.substring(0, lettura.length() - 1).toInt() > BUFFER_SIZE){
       sd = true;
       if (SD.exists("last.txt"))
         SD.remove("last.txt");
@@ -188,9 +191,9 @@ void analyzeResponse(){
   }
   for(uint8_t j = 0; j < ripetizioni; j++){
     Serial.println(millis());
-    for (uint16_t i = 0; i < numeroMex && !riparti; i = i + BUFFER_SIZE){
+    for (uint16_t i = 0; i < numeroMex && !riparti; i = i + BASKET_SIZE){
       if (sd)
-        lettura = readMessages(BUFFER_SIZE);
+        lettura = readMessages(BASKET_SIZE);
       Serial.println(lettura);
       old_index = -1;
       for (int8_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
@@ -295,7 +298,7 @@ uint16_t countMessages(){
     c = myFile.read();
     if (c == 'D')
       readDictionary();
-    for (uint8_t i = 0; i < lettura.length(); i++){
+    for (uint16_t i = 0; i < lettura.length(); i++){
       c = lettura.charAt(i);
       if (diz){
         for (uint8_t k = 0; k < 10; k++){

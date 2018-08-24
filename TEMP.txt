@@ -1,0 +1,77 @@
+RETTANGOLO
+giri = Math.min(altezza, larghezza);
+for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+	if (i > 0) {
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
+	}
+	messaggi2d.add(disegnaLinea(larghezza - i, 0));
+	messaggi2d.add(disegnaLinea(altezza - i, 90));
+	messaggi2d.add(disegnaLinea(larghezza - i, 180));
+	messaggi2d.add(disegnaLinea(altezza - i, 270));
+}
+TRIANGOLO
+messaggi2d.add(disegnaLinea(base, 0));
+String temp = disegnaLinea(lato1, 180 - angolo3);
+giri = (Double.parseDouble(temp.split("-")[0].substring(1)) / ascoltatore.getGiriMillimetro()[1]) * Integer.parseInt(temp.split("#")[1]);
+messaggi2d.add(temp);
+messaggi2d.add(disegnaLinea(lato2, 270 - (angolo1 - (90 - angolo3))));
+double diff = 0;
+double xl1, xl2;
+for (int j = 0; diff < giri; j++) {
+	xl1 = calcolaXdaY(lato1, 180 - angolo3, diff);
+	xl2 = calcolaXdaY(lato2, 270 - (angolo1 - (90 - angolo3)), diff);
+	if (xl1 + xl2 > 0) {
+		if (j % 2 == 0)
+			messaggi2d.add(disegnaLinea(xl1 + xl2, 0));
+		else
+			messaggi2d.add(disegnaLinea(xl1 + xl2, 180));
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getPrecisioni().get(1) * ascoltatore.getGiriMillimetro()[1])));
+	}
+	diff += ascoltatore.getApp().getManageXml().getPrecisioni().get(1);
+}
+
+giri = Math.min(base, Math.min(lato1, lato2));
+for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+	if (i > 0) {
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
+	}
+	messaggi2d.add(disegnaLinea(base - i, 0));
+	messaggi2d.add(disegnaLinea(lato1 - i, 180 - angolo3));
+	messaggi2d.add(disegnaLinea(lato2 - i, 270 - (angolo1 - (90 - angolo3))));
+}
+PARALLELO
+giri = Math.min(diagonale, base);
+for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+	if (i > 0) {
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
+	}
+	messaggi2d.add(disegnaLinea(base - i, 0));
+	messaggi2d.add(disegnaLinea((int) diagonale - i, angolo));
+	messaggi2d.add(disegnaLinea(base - i, 180));
+	messaggi2d.add(disegnaLinea((int) diagonale - i, 180 + angolo));
+}
+TRAPEZIO
+ArrayList<String> messaggi2d = new ArrayList<>();
+giri = Math.min(Math.min(Math.min(baseMaggiore, lato1), baseMinore), lato2);
+for (double i = 0; i < giri; i = i + ascoltatore.getApp().getManageXml().getDiametro() * 2) {
+	if (i > 0) {
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mxg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[0])));
+		messaggi2d.add(ascoltatore.getSpostamenti().get("mys") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
+	}
+	messaggi2d.add(disegnaLinea(baseMaggiore - 1, 0));
+	messaggi2d.add(disegnaLinea((int) lato1 - 1, Math.round(90 + angolo1)));
+	messaggi2d.add(disegnaLinea(baseMinore - 1, 180));
+	messaggi2d.add(disegnaLinea((int) lato2 - 1, Math.round(270 - angolo2)));
+}
+CERCHIO
+for (double i = raggio; i > raggio - giri; i = i - ascoltatore.getApp().getManageXml().getDiametro()) {
+	if (i < raggio)
+		messaggi2d.add(ascoltatore.getSpostamenti().get("myg") + Long.toString(Math.round(ascoltatore.getApp().getManageXml().getDiametro() * ascoltatore.getGiriMillimetro()[1])));
+	messaggi2d.addAll(disegnaSemiCerchio(i, "mxg", "myg"));
+	messaggi2d.addAll(disegnaSemiCerchio(i, "myg", "mxs"));
+	messaggi2d.addAll(disegnaSemiCerchio(i, "mxs", "mys"));
+	messaggi2d.addAll(disegnaSemiCerchio(i, "mys", "mxg"));
+}

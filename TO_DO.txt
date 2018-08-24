@@ -1,4 +1,9 @@
 - per i riempimenti delle figure muoversi a linee e non ridisegnare ogni volta la figura
 	TRIANGOLO 100 100 100 1 -> tempo 482177
+- aggiornare simulaAvanzamento per gestire il #
+- controllare nel riempimento se muovendomi della dimensione del diametro non sforo la dimensione del pezzo
+- allineare disegno rettangolo profondo con gli altri
+- triangolo rettangolo e trapezio rettangolo in riempiento test
 - fare dei test con il diametro diverso da uno
-- inserire lo spessore della figura (solo perimetro, 3mm, iena, ecc..) come parametro 
+- rimuovere alteza come campo in input del trapezio
+- inserire lo spessore della figura (solo perimetro, 3mm, piena, ecc..) come parametro 
