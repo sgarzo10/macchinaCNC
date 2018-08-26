@@ -156,25 +156,69 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
     }
 
     public void simulaAvanzamento(String messaggio, boolean addView){
-        messaggio = spostamenti.get(messaggio.substring(0,1)) + messaggio.substring(1, messaggio.length());
-        String asse = messaggio.substring(1, 2);
-        String dir = messaggio.substring(2, 3);
-        float giri;
-        if (!messaggio.substring(3, messaggio.length()).contains("."))
-            giri = Float.parseFloat(messaggio.substring(3, messaggio.length()));
-        else
-            giri = Float.parseFloat(messaggio.substring(3, messaggio.indexOf(".")));
-        if (dir.equals("s")) {
-            posizioni[map.get(asse)] = posizioni[map.get(asse)] + (giri / giriMillimetro[map.get(asse)]);
-            if (posizioni[map.get(asse)] > lunghezze[map.get(asse)])
-                posizioni[map.get(asse)] = lunghezze[map.get(asse)];
+        String mex1, mex2, asse, dir, asse2, dir2;
+        float giri, giri2;
+        int count;
+        if (messaggio.contains("-")){
+            mex1 = messaggio.split("-")[0];
+            mex2 = messaggio.split("-")[1].split("#")[0];
+            count = Integer.parseInt(messaggio.split("-")[1].split("#")[1]);
+            mex1 = spostamenti.get(mex1.substring(0,1)) + mex1.substring(1, mex1.length());
+            mex2 = spostamenti.get(mex2.substring(0,1)) + mex2.substring(1, mex2.length());
+            asse = mex1.substring(1, 2);
+            dir = mex1.substring(2, 3);
+            if (!mex1.substring(3, mex1.length()).contains("."))
+                giri = Float.parseFloat(mex1.substring(3, mex1.length()));
+            else
+                giri = Float.parseFloat(mex1.substring(3, mex1.indexOf(".")));
+            asse2 = mex2.substring(1, 2);
+            dir2 = mex2.substring(2, 3);
+            if (!mex2.substring(3, mex2.length()).contains("."))
+                giri2 = Float.parseFloat(mex2.substring(3, mex2.length()));
+            else
+                giri2 = Float.parseFloat(mex2.substring(3, mex2.indexOf(".")));
+            if (dir.equals("s")) {
+                posizioni[map.get(asse)] = posizioni[map.get(asse)] + ((giri / giriMillimetro[map.get(asse)]) * count);
+                if (posizioni[map.get(asse)] > lunghezze[map.get(asse)])
+                    posizioni[map.get(asse)] = lunghezze[map.get(asse)];
+            } else {
+                posizioni[map.get(asse)] = posizioni[map.get(asse)] - ((giri / giriMillimetro[map.get(asse)]) * count);
+                if (posizioni[map.get(asse)] < 0)
+                    posizioni[map.get(asse)] = 0;
+            }
+            if (dir2.equals("s")) {
+                posizioni[map.get(asse2)] = posizioni[map.get(asse2)] + ((giri2 / giriMillimetro[map.get(asse2)]) * count);
+                if (posizioni[map.get(asse2)] > lunghezze[map.get(asse2)])
+                    posizioni[map.get(asse2)] = lunghezze[map.get(asse2)];
+            } else {
+                posizioni[map.get(asse2)] = posizioni[map.get(asse2)] - ((giri2 / giriMillimetro[map.get(asse2)]) * count);
+                if (posizioni[map.get(asse2)] < 0)
+                    posizioni[map.get(asse2)] = 0;
+            }
+            if (addView) {
+                app.getTextPosizioni().get(map.get(asse)).setText(String.format(app.getResources().getString(R.string.output_posizione), asse.toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(asse)]));
+                app.getTextPosizioni().get(map.get(asse2)).setText(String.format(app.getResources().getString(R.string.output_posizione), asse2.toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(asse2)]));
+            }
         } else {
-            posizioni[map.get(asse)] = posizioni[map.get(asse)] - (giri / giriMillimetro[map.get(asse)]);
-            if (posizioni[map.get(asse)] < 0)
-                posizioni[map.get(asse)] = 0;
+            messaggio = spostamenti.get(messaggio.substring(0, 1)) + messaggio.substring(1, messaggio.length());
+            asse = messaggio.substring(1, 2);
+            dir = messaggio.substring(2, 3);
+            if (!messaggio.substring(3, messaggio.length()).contains("."))
+                giri = Float.parseFloat(messaggio.substring(3, messaggio.length()));
+            else
+                giri = Float.parseFloat(messaggio.substring(3, messaggio.indexOf(".")));
+            if (dir.equals("s")) {
+                posizioni[map.get(asse)] = posizioni[map.get(asse)] + (giri / giriMillimetro[map.get(asse)]);
+                if (posizioni[map.get(asse)] > lunghezze[map.get(asse)])
+                    posizioni[map.get(asse)] = lunghezze[map.get(asse)];
+            } else {
+                posizioni[map.get(asse)] = posizioni[map.get(asse)] - (giri / giriMillimetro[map.get(asse)]);
+                if (posizioni[map.get(asse)] < 0)
+                    posizioni[map.get(asse)] = 0;
+            }
+            if (addView)
+                app.getTextPosizioni().get(map.get(asse)).setText(String.format(app.getResources().getString(R.string.output_posizione), asse.toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(asse)]));
         }
-        if (addView)
-            app.getTextPosizioni().get(map.get(asse)).setText(String.format(app.getResources().getString(R.string.output_posizione), asse.toUpperCase(), app.getAscoltatore().getPosizioni()[map.get(asse)]));
     }
 
     public void simulaDisegno(ArrayList<String> messaggi){

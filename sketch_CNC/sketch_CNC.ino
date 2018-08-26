@@ -57,7 +57,7 @@ provare buffer e basket piu grande
 #define SENS_MOT_Z 3 //define sensor pin
 #define MANDRINO 3 // define mandrino pin
 #define BUFFER_SIZE 20 //dimensione massima del messaggio oltre la quale viene salvato sull SD
-#define BASKET_SIZE 10 //numero di messaggi da leggere dalla scheda SD
+#define BASKET_SIZE 5 //numero di messaggi da leggere dalla scheda SD
 #define BAUD_RATE 38400 //velocita seriale
 
 struct movimento {
@@ -116,8 +116,6 @@ void loop() {
 void bluetooth_read(){
   char c = 'w';
   if (bluetooth_seriale.available() > 0){
-    /*Serial.print("A");
-    Serial.println(millis());*/
     while (c != 'L'){
       c = bluetooth_seriale.read();
       if ((int)c > -1)
@@ -190,11 +188,10 @@ void analyzeResponse(){
       lettura = lettura.substring(lettura.indexOf("L") + 1, lettura.length());
   }
   for(uint8_t j = 0; j < ripetizioni; j++){
-    Serial.println(millis());
     for (uint16_t i = 0; i < numeroMex && !riparti; i = i + BASKET_SIZE){
       if (sd)
         lettura = readMessages(BASKET_SIZE);
-      Serial.println(lettura);
+      //Serial.println(lettura);
       old_index = -1;
       for (int8_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
         currentMex = currentMex + 1;
@@ -238,7 +235,6 @@ void analyzeResponse(){
         }
       }
     }
-    Serial.println(millis());
     riparti = false;
   }
   pulisci();
