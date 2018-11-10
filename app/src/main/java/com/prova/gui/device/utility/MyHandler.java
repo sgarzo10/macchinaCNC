@@ -21,7 +21,7 @@ public class MyHandler extends android.os.Handler{
     public void setFine(boolean fine) { this.fine = fine; }
 
     public MyHandler(ConnectionActivity app) {
-        sb = new StringBuilder("");
+        sb = new StringBuilder();
         this.app = app;
         ok = 0;
         fine = true;

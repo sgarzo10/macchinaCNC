@@ -45,7 +45,8 @@ public class BluetoothConnection extends Thread {
     public boolean connetti(String mac) {
         BluetoothDevice mmDevice = bluetoothAdapter.getRemoteDevice(mac);
         try {
-            mmSocket = (BluetoothSocket) mmDevice.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(mmDevice, 1);
+            String name = "createRfcommSocket";
+            mmSocket = (BluetoothSocket) mmDevice.getClass().getMethod(name, new Class[]{int.class}).invoke(mmDevice, 1);
             mmSocket.connect();
             outStream = mmSocket.getOutputStream();
             input = mmSocket.getInputStream();
@@ -110,7 +111,7 @@ public class BluetoothConnection extends Thread {
     public void run() {
         byte[] buffer = new byte[4096];
         int bytes;
-        while (true) {
+        while (!app.isKillBluetoothConnection()) {
             try {
                 if (input != null) {
                     bytes = input.available();
@@ -120,15 +121,15 @@ public class BluetoothConnection extends Thread {
                     }
                 }
                 app.getProgressBar().setProgress(progresso);
-            } catch (Exception ignored) {
-                Log.e("EXCEPTION CONNEC RECIVE", ignored.getMessage());
+            } catch (Exception e) {
+                Log.e("EXCEPTION CONNEC RECIVE", e.getMessage());
             }
         }
     }
 
     private void compress(){
         String newMex = message;
-        StringBuilder dict = new StringBuilder("");
+        StringBuilder dict = new StringBuilder();
         String[] messages = message.split("&");
         //NON USARE a d e g l r s x y z  w D L & | : ! # - *
         List<String> chiavi = new ArrayList<>(Arrays.asList("b", "c", "f", "h", "i", "m", "n", "o", "p", "q"));

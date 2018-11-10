@@ -34,6 +34,7 @@ abilitare reset all all'avvio
 abilitare while per reset
 privare ad alzare la baud rate del bluetooth
 provare buffer e basket piu grande
+cambiare pin SD
 */
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro

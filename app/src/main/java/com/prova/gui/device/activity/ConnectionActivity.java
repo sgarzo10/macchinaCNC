@@ -47,6 +47,8 @@ public class ConnectionActivity extends AppCompatActivity {
     private boolean initPosizioni;
     private boolean initGiri;
     private boolean primo;
+    private boolean killBluetoothConnection;
+    private boolean killMovePoint;
     private ManageXml manageXml;
     private Map<Integer, String> map;
 
@@ -62,11 +64,15 @@ public class ConnectionActivity extends AppCompatActivity {
     public TextView getNumMex() { return numMex; }
     public ManageXml getManageXml() { return manageXml; }
     public ProgressBar getProgressBar() { return progressBar; }
+    public boolean isKillBluetoothConnection() { return killBluetoothConnection; }
+    public boolean isKillMovePoint() { return killMovePoint; }
 
-    @SuppressLint("UseSparseArrays")
+    @SuppressLint({"UseSparseArrays", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        killBluetoothConnection = false;
+        killMovePoint = false;
         map = new HashMap<>();
         map.put(0, "x");
         map.put(1, "y");
@@ -196,6 +202,8 @@ public class ConnectionActivity extends AppCompatActivity {
         bluetooth.disconnetti();
         bluetooth.interrupt();
         mp.interrupt();
+        killBluetoothConnection = true;
+        killMovePoint = true;
     }
 
     public void addView(String s){
@@ -266,7 +274,7 @@ public class ConnectionActivity extends AppCompatActivity {
                 inputDialog.setLayoutParams(lp);
                 inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 if (!aValue.equals("Profondità"))
-                    inputDialog.setText("10");
+                    inputDialog.setText("0");
                 else
                     inputDialog.setText("1");
                 input.add(inputDialog);

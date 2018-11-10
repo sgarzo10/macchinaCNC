@@ -51,7 +51,7 @@ public class MovePoint extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (!app.isKillMovePoint()) {
             if (jv.isContinua())
                 spostaPuntino();
         }

@@ -150,7 +150,8 @@ public class AscoltatoreMainActivity implements View.OnClickListener, CompoundBu
     {
         try {
             BluetoothDevice mmDevice=bluetooth.getDevice(mac.get(i));
-            Method m = mmDevice.getClass().getMethod("removeBond", (Class[]) null);
+            String name = "removeBond";
+            Method m = mmDevice.getClass().getMethod(name, (Class[]) null);
             m.invoke(mmDevice, (Object[]) null);
             app.getMessaggio().setText(R.string.dissociato);
             pulisci();
