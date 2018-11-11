@@ -1,9 +1,6 @@
-#include <SoftwareSerial.h>
 #include <SPI.h>
 #include <SD.h>
 
-/*
-Arduino MEGA 2560
 #define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
 #define GIRI_MM_X 640 //numero di giri per fare un millimetro
 #define ENA_MOT_X 2 //define Enable Pin
@@ -15,52 +12,29 @@ Arduino MEGA 2560
 #define ENA_MOT_Y 5 //define Enable Pin
 #define DIR_MOT_Y 6 //define Direction
 #define PUL_MOT_Y 7 //define Pulse pin
-#define SENS_MOT_Y 2 //define sensor pin
+#define SENS_MOT_Y 5 //define sensor pin
 #define LUNGHEZZA_Z 135 //lunghezza asse z in millimetri
 #define GIRI_MM_Z 430 //numero di giri per fare un millimetro
 #define ENA_MOT_Z 8 //define Enable Pin
 #define DIR_MOT_Z 9 //define Direction
 #define PUL_MOT_Z 10 //define Pulse pin
-#define SENS_MOT_Z 12 //define sensor pin
+#define SENS_MOT_Z 11 //define sensor pin
 #define MANDRINO 23 // define mandrino pin
-#define BLUETOOTH_TX 18 //define bluetooth tx pin
-#define BLUETOOTH_RX 19 //define bluetooth rx pin
-#define BUFFER_SIZE 20 //dimensione massima del messaggio oltre la quale viene salvato sull SD
-#define BASKET_SIZE 10 //numero di messaggi da leggere dalla scheda SD
+#define BLUETOOTH_RX 18 //define bluetooth tx pin
+#define BLUETOOTH_TX 19 //define bluetooth rx pin
+#define PIN_SD 53 //define SD pin
+#define BUFFER_SIZE 60 //dimensione massima del messaggio oltre la quale viene salvato sull SD
+#define BASKET_SIZE 25 //numero di messaggi da leggere dalla scheda SD
 #define BAUD_RATE 38400 //velocita seriale
-Sostituire bluetooth_seriale con Serial1
-rimuovere SoftwareSerial
-abilitare reset all all'avvio
-abilitare while per reset
-privare ad alzare la baud rate del bluetooth
-provare buffer e basket piu grande
-cambiare pin SD
-*/
-#define LUNGHEZZA_X 450 //lunghezza asse x in millimetri
-#define GIRI_MM_X 640 //numero di giri per fare un millimetro
-#define ENA_MOT_X 3 //define Enable Pin
-#define DIR_MOT_X 3 //define Direction
-#define PUL_MOT_X 3 //define Pulse pin
-#define SENS_MOT_X 3 //define sensor pin
-#define BLUETOOTH_TX  6//define bluetooth tx pin
-#define BLUETOOTH_RX 7 //define bluetooth rx pin
-#define LUNGHEZZA_Y 309 //lunghezza asse y in millimetri
-#define GIRI_MM_Y 640 //numero di giri per fare un millimetro
-#define ENA_MOT_Y 3 //define Enable Pin
-#define DIR_MOT_Y 3 //define Direction
-#define PUL_MOT_Y 3 //define Pulse pin
-#define SENS_MOT_Y 3 //define sensor pin
-#define LUNGHEZZA_Z 135 //lunghezza asse z in millimetri
-#define GIRI_MM_Z 430 //numero di giri per fare un millimetro
-#define ENA_MOT_Z 3 //define Enable Pin
-#define DIR_MOT_Z 3 //define Direction
-#define PUL_MOT_Z 3 //define Pulse pin
-#define SENS_MOT_Z 3 //define sensor pin
-#define MANDRINO 3 // define mandrino pin
-#define BUFFER_SIZE 20 //dimensione massima del messaggio oltre la quale viene salvato sull SD
-#define BASKET_SIZE 5 //numero di messaggi da leggere dalla scheda SD
-#define BAUD_RATE 38400 //velocita seriale
+/*
+Abilitare reset all all'avvio
+Abilitare while per reset
+Abilitare ruota disegno
 
+Disabilitare reset all all'avvio
+Disabilitare while per reset
+Disabilitare ruota disegno
+*/
 struct movimento {
   String motore;
   boolean direzione;
@@ -74,7 +48,6 @@ struct coppia {
 };
 
 File myFile;
-SoftwareSerial bluetooth_seriale(BLUETOOTH_TX, BLUETOOTH_RX);
 float millimetri_totali[3] = {0,0,0};
 float giri_millimetro[3] = {GIRI_MM_X, GIRI_MM_Y, GIRI_MM_Z};
 uint16_t lunghezze[3] = {LUNGHEZZA_X, LUNGHEZZA_Y, LUNGHEZZA_Z};
@@ -90,11 +63,10 @@ String lettura = "";
 void setup() {
   if (seriale)
     Serial.begin(BAUD_RATE);
-  if (!SD.begin(4)) {
+  if (!SD.begin(PIN_SD)) {
     Serial.println("INIZIALIZZAZIONE SD FALLITA!");
-    return;
   }
-  bluetooth_seriale.begin(BAUD_RATE);
+  Serial1.begin(BAUD_RATE);
   pinMode (PUL_MOT_X, OUTPUT);
   pinMode (DIR_MOT_X, OUTPUT);
   pinMode (ENA_MOT_X, OUTPUT);
@@ -116,9 +88,9 @@ void loop() {
 
 void bluetooth_read(){
   char c = 'w';
-  if (bluetooth_seriale.available() > 0){
+  if (Serial1.available() > 0){
     while (c != 'L'){
-      c = bluetooth_seriale.read();
+      c = Serial1.read();
       if ((int)c > -1)
         lettura += c;
     }
@@ -130,7 +102,7 @@ void bluetooth_read(){
       while (c != '!'){
         /*Serial.print("I");
         Serial.println(millis());*/
-        c = bluetooth_seriale.read();
+        c = Serial1.read();
         if ((int)c > -1){
           myFile.print(c);
           /*Serial.print("F");
@@ -141,7 +113,7 @@ void bluetooth_read(){
        while (c != '!'){
         /*Serial.print("I");
         Serial.println(millis());*/
-        c = bluetooth_seriale.read();
+        c = Serial1.read();
         if ((int)c > -1){
           lettura += c;
           /*Serial.print("F");
@@ -168,6 +140,7 @@ void analyzeResponse(){
   uint8_t mexPos = 0;
   uint16_t numeroMex = countMessages();
   uint16_t currentMex = 0;
+  uint16_t inc = 0;
   boolean riparti = false;
   Serial.println("----------------------------");
   Serial.print("CARATTERI: ");
@@ -188,13 +161,19 @@ void analyzeResponse(){
     else
       lettura = lettura.substring(lettura.indexOf("L") + 1, lettura.length());
   }
+  if (sd)
+    inc = BASKET_SIZE;
+  else
+    inc = numeroMex;
   for(uint8_t j = 0; j < ripetizioni; j++){
-    for (uint16_t i = 0; i < numeroMex && !riparti; i = i + BASKET_SIZE){
+    for (uint16_t i = 0; i < numeroMex && !riparti; i = i + inc){
       if (sd)
         lettura = readMessages(BASKET_SIZE);
-      //Serial.println(lettura);
+      else
+        lettura = readMessages(numeroMex);
+      Serial.println(lettura);
       old_index = -1;
-      for (int8_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
+      for (int16_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
         currentMex = currentMex + 1;
         mex = lettura.substring(old_index + 1, index);
         if(mex.indexOf("#") > -1){
@@ -233,6 +212,8 @@ void analyzeResponse(){
           bluetooth_command(mex);
           if (sd)
             Serial.println("HO ANALIZZATO TUTTO IL FILE");
+          else
+            Serial.println("HO ANALIZZATO TUTTO IL MESSAGGIO");
         }
       }
     }
@@ -243,11 +224,18 @@ void analyzeResponse(){
 
 String readMessages(uint16_t numero){
   uint16_t nMessages = 0;
+  uint16_t caratteri = 0;
   String myLettura = "";
   char c = 'w';
   boolean inDict = false;
-  while (nMessages < numero && myFile.available()){
-    c = myFile.read();
+  while (nMessages < numero){
+    if (sd){
+      if (myFile.available())
+        c = myFile.read();
+      else
+        break;
+    } else
+      c = lettura.charAt(caratteri);
     if (diz){
       for (uint8_t k = 0; k < 10; k++){
         if (dizionario[k].chiave == c){
@@ -263,6 +251,7 @@ String readMessages(uint16_t numero){
       myLettura += c;
     else
       inDict = false;
+    caratteri++;
   }
   return myLettura;
 }
@@ -292,10 +281,10 @@ uint16_t countMessages(){
       }
     }
   } else {
-    c = myFile.read();
+    c = lettura.charAt(lettura.indexOf("L") + 1);
     if (c == 'D')
       readDictionary();
-    for (uint16_t i = 0; i < lettura.length(); i++){
+    for (uint16_t i = dimDiz; i < lettura.length(); i++){
       c = lettura.charAt(i);
       if (diz){
         for (uint8_t k = 0; k < 10; k++){
@@ -373,11 +362,11 @@ void ruota(String motore, boolean direzione, uint16_t velocita){
     pin_dir = DIR_MOT_Z;
     pin_pul = PUL_MOT_Z;
   }
-  digitalWrite(pin_dir,direzione);
+  /*digitalWrite(pin_dir,direzione);
   digitalWrite(pin_pul,HIGH);
   delayMicroseconds(velocita);
   digitalWrite(pin_pul,LOW);
-  delayMicroseconds(velocita);
+  delayMicroseconds(velocita);*/
   return;
 }
 
@@ -661,7 +650,7 @@ void reset_motore(String asse){
     pin = SENS_MOT_Z;
     dir = "6";
   }
-  /*while(analogRead(pin) < 1019)
+  /*while(analogRead(pin) < 1008)
     sposta(dir+String((int)giri_millimetro[indice]), false, true);*/
   millimetri_totali[indice] = 0;
   my_print("o", true);
@@ -671,11 +660,11 @@ void reset_motore(String asse){
 void my_print(String s, boolean new_line){
   if (ultimo){
     if (new_line){
-      bluetooth_seriale.println(s);
+      Serial1.println(s);
       ultimo = false;
     }
     else
-      bluetooth_seriale.print(s);
+      Serial1.print(s);
   }
   return;
 }

@@ -274,7 +274,7 @@ public class ConnectionActivity extends AppCompatActivity {
                 inputDialog.setLayoutParams(lp);
                 inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 if (!aValue.equals("Profondità"))
-                    inputDialog.setText("0");
+                    inputDialog.setText("10");
                 else
                     inputDialog.setText("1");
                 input.add(inputDialog);

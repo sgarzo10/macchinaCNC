@@ -85,7 +85,7 @@ public class DrawFigure {
             }
             if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
                 messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
-                messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+                messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))) + "-" + Integer.toString(messaggi.size() - messaggi2d.size() - 1));
             } else
                 messaggi.addAll(messaggi2d);
             messaggi.addAll(resetPostDraw());
@@ -157,7 +157,7 @@ public class DrawFigure {
             }
             if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
                 messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
-                messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+                messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))) + "-" + Integer.toString(messaggi.size() - messaggi2d.size() - 1));
             } else
                 messaggi.addAll(messaggi2d);
             messaggi.addAll(resetPostDraw());
@@ -231,7 +231,7 @@ public class DrawFigure {
                 }
                 if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
                     messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
-                    messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+                    messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))) + "-" + Integer.toString(messaggi.size() - messaggi2d.size() - 1));
                 } else
                     messaggi.addAll(messaggi2d);
                 messaggi.addAll(resetPostDraw());
@@ -297,7 +297,7 @@ public class DrawFigure {
         }
         if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
             messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
-            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))) + "-" + Integer.toString(messaggi.size() - messaggi2d.size() - 1));
         } else
             messaggi.addAll(messaggi2d);
         messaggi.addAll(resetPostDraw());
@@ -328,7 +328,7 @@ public class DrawFigure {
         ArrayList<String> messaggi2d = disegnaSemiCerchio(raggio, mex1, mex2);
         if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
             messaggi.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
-            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
+            messaggi.add("*" + Integer.toString((int) (profondita / ascoltatore.getApp().getManageXml().getPrecisioni().get(2))) + "-" + Integer.toString(messaggi.size() - messaggi2d.size() - 1));
         } else
             messaggi.addAll(messaggi2d);
         messaggi.addAll(resetPostDraw());
