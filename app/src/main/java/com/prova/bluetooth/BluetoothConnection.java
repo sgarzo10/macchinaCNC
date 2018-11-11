@@ -71,9 +71,10 @@ public class BluetoothConnection extends Thread {
 
     public void invia(String toSend) {
         message = toSend + "!";
+        int lenNoCompress = message.length();
         if (message.contains("&"))
             compress();
-        message = Integer.toString(message.length()) + "L" + message;
+        message = Integer.toString(lenNoCompress) + "L" + message;
         Log.i("SEND", message);
         new Thread(new Runnable() {
 
@@ -92,9 +93,9 @@ public class BluetoothConnection extends Thread {
                                 mex = message.substring(i, message.length());
                             outStream.write(mex.getBytes());
                             if (i == 0)
-                                sleep(550);
+                                sleep(750);
                             else
-                                sleep(250);
+                                sleep(400);
                         }
                     } else
                         outStream.write(message.getBytes());

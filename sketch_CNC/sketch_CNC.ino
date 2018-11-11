@@ -23,8 +23,7 @@
 #define BLUETOOTH_RX 18 //define bluetooth tx pin
 #define BLUETOOTH_TX 19 //define bluetooth rx pin
 #define PIN_SD 53 //define SD pin
-#define BUFFER_SIZE 60 //dimensione massima del messaggio oltre la quale viene salvato sull SD
-#define BASKET_SIZE 25 //numero di messaggi da leggere dalla scheda SD
+#define BUFFER_SIZE 128 //dimensione massima del mex non compresso con il quale posso lavorare
 #define BAUD_RATE 38400 //velocita seriale
 /*
 Abilitare reset all all'avvio
@@ -58,6 +57,7 @@ boolean ultimo = false;
 boolean diz = false;
 boolean sd = false;
 uint8_t dimDiz = 0;
+uint16_t dimMexNoComp = 0;
 String lettura = "";
 
 void setup() {
@@ -94,7 +94,8 @@ void bluetooth_read(){
       if ((int)c > -1)
         lettura += c;
     }
-    if (lettura.substring(0, lettura.length() - 1).toInt() > BUFFER_SIZE){
+    dimMexNoComp = lettura.substring(0, lettura.length() - 1).toInt();
+    if (dimMexNoComp > BUFFER_SIZE){
       sd = true;
       if (SD.exists("last.txt"))
         SD.remove("last.txt");
@@ -140,7 +141,6 @@ void analyzeResponse(){
   uint8_t mexPos = 0;
   uint16_t numeroMex = countMessages();
   uint16_t currentMex = 0;
-  uint16_t inc = 0;
   boolean riparti = false;
   Serial.println("----------------------------");
   Serial.print("CARATTERI: ");
@@ -161,16 +161,12 @@ void analyzeResponse(){
     else
       lettura = lettura.substring(lettura.indexOf("L") + 1, lettura.length());
   }
-  if (sd)
-    inc = BASKET_SIZE;
-  else
-    inc = numeroMex;
   for(uint8_t j = 0; j < ripetizioni; j++){
-    for (uint16_t i = 0; i < numeroMex && !riparti; i = i + inc){
+    for (uint16_t i = 0; i < dimMexNoComp && !riparti; i = i + lettura.length()){
       if (sd)
-        lettura = readMessages(BASKET_SIZE);
+        lettura = readMessages();
       else
-        lettura = readMessages(numeroMex);
+        lettura = readMessages();
       Serial.println(lettura);
       old_index = -1;
       for (int16_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
@@ -222,13 +218,14 @@ void analyzeResponse(){
   pulisci();
 }
 
-String readMessages(uint16_t numero){
-  uint16_t nMessages = 0;
+String readMessages(){
   uint16_t caratteri = 0;
+  uint8_t dimLast = 0;
   String myLettura = "";
   char c = 'w';
   boolean inDict = false;
-  while (nMessages < numero){
+  boolean esci = false;
+  while (myLettura.length() < BUFFER_SIZE && !esci && myLettura.length() < dimMexNoComp){
     if (sd){
       if (myFile.available())
         c = myFile.read();
@@ -239,18 +236,29 @@ String readMessages(uint16_t numero){
     if (diz){
       for (uint8_t k = 0; k < 10; k++){
         if (dizionario[k].chiave == c){
-          myLettura += dizionario[k].valore + "&";
+          if (myLettura.length() + dizionario[k].valore.length() + 1 <= BUFFER_SIZE)
+            myLettura += dizionario[k].valore + "&";
+          else {
+            esci = true;
+            myFile.seek(myFile.position() - 1);
+          }
           k = 10;
           inDict = true;
         }
       }
     }
-    if (c == '&' || c == '!' || inDict)
-      nMessages = nMessages + 1;
-    if (!inDict)
-      myLettura += c;
-    else
+    if (!inDict){
+      if (myLettura.length() + 1 <= BUFFER_SIZE){
+        myLettura += c;
+        dimLast++;
+      } else {
+        esci = true;
+        myFile.seek(myFile.position() - dimLast);
+      }
+    } else
       inDict = false;
+    if (c == '&' || c == '!' || inDict)
+      dimLast = 0;
     caratteri++;
   }
   return myLettura;
