@@ -79,7 +79,7 @@ void setup() {
   pinMode (MANDRINO, OUTPUT);
   pulisci();
   Serial.println("---------------  START  ---------------");
-  //reset("a");
+  reset("a");
 }
 
 void loop() {
@@ -97,9 +97,13 @@ void bluetooth_read(){
     dimMexNoComp = lettura.substring(0, lettura.length() - 1).toInt();
     if (dimMexNoComp > BUFFER_SIZE){
       sd = true;
+      /*Serial.print("I");
+      Serial.println(millis());*/
       if (SD.exists("last.txt"))
         SD.remove("last.txt");
       myFile = SD.open("last.txt", FILE_WRITE);
+      /*Serial.print("F");
+      Serial.println(millis());*/
       while (c != '!'){
         /*Serial.print("I");
         Serial.println(millis());*/
@@ -372,11 +376,11 @@ void ruota(String motore, boolean direzione, uint16_t velocita){
     pin_dir = DIR_MOT_Z;
     pin_pul = PUL_MOT_Z;
   }
-  /*digitalWrite(pin_dir,direzione);
+  digitalWrite(pin_dir,direzione);
   digitalWrite(pin_pul,HIGH);
   delayMicroseconds(velocita);
   digitalWrite(pin_pul,LOW);
-  delayMicroseconds(velocita);*/
+  delayMicroseconds(velocita);
   return;
 }
 
@@ -660,8 +664,8 @@ void reset_motore(String asse){
     pin = SENS_MOT_Z;
     dir = "6";
   }
-  /*while(analogRead(pin) < 1008)
-    sposta(dir+String((int)giri_millimetro[indice]), false, true);*/
+  while(analogRead(pin) < 1008)
+    sposta(dir+String((int)giri_millimetro[indice]), false, true);
   millimetri_totali[indice] = 0;
   my_print("o", true);
   return;
