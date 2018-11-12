@@ -143,12 +143,14 @@ void analyzeResponse(){
   uint16_t currentMex = 0;
   boolean riparti = false;
   Serial.println("----------------------------");
-  Serial.print("CARATTERI: ");
+  Serial.print("DIMENSIONE COMPRESSO: ");
   if (sd)
     Serial.print(myFile.size() + lettura.length());
   else
     Serial.print(lettura.length());
-  Serial.print(" MESSAGGI: ");
+  Serial.print(" DIMENSIONE NON COMPRESSO: ");
+  Serial.print(dimMexNoComp);
+  Serial.print(" NUMERO MESSAGGI: ");
   Serial.println(numeroMex);
   if (sd){
     if (diz)
