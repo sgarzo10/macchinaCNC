@@ -79,7 +79,7 @@ void setup() {
   pinMode (MANDRINO, OUTPUT);
   pulisci();
   Serial.println("---------------  START  ---------------");
-  reset("a");
+  //reset("a");
 }
 
 void loop() {
@@ -231,7 +231,7 @@ String readMessages(){
   char c = 'w';
   boolean inDict = false;
   boolean esci = false;
-  while (myLettura.length() < BUFFER_SIZE && !esci && myLettura.length() < dimMexNoComp){
+  while (myLettura.length() <= BUFFER_SIZE && !esci && myLettura.length() < dimMexNoComp){
     if (sd){
       if (myFile.available())
         c = myFile.read();
@@ -259,7 +259,8 @@ String readMessages(){
         dimLast++;
       } else {
         esci = true;
-        myFile.seek(myFile.position() - dimLast);
+        myFile.seek(myFile.position() - dimLast - 1);
+        myLettura = myLettura.substring(0, myLettura.length() - dimLast);
       }
     } else
       inDict = false;
@@ -376,11 +377,11 @@ void ruota(String motore, boolean direzione, uint16_t velocita){
     pin_dir = DIR_MOT_Z;
     pin_pul = PUL_MOT_Z;
   }
-  digitalWrite(pin_dir,direzione);
+  /*digitalWrite(pin_dir,direzione);
   digitalWrite(pin_pul,HIGH);
   delayMicroseconds(velocita);
   digitalWrite(pin_pul,LOW);
-  delayMicroseconds(velocita);
+  delayMicroseconds(velocita);*/
   return;
 }
 
@@ -664,8 +665,8 @@ void reset_motore(String asse){
     pin = SENS_MOT_Z;
     dir = "6";
   }
-  while(analogRead(pin) < 1008)
-    sposta(dir+String((int)giri_millimetro[indice]), false, true);
+  /*while(analogRead(pin) < 1008)
+    sposta(dir+String((int)giri_millimetro[indice]), false, true);*/
   millimetri_totali[indice] = 0;
   my_print("o", true);
   return;

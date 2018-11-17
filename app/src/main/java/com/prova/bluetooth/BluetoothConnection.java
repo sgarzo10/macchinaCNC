@@ -93,9 +93,9 @@ public class BluetoothConnection extends Thread {
                                 mex = message.substring(i, message.length());
                             outStream.write(mex.getBytes());
                             if (i == 0)
-                                sleep(450);
+                                sleep(976);
                             else
-                                sleep(300);
+                                sleep(576);
                         }
                     } else
                         outStream.write(message.getBytes());
