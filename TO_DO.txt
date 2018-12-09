@@ -1,7 +1,8 @@
-- test per il rimpimento di tutte le figure
-- test per la profondità di tutte le figure
-- test con il diametro diverso da uno
+AM
+- riempimento cerchio non funzionante
 
-
-- calcolare il delay all'invio se il messaggio non viene salvato sull SD
-- inserire lo spessore della figura (solo perimetro, 3mm, piena, ecc..) come parametro
+EVO
+- spessore della figura per triangolo, trapezio, cerchio
+- se parametri trapezio non corretti valorizzare on corretti
+- disegnare figure multilivello
+- salvare delle misure

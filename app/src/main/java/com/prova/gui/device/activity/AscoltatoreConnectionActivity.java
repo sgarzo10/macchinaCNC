@@ -226,16 +226,16 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
             simulaAvanzamento(messaggi.get(i), false);
     }
 
-    public ArrayList<String> posiziona(float x, float y, float z){
+    public ArrayList<String> posiziona(double x, double y, float z){
         @SuppressLint("UseSparseArrays")
         Map<Integer, String> map = new HashMap<>();
         ArrayList<String> messaggi = new ArrayList<>();
-        float[] coordinate = {x, y, z};
+        double[] coordinate = {x, y, z};
         map.put(0, "x");
         map.put(1, "y");
         map.put(2, "z");
         for (int i = 0; i < 3; i++) {
-            float coordinata = coordinate[i];
+            double coordinata = coordinate[i];
             if (coordinata > lunghezze[i])
                 coordinata = lunghezze[i];
             if (Math.abs(coordinata - posizioni[i]) > 0) {
@@ -277,16 +277,16 @@ public class AscoltatoreConnectionActivity implements View.OnClickListener, Comp
                     addMex(drawFigure.disegnaSemiCerchioProfondo(Float.parseFloat(app.getInput().get(6).getText().toString()), s[0], s[1], Float.parseFloat(app.getInput().get(8).getText().toString())));
                     break;
                 case 3:
-                    drawFigure.disegnaRettangolo(Float.parseFloat(app.getInput().get(9).getText().toString()), Float.parseFloat(app.getInput().get(10).getText().toString()), Float.parseFloat(app.getInput().get(11).getText().toString()), app.getCheck().get(0).isChecked());
+                    drawFigure.disegnaRettangolo(Float.parseFloat(app.getInput().get(9).getText().toString()), Float.parseFloat(app.getInput().get(10).getText().toString()), Float.parseFloat(app.getInput().get(11).getText().toString()), Float.parseFloat(app.getInput().get(12).getText().toString()), Float.parseFloat(app.getInput().get(13).getText().toString()), app.getCheck().get(0).isChecked());
                     break;
                 case 4:
-                    drawFigure.disegnaTriangolo(Float.parseFloat(app.getInput().get(12).getText().toString()), Float.parseFloat(app.getInput().get(13).getText().toString()), Float.parseFloat(app.getInput().get(14).getText().toString()), Float.parseFloat(app.getInput().get(15).getText().toString()), app.getCheck().get(1).isChecked());
+                    drawFigure.disegnaTriangolo(Float.parseFloat(app.getInput().get(14).getText().toString()), Float.parseFloat(app.getInput().get(15).getText().toString()), Float.parseFloat(app.getInput().get(16).getText().toString()), Float.parseFloat(app.getInput().get(17).getText().toString()), Float.parseFloat(app.getInput().get(18).getText().toString()), Float.parseFloat(app.getInput().get(19).getText().toString()), Float.parseFloat(app.getInput().get(20).getText().toString()), app.getCheck().get(1).isChecked());
                     break;
                 case 5:
-                    drawFigure.disegnaParallelo(Float.parseFloat(app.getInput().get(16).getText().toString()),Float.parseFloat(app.getInput().get(17).getText().toString()),Float.parseFloat(app.getInput().get(18).getText().toString()), Float.parseFloat(app.getInput().get(19).getText().toString()), app.getCheck().get(2).isChecked());
+                    drawFigure.disegnaParallelo(Float.parseFloat(app.getInput().get(21).getText().toString()),Float.parseFloat(app.getInput().get(22).getText().toString()),Float.parseFloat(app.getInput().get(23).getText().toString()), Float.parseFloat(app.getInput().get(24).getText().toString()), Float.parseFloat(app.getInput().get(25).getText().toString()), Float.parseFloat(app.getInput().get(26).getText().toString()), app.getCheck().get(2).isChecked());
                     break;
                 case 6:
-                    drawFigure.disegnaCerchio(Float.parseFloat(app.getInput().get(20).getText().toString()), Float.parseFloat(app.getInput().get(21).getText().toString()), app.getCheck().get(3).isChecked());
+                    drawFigure.disegnaCerchio(Float.parseFloat(app.getInput().get(27).getText().toString()), Float.parseFloat(app.getInput().get(28).getText().toString()), Float.parseFloat(app.getInput().get(29).getText().toString()), app.getCheck().get(3).isChecked());
                     break;
                 case 7:
                     drawFigure.disegnaTrapezio(Float.parseFloat(app.getInput().get(22).getText().toString()), Float.parseFloat(app.getInput().get(23).getText().toString()), Float.parseFloat(app.getInput().get(24).getText().toString()), Float.parseFloat(app.getInput().get(25).getText().toString()), Float.parseFloat(app.getInput().get(26).getText().toString()), Float.parseFloat(app.getInput().get(27).getText().toString()), app.getCheck().get(4).isChecked());

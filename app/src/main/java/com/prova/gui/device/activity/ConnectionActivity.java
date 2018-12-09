@@ -1,11 +1,14 @@
 package com.prova.gui.device.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -122,15 +125,15 @@ public class ConnectionActivity extends AppCompatActivity {
         sali.setOnTouchListener(ascoltatore);
         scendi.setOnTouchListener(ascoltatore);
         rotazione_attiva.setOnCheckedChangeListener(ascoltatore);
-        createDialog("Scegli posizione", "Inserisci le coordinate", new String[]{"X", "Y", "Z"});
-        createDialog("Scegli parametri linea", "Inserisci i parametri", new String[]{"Lunghezza", "Angolo", "Profondità"});
-        createDialog("Scegli parametri curva", "Inserisci i parametri", new String[]{"Raggio", "Quadrante", "Profondità"});
-        createDialog("Scegli dimensioni rettangolo", "Inserisci le dimensioni", new String[]{"Base", "Altezza", "Profondità", "Riempi"});
-        createDialog("Scegli dimensioni triangolo", "Inserisci le dimensioni", new String[]{"Base", "Lato1", "Lato2", "Profondità", "Riempi"});
-        createDialog("Scegli dimensioni parallelogramma", "Inserisci le dimensioni", new String[]{"Base", "Diagonale", "Altezza", "Profondità", "Riempi"});
-        createDialog("Scegli dimensioni cerchio", "Inserisci le dimensioni", new String[]{"Raggio", "Profondità", "Riempi"});
-        createDialog("Scegli dimensioni trapezio", "Inserisci le dimensioni", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza", "Profondità", "Riempi"});
-        createDialog("RESET", "Scegli assi", new String[]{"Reset X", "Reset Y", "Reset Z"});
+        createDialog("Scegli posizione", new String[]{"X", "Y", "Z"});
+        createDialog("Scegli parametri linea", new String[]{"Lunghezza", "Angolo", "Profondità"});
+        createDialog("Scegli parametri curva", new String[]{"Raggio", "Quadrante", "Profondità"});
+        createDialog("Scegli dimensioni rettangolo", new String[]{"Base", "Altezza", "Profondità", "Spessore Base", "Spessore Altezza", "Riempi"});
+        createDialog("Scegli dimensioni triangolo", new String[]{"Base", "Lato1", "Lato2", "Profondità", "Spessore Base", "Spessore Lato1", "Spessore Lato2", "Riempi"});
+        createDialog("Scegli dimensioni parallelogramma",new String[]{"Base", "Diagonale", "Altezza", "Profondità", "Spessore Base", "Spessore Diagonale", "Riempi"});
+        createDialog("Scegli dimensioni cerchio", new String[]{"Raggio", "Profondità", "Spessore", "Riempi"});
+        createDialog("Scegli dimensioni trapezio", new String[]{"Base Maggiore", "Lato1", "Base Minore", "Lato2", "Altezza", "Profondità", "Riempi"});
+        createDialog("RESET", new String[]{"Reset X", "Reset Y", "Reset Z"});
         mp = new MovePoint(this, joystickView);
         mp.start();
         TextView t = new TextView(this);
@@ -244,51 +247,55 @@ public class ConnectionActivity extends AppCompatActivity {
         }, 100);
     }
 
-    private void createDialog(String title, String messagge, String[] value){
+    private void createDialog(String title, String[] value){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle(title);
-        builder.setMessage(messagge);
         builder.setView(dialogView(value));
         builder.setPositiveButton("Conferma", ascoltatore);
-        builder.setNegativeButton(android.R.string.cancel, ascoltatore);
         AlertDialog dialogElement = builder.create();
         dialog.add(dialogElement);
     }
 
-    private LinearLayout dialogView(String[] value){
-        LinearLayout l = new LinearLayout(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        l.setLayoutParams(lp);
-        l.setWeightSum(value.length);
-        l.setOrientation(LinearLayout.HORIZONTAL);
+    private View dialogView(String[] value){
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        assert inflater != null;
+        @SuppressLint("InflateParams") View myScrollView = inflater.inflate(R.layout.scroll, null, false);
+        LinearLayout l = myScrollView.findViewById(R.id.scrollLayout);
+        LinearLayout.LayoutParams lp;
         for (String aValue : value) {
+            LinearLayout l1 = new LinearLayout(this);
             TextView testoDialog = new TextView(this);
+            lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            l1.setLayoutParams(lp);
+            l1.setWeightSum(1);
+            l1.setOrientation(LinearLayout.HORIZONTAL);
+            lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.7f);
             testoDialog.setText(aValue);
-            lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.4f);
             testoDialog.setLayoutParams(lp);
-            l.addView(testoDialog);
+            l1.addView(testoDialog);
             if (!aValue.equals("Riempi") && !aValue.contains("Reset")) {
                 EditText inputDialog = new EditText(this);
-                lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
+                lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.3f);
                 inputDialog.setLayoutParams(lp);
                 inputDialog.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 if (!aValue.equals("Profondità"))
-                    inputDialog.setText("10");
+                    inputDialog.setText("0");
                 else
                     inputDialog.setText("1");
                 input.add(inputDialog);
-                l.addView(inputDialog);
+                l1.addView(inputDialog);
             } else {
                 CheckBox inputDialog = new CheckBox(this);
-                lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.6f);
+                lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 0.3f);
                 inputDialog.setLayoutParams(lp);
                 inputDialog.setChecked(true);
                 check.add(inputDialog);
-                l.addView(inputDialog);
+                l1.addView(inputDialog);
             }
+            l.addView(l1);
         }
-        return l;
+        return myScrollView;
     }
 
     private void checkValori(boolean posizioni){

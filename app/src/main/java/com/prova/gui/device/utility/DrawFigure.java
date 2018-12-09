@@ -14,12 +14,12 @@ public class DrawFigure {
         this.ascoltatore = ascoltatore;
     }
 
-    public void disegnaRettangolo(double larghezza, double altezza, double profondita, boolean riempi){
+    public void disegnaRettangolo(double larghezza, double altezza, double profondita, double spessoreBase, double spessoreAltezza, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
         double diametro = ascoltatore.getApp().getManageXml().getDiametro();
-        float init_x = ascoltatore.getPosizioni()[0];
-        float init_y = ascoltatore.getPosizioni()[1];
+        double init_x = ascoltatore.getPosizioni()[0];
+        double init_y = ascoltatore.getPosizioni()[1];
         ArrayList<String> messaggi2d = new ArrayList<>();
         altezza = altezza - diametro;
         larghezza = larghezza - diametro;
@@ -28,19 +28,19 @@ public class DrawFigure {
         messaggi2d.add(disegnaLinea(larghezza, 180));
         messaggi2d.add(disegnaLinea(altezza, 270));
         if (riempi) {
-            double diff = 0;
-            for (int j = 0; diff < altezza; j++) {
-                if (diametro < altezza - diff) {
-                    messaggi2d.add(disegnaLinea(diametro, 90));
-                    diff += diametro;
-                } else {
-                    messaggi2d.add(disegnaLinea(altezza - diff, 90));
-                    diff += altezza - diff;
-                }
-                if (j % 2 == 0)
-                    messaggi2d.add(disegnaLinea(larghezza, 0));
-                else
-                    messaggi2d.add(disegnaLinea(larghezza, 180));
+            messaggi2d.addAll(riempiRettangolo(altezza, larghezza, diametro, 90, 0, 180));
+        } else {
+            if (spessoreBase > 0){
+                messaggi2d.addAll(riempiRettangolo(spessoreBase, larghezza, diametro, 90, 0, 180));
+                messaggi2d.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y + altezza));
+                messaggi2d.addAll(riempiRettangolo(spessoreBase, larghezza, diametro, 270, 0, 180));
+            }
+            if (spessoreAltezza > 0){
+                if (spessoreBase > 0)
+                    messaggi2d.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+                messaggi2d.addAll(riempiRettangolo(spessoreAltezza, altezza, diametro, 0, 90, 270));
+                messaggi2d.addAll(simulaAndPosiziona(messaggi2d, init_x + larghezza, init_y));
+                messaggi2d.addAll(riempiRettangolo(spessoreAltezza, altezza, diametro, 180, 90, 270));
             }
         }
         if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
@@ -52,12 +52,31 @@ public class DrawFigure {
         ascoltatore.addMex(messaggi);
     }
 
-    public void disegnaParallelo(double base, double diagonale, double altezza, double profondita, boolean riempi){
+    private ArrayList<String> riempiRettangolo(double massimo, double lunghezza, double diametro, long angolo1 , long angolo2, long angolo3){
+        ArrayList<String> messaggi = new ArrayList<>();
+        double diff = 0;
+        for (int j = 0; diff < massimo; j++) {
+            if (diametro < massimo - diff) {
+                messaggi.add(disegnaLinea(diametro, angolo1));
+                diff += diametro;
+            } else {
+                messaggi.add(disegnaLinea(massimo - diff, angolo1));
+                diff += massimo - diff;
+            }
+            if (j % 2 == 0)
+                messaggi.add(disegnaLinea(lunghezza, angolo2));
+            else
+                messaggi.add(disegnaLinea(lunghezza, angolo3));
+        }
+        return messaggi;
+    }
+
+    public void disegnaParallelo(double base, double diagonale, double altezza, double profondita, double spessoreBase, double spessoreDiagonale, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
         double diametro = ascoltatore.getApp().getManageXml().getDiametro();
-        float init_x = ascoltatore.getPosizioni()[0];
-        float init_y = ascoltatore.getPosizioni()[1];
+        double init_x = ascoltatore.getPosizioni()[0];
+        double init_y = ascoltatore.getPosizioni()[1];
         if (diagonale > altezza) {
             ArrayList<String> messaggi2d = new ArrayList<>();
             long angolo = Math.round(90 - Math.toDegrees(Math.acos(altezza / diagonale)));
@@ -68,19 +87,19 @@ public class DrawFigure {
             messaggi2d.add(disegnaLinea(base, 180));
             messaggi2d.add(disegnaLinea(diagonale, 180 + angolo));
             if (riempi) {
-                double diff = 0;
-                for (int j = 0; diff < diagonale; j++){
-                    if (diametro < diagonale - diff) {
-                        messaggi2d.add(disegnaLinea(diametro , angolo));
-                        diff += diametro;
-                    } else {
-                        messaggi2d.add(disegnaLinea(diagonale - diff , angolo));
-                        diff += diagonale - diff;
-                    }
-                    if (j % 2 == 0)
-                        messaggi2d.add(disegnaLinea(base, 0));
-                    else
-                        messaggi2d.add(disegnaLinea(base, 180));
+                messaggi2d.addAll(riempiRettangolo(diagonale, base, diametro, angolo, 0, 180));
+            } else {
+                if (spessoreBase > 0){
+                    messaggi2d.addAll(riempiRettangolo(spessoreBase, base, diametro, angolo, 0, 180));
+                    messaggi2d.addAll(simulaAndPosiziona(messaggi2d, init_x - Math.sqrt((diagonale * diagonale) - (altezza * altezza)), init_y + altezza));
+                    messaggi2d.addAll(riempiRettangolo(spessoreBase, base, diametro, 180 + angolo, 0, 180));
+                }
+                if (spessoreDiagonale > 0){
+                    if (spessoreBase > 0)
+                        messaggi2d.addAll(simulaAndPosiziona(messaggi2d, init_x, init_y));
+                    messaggi2d.addAll(riempiRettangolo(spessoreDiagonale, diagonale, diametro, 0, angolo, 180 + angolo));
+                    messaggi2d.addAll(simulaAndPosiziona(messaggi2d, init_x + base, init_y));
+                    messaggi2d.addAll(riempiRettangolo(spessoreDiagonale, diagonale, diametro, 180, angolo, 180 + angolo));
                 }
             }
             if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
@@ -93,12 +112,12 @@ public class DrawFigure {
         }
     }
 
-    public void disegnaTriangolo(double base, double lato1, double lato2, double profondita, boolean riempi){
+    public void disegnaTriangolo(double base, double lato1, double lato2, double profondita,double spessoreBase, double spessoreLato1, double spessoreLato2, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
         double diametro = ascoltatore.getApp().getManageXml().getDiametro();
-        float init_x = ascoltatore.getPosizioni()[0];
-        float init_y = ascoltatore.getPosizioni()[1];
+        double init_x = ascoltatore.getPosizioni()[0];
+        double init_y = ascoltatore.getPosizioni()[1];
         long angolo1 = Math.round(Math.toDegrees(Math.acos((lato1 * lato1 + lato2 * lato2 - base * base) / (2d * lato1 * lato2))));
         long angolo2 = Math.round(Math.toDegrees(Math.acos((base * base + lato2 * lato2 - lato1 * lato1) / (2d * base * lato2))));
         long angolo3 = 180 - angolo1 - angolo2;
@@ -169,8 +188,8 @@ public class DrawFigure {
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
         double diametro = ascoltatore.getApp().getManageXml().getDiametro();
-        float init_x = ascoltatore.getPosizioni()[0];
-        float init_y = ascoltatore.getPosizioni()[1];
+        double init_x = ascoltatore.getPosizioni()[0];
+        double init_y = ascoltatore.getPosizioni()[1];
         if (lato2 >= altezza && lato1 >= altezza && baseMinore <= baseMaggiore) {
             long angolo1 = Math.round(Math.toDegrees(Math.acos(altezza / lato1)));
             long angolo2 = Math.round(Math.toDegrees(Math.acos(altezza / lato2)));
@@ -240,12 +259,12 @@ public class DrawFigure {
         }
     }
 
-    public void disegnaCerchio(double raggio, double profondita, boolean riempi){
+    public void disegnaCerchio(double raggio, double profondita, double spessore, boolean riempi){
         ArrayList<String> messaggi = new ArrayList<>();
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
         double diametro = ascoltatore.getApp().getManageXml().getDiametro();
-        float init_x = ascoltatore.getPosizioni()[0];
-        float init_y = ascoltatore.getPosizioni()[1];
+        double init_x = ascoltatore.getPosizioni()[0];
+        double init_y = ascoltatore.getPosizioni()[1];
         ArrayList<String> messaggi2d = new ArrayList<>();
         messaggi2d.addAll(disegnaSemiCerchio(raggio, "mxg", "myg"));
         messaggi2d.addAll(disegnaSemiCerchio(raggio, "myg", "mxs"));
@@ -322,8 +341,8 @@ public class DrawFigure {
 
     public ArrayList<String> disegnaSemiCerchioProfondo(double raggio, String mex1, String mex2, double profondita) {
         ArrayList<String> messaggi = new ArrayList<>();
-        float init_x = ascoltatore.getPosizioni()[0];
-        float init_y = ascoltatore.getPosizioni()[1];
+        double init_x = ascoltatore.getPosizioni()[0];
+        double init_y = ascoltatore.getPosizioni()[1];
         messaggi.add(ascoltatore.getSpostamenti().get("mzs") + Long.toString(Math.round(ascoltatore.getGiriMillimetro()[2]*ascoltatore.getApp().getManageXml().getPrecisioni().get(2))));
         ArrayList<String> messaggi2d = disegnaSemiCerchio(raggio, mex1, mex2);
         if (profondita > ascoltatore.getApp().getManageXml().getPrecisioni().get(2)) {
@@ -425,7 +444,7 @@ public class DrawFigure {
         return toReturn;
     }
 
-    private ArrayList<String> simulaAndPosiziona(ArrayList<String> messaggi2d, float x, float y){
+    private ArrayList<String> simulaAndPosiziona(ArrayList<String> messaggi2d, double x, double y){
         ArrayList<String> messaggi = new ArrayList<>(messaggi2d);
         ascoltatore.simulaDisegno(messaggi2d);
         ArrayList<String> posiziona = new ArrayList<>(ascoltatore.posiziona(x, y, ascoltatore.getPosizioni()[2]));
