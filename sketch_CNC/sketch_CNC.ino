@@ -169,10 +169,7 @@ void analyzeResponse(){
   }
   for(uint8_t j = 0; j < ripetizioni; j++){
     for (uint16_t i = 0; i < dimMexNoComp && !riparti; i = i + lettura.length()){
-      if (sd)
-        lettura = readMessages();
-      else
-        lettura = readMessages();
+      lettura = readMessages();
       Serial.println(lettura);
       old_index = -1;
       for (int16_t index = lettura.indexOf("&"); index > 0 && !riparti; index = lettura.indexOf("&", old_index + 1)){
@@ -360,63 +357,48 @@ void readDictionary(){
   return;
 }
 
-//direzione: true orario(sale), false antiorario (scende)
-//velocita: 20 velocissimo, 1000 lentissimo
-void ruota(String motore, boolean direzione, uint16_t velocita){
-  uint8_t pin_dir = 0;
-  uint8_t pin_pul = 0;
-  if (motore == "x"){
-    pin_dir = DIR_MOT_X;
-    pin_pul = PUL_MOT_X;
-  }
-  if (motore == "y"){
-    pin_dir = DIR_MOT_Y;
-    pin_pul = PUL_MOT_Y;
-  }
-  if (motore == "z"){
-    pin_dir = DIR_MOT_Z;
-    pin_pul = PUL_MOT_Z;
-  }
-  /*digitalWrite(pin_dir,direzione);
-  digitalWrite(pin_pul,HIGH);
-  delayMicroseconds(velocita);
-  digitalWrite(pin_pul,LOW);
-  delayMicroseconds(velocita);*/
-  return;
-}
-
-//3200 pulsazioni giro completo 5mm - 640 pulsazioni 1mm 
-void sposta_millimetro(String motore, uint32_t giri, boolean direzione, uint16_t velocita){
-  uint8_t pin = 0;
-  if (motore == "x")
-    pin = ENA_MOT_X;
-  if (motore == "y")
-    pin = ENA_MOT_Y;
-  if (motore == "z")
-    pin = ENA_MOT_Z;
-  digitalWrite(pin,true);
-  for(uint32_t i=0;i<giri;i++)
-    ruota(motore, direzione, velocita);
-  return;
-}
-
-void aggiorna_misura(movimento m){
-  uint8_t indice = motoreToIndice(m.motore);
-  float totali = millimetri_totali[indice];
-  if (m.direzione)
-    totali = totali + (m.giri / giri_millimetro[indice]);
-  else
-    totali = totali - (m.giri / giri_millimetro[indice]);
-  millimetri_totali[indice] = totali;
-  return;
-}
-
+/*
+direzione: true orario(sale), false antiorario (scende)
+velocita: 20 velocissimo, 1000 lentissimo
+3200 giri rotazione completa 5mm - 640 giri 1mm*/
 void sposta(String command, boolean aggiorna, boolean reset){
   movimento m = lettura_parametri(spostamenti[command.substring(0,1).toInt() - 1] + command.substring(1, command.length()), reset);
+  uint8_t indice = motoreToIndice(m.motore);
+  float totali = millimetri_totali[indice];
+  uint8_t pin_ena = 0;
+  uint8_t pin_dir = 0;
+  uint8_t pin_pul = 0;
   if (m.giri != 0){
-    sposta_millimetro(m.motore, m.giri, m.direzione, m.velocita);
-    if (aggiorna)
-      aggiorna_misura(m);
+    if (m.motore == "x"){
+      pin_ena = ENA_MOT_X;
+      pin_dir = DIR_MOT_X;
+      pin_pul = PUL_MOT_X;
+    }
+    if (m.motore == "y"){
+      pin_ena = ENA_MOT_Y;
+      pin_dir = DIR_MOT_Y;
+      pin_pul = PUL_MOT_Y;
+    }
+    if (m.motore == "z"){
+      pin_ena = ENA_MOT_Z;
+      pin_dir = DIR_MOT_Z;
+      pin_pul = PUL_MOT_Z;
+    }
+    digitalWrite(pin_ena,true);
+    for(uint32_t i=0;i<m.giri;i++){
+    /*digitalWrite(pin_dir,m.direzione);
+      digitalWrite(pin_pul,HIGH);
+      delayMicroseconds(m.velocita);
+      digitalWrite(pin_pul,LOW);
+      delayMicroseconds(m.velocita);*/
+    }
+    if (aggiorna){
+      if (m.direzione)
+        totali = totali + (m.giri / giri_millimetro[indice]);
+      else
+        totali = totali - (m.giri / giri_millimetro[indice]);
+      millimetri_totali[indice] = totali;
+    }
   }
   if (aggiorna)
     dove_print(m.motore, true);
